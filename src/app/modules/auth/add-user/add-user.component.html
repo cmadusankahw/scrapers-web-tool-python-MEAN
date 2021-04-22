@@ -1,0 +1,137 @@
+<mdb-card>
+  <mdb-card-header class="green white-text text-center py-4">
+    <h4><b>Add New Users</b></h4>
+  </mdb-card-header>
+
+  <!--Card content-->
+  <mdb-card-body class="px-lg-5 pt-0">
+    <!-- Form -->
+    <br />
+    <form
+      style="color: #757575"
+      (submit)="signupUser(signupform)"
+      #signupform="ngForm"
+    >
+      <div class="text-center">
+        <mat-form-field class="mfield">
+          <mat-label>User type</mat-label>
+          <mat-select required name="user_type" #user_type="ngModel" ngModel>
+            <mat-option value="superAdmin"> Super Admin</mat-option>
+            <mat-option value="financialAdmin"> Financial Admin</mat-option>
+            <mat-option value="moderator"> Moderator</mat-option>
+          </mat-select>
+          <mat-error *ngIf="user_type.invalid">Select User Type</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="mfield">
+          <input
+            matInput
+            type="text"
+            placeholder="Enter User Name"
+            required
+            name="user_name"
+            #user_name="ngModel"
+            ngModel
+          />
+          <mat-error *ngIf="user_name.invalid">User Name is required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="mfield">
+          <input
+            matInput
+            type="email"
+            placeholder="Enter User Email"
+            required
+            name="user_email"
+            #user_email="ngModel"
+            ngModel
+          />
+          <mat-error *ngIf="user_email.invalid"
+            >A valid Email is required</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field class="mfield">
+          <input
+            matInput
+            placeholder="Enter User Contact No"
+            required
+            name="contact_no"
+            #contact_no="ngModel"
+            ngModel
+          />
+          <mat-error *ngIf="contact_no.invalid"
+            >Please Provide a Contact No</mat-error
+          >
+        </mat-form-field>
+
+        <mat-form-field class="mfield">
+          <mat-label>Select User Gender</mat-label>
+          <mat-select required name="gender" #gender="ngModel" ngModel>
+            <mat-option value="male">Male</mat-option>
+            <mat-option value="female">Female</mat-option>
+            <mat-option value="none">Prefer Not to Say</mat-option>
+          </mat-select>
+          <mat-error *ngIf="gender.invalid"
+            >Please Select your Gender</mat-error
+          >
+        </mat-form-field>
+      </div>
+
+      <hr />
+
+      <div class="row">
+        <div class="col-md-6">
+          <mat-form-field class="mfield">
+            <input
+              matInput
+              type="password"
+              placeholder="Enter Password"
+              required
+              pattern="^(?=.*\d).{4,8}$"
+              name="user_pass"
+              #user_pass="ngModel"
+              ngModel
+            />
+            <mat-error *ngIf="user_pass.invalid"
+              >Password is required</mat-error
+            >
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <mat-form-field class="mfield">
+            <input
+              matInput
+              type="password"
+              placeholder="Retype Password"
+              required
+              pattern="^(?=.*\d).{4,8}$"
+              name="user_pass_check"
+              #user_pass_check="ngModel"
+              ngModel
+            />
+            <mat-error *ngIf="user_pass_check.invalid"
+              >Valid Password Cnfirmation is required</mat-error
+            >
+          </mat-form-field>
+        </div>
+      </div>
+
+      <br />
+
+      <!-- Sign up complete button -->
+      <button
+        mdbBtn
+        color="green"
+        rounded="true"
+        block="true"
+        mdbWavesEffect
+        type="submit"
+      >
+        Create User
+      </button>
+      <br />
+    </form>
+    <!-- Form -->
+  </mdb-card-body>
+</mdb-card>

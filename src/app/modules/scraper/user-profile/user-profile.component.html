@@ -1,0 +1,418 @@
+<!--Business Profile View-->
+<div class="card mt-4 container-fluid" *ngIf="!editmode">
+  <section class="dark-grey-text">
+    <!--profile header-->
+    <div class="container-fluid pt-3">
+      <div class="row" style="display: flex; align-items: center">
+        <div class="col-md-3">
+          <img
+            src="{{ admin ? admin.profilePic : imageUrl }}"
+            alt="User Pic"
+            class="img-thumbnail logo-img"
+          />
+        </div>
+        <div class="col-md-9">
+          <h2 class="txt-title">
+            {{ admin ? admin.userName : "Loading..." }}
+          </h2>
+        </div>
+      </div>
+
+      <!-- profile content-->
+      <div class="page-content">
+        <hr />
+
+        <!--row 1-->
+        <div class="row">
+          <div class="col-md-5 inst-text">
+            <mdb-icon fas icon="envelope"></mdb-icon> <span> User ID </span>
+          </div>
+
+          <div class="col-md-7 profile-text">
+            <span> {{ admin ? admin.userId : "Loading..." }}</span>
+          </div>
+        </div>
+
+        <!--row 1-->
+        <div class="row div-content">
+          <div class="col-md-5 inst-text">
+            <mdb-icon fas icon="envelope"></mdb-icon> <span> Email </span>
+          </div>
+
+          <div class="col-md-7 profile-text">
+            <span> {{ admin ? admin.userEmail : "Loading..." }}</span>
+          </div>
+        </div>
+
+        <!--row 2-->
+        <div class="row div-content">
+          <div class="col-md-5 inst-text">
+            <mdb-icon fas icon="birthday-cake"></mdb-icon>
+            <span> Admin Type</span>
+          </div>
+
+          <div class="col-md-7 profile-text">
+            <span> {{ admin ? admin.userType : "Loading..." }}</span>
+          </div>
+        </div>
+
+        <!--row 2-->
+        <div class="row div-content">
+          <div class="col-md-5 inst-text">
+            <mdb-icon fas icon="phone"></mdb-icon>
+            <span> Contact No </span>
+          </div>
+
+          <div class="col-md-7 profile-text">
+            <span> {{ admin ? admin.userContactNo : "Loading..." }}</span>
+          </div>
+        </div>
+
+        <!--row 2-->
+        <div class="row div-content">
+          <div class="col-md-5 inst-text">
+            <mdb-icon fas icon="mercury"></mdb-icon> <span> Gender</span>
+          </div>
+
+          <div class="col-md-7 profile-text">
+            <span> {{ admin ? admin.gender : "Loading..." }}</span>
+          </div>
+        </div>
+
+        <!--row 4-->
+        <div class="row div-content">
+          <div class="col-md-5 inst-text" style="padding-bottom: 100px">
+            <mdb-icon fas icon="key"></mdb-icon> <span> Password </span>
+          </div>
+
+          <div class="col-md-7 profile-text">
+            <span> ******* </span>
+          </div>
+          <br />
+          <div class="btn-gr">
+            <hr />
+            <a
+              type="button"
+              mdbBtn
+              color="green"
+              outline="yes"
+              class="waves-light btn btn-md cust-btn btn-lm"
+              mdbWavesEffect
+              (click)="changePassword.show()"
+            >
+              Change Password
+            </a>
+            <a
+              type="button"
+              mdbBtn
+              color="dark"
+              outline="yes"
+              class="btn btn-md mt-2"
+              (click)="editmode = !editmode"
+              mdbWavesEffect
+              >Customize Profile
+            </a>
+          </div>
+        </div>
+        <hr />
+      </div>
+    </div>
+  </section>
+</div>
+
+<!--customize profile section-->
+<div class="card mt-4 container-fluid" *ngIf="editmode">
+  <form
+    class="service-form pd-top-min"
+    #editProfile="ngForm"
+    (submit)="editUser(editProfile)"
+  >
+    <section class="dark-grey-text">
+      <!--edit content-->
+      <div class="pd-top-min text-center">
+        <!--row1-->
+        <div class="row">
+          <div class="col-md-4 inst-text">
+            <mdb-icon fas icon="award"></mdb-icon>
+            <span> Change Profile Picture: </span>
+          </div>
+
+          <div class="col-md-4 text-center">
+            <a role="button" mdbWavesEffect (click)="img.click()">
+              <img
+                [src]="image ? imageUrl : admin.profilePic"
+                alt="Profile Picture"
+                class="img-thumbnail logo-img-edit"
+              />
+            </a>
+            <input
+              type="file"
+              hidden="true"
+              id="img"
+              #img
+              ngmodel
+              name="image"
+              accept="image/*"
+              (change)="onImageUploaded($event)"
+            />
+          </div>
+        </div>
+
+        <hr />
+        <br />
+
+        <div class="row page-content">
+          <div class="col-md-4 inst-text">
+            <mdb-icon fas icon="file-signature"></mdb-icon>
+            <span> Your Name: </span>
+          </div>
+
+          <div class="col-md-7 text-center">
+            <mat-form-field class="service-full-width">
+              <input
+                matInput
+                [ngModel]="admin.userName"
+                required
+                name="user_name"
+                #userName="ngModel"
+              />
+              <mat-error *ngIf="userName.invalid"
+                >Please enter your name</mat-error
+              >
+            </mat-form-field>
+          </div>
+        </div>
+        <!--row 2-->
+        <div class="row pt-3">
+          <div class="col-md-4 inst-text">
+            <mdb-icon fas icon="envelope"></mdb-icon>
+            <span> Email Address:</span>
+          </div>
+
+          <div class="col-md-7 text-center">
+            <mat-form-field class="service-full-width">
+              <input
+                matInput
+                [ngModel]="admin.userEmail"
+                required
+                type="email"
+                #email="ngModel"
+                name="email"
+                ngModel
+              />
+              <mat-error *ngIf="email.invalid"
+                >Please enter a valid email address</mat-error
+              >
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!--row 2-->
+        <div class="row page-content">
+          <div class="col-md-4 inst-text">
+            <mdb-icon fas icon="phone"></mdb-icon> <span> Contact No:</span>
+          </div>
+
+          <div class="col-md-7 text-center">
+            <mat-form-field class="service-full-width">
+              <input
+                matInput
+                [ngModel]="admin.userContactNo"
+                required
+                #contactNo="ngModel"
+                minlength="10"
+                maxlength="10"
+                name="contact_no"
+              />
+              <mat-error *ngIf="contactNo.invalid"
+                >Contact No must contain 10 digits</mat-error
+              >
+            </mat-form-field>
+          </div>
+        </div>
+
+        <!--row 3-->
+        <div class="row page-content" style="padding-bottom: 120px">
+          <div class="col-md-4 inst-text">
+            <mdb-icon fas icon="mercury"></mdb-icon> <span> Gender:</span>
+          </div>
+
+          <div class="col-md-7 text-center">
+            <mat-form-field class="service-full-width">
+              <mat-label>Select Gender</mat-label>
+              <mat-select
+                [ngModel]="admin.gender"
+                required
+                ngModel
+                name="gender"
+              >
+                <mat-option value="male">Male</mat-option>
+                <mat-option value="female">Female</mat-option>
+                <mat-option value="none">Prefer Not to Say</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <hr />
+      </div>
+    </section>
+
+    <!--save buttons-->
+    <div class="text-center pb-3">
+      <button
+        type="button"
+        mdbBtn
+        color="green"
+        class="waves-light btn btn-md cust-btn btn-tab"
+        mdbWavesEffect
+        type="submit"
+      >
+        Save Changes
+      </button>
+      <button
+        type="button"
+        mdbBtn
+        color="green"
+        class="waves-light btn btn-md cust-btn btn-tab"
+        mdbWavesEffect
+        outline="yes"
+        (click)="editmode = !editmode"
+        (click)="editProfile.resetForm()"
+      >
+        Discard
+      </button>
+    </div>
+    <hr />
+  </form>
+</div>
+
+<!--change password Modal-->
+<div
+  mdbModal
+  #changePassword="mdbModal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myBasicModalLabel"
+  [config]="{ backdrop: false, ignoreBackdropClick: true }"
+  aria-hidden="true"
+>
+  <form #pwordForm="ngForm" (submit)="changeUserPassword(pwordForm)">
+    <div
+      class="modal-dialog modal-dialog-centered"
+      role="document"
+      style="overflow-y: initial !important"
+    >
+      <div class="modal-content">
+        <div class="modal-header">
+          <button
+            type="button"
+            class="close pull-right"
+            aria-label="Close"
+            (click)="changePassword.hide()"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+          <h4 class="modal-title w-100" id="myModalLabel">Change Password</h4>
+        </div>
+        <div class="modal-body" style="height: 330px; overflow-y: auto">
+          <!--row 2-->
+          <div class="row page-content">
+            <div class="col-md-5 inst-text">
+              <span> Current Password:</span>
+            </div>
+
+            <div class="col-md-7 text-center">
+              <mat-form-field class="service-full-width">
+                <mat-label>Current Password here </mat-label>
+                <input
+                  type="password"
+                  matInput
+                  required
+                  name="current_password"
+                  #currentPword="ngModel"
+                  ngModel
+                />
+                <mat-error *ngIf="currentPword.invalid"
+                  >Current Password is required</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+          <hr />
+
+          <!--row 2-->
+          <div class="row page-content">
+            <div class="col-md-5 inst-text">
+              <span> New Password:</span>
+            </div>
+
+            <div class="col-md-7 text-center">
+              <mat-form-field class="service-full-width">
+                <mat-label>New Password here </mat-label>
+                <input
+                  type="password"
+                  matInput
+                  required
+                  name="new_password1"
+                  #newPassword1="ngModel"
+                  ngModel
+                />
+                <mat-error *ngIf="newPassword1.invalid"
+                  >New Password cannot be empty</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!--row 2-->
+          <div class="row">
+            <div class="col-md-5 inst-text">
+              <span> Retype Password:</span>
+            </div>
+
+            <div class="col-md-7 text-center">
+              <mat-form-field class="service-full-width">
+                <mat-label>Retype Password here </mat-label>
+                <input
+                  type="password"
+                  matInput
+                  required
+                  name="new_password2"
+                  #newPassword2="ngModel"
+                  ngModel
+                />
+                <mat-error *ngIf="newPassword2.invalid"
+                  >Plase re-type the password</mat-error
+                >
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            mdbBtn
+            class="btn btn-md"
+            color="green"
+            type="submit"
+            mdbWavesEffect
+          >
+            Change Password
+          </button>
+          <button
+            mdbBtn
+            class="btn btn-md"
+            color="green"
+            outline="yes"
+            (click)="changePassword.hide()"
+            mdbWavesEffect
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

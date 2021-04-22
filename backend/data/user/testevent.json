@@ -1,0 +1,76 @@
+
+  {
+    "event_id":"E1",
+    "event_title": "Evenza smart Hackathon",
+    "description": "test description",
+    "event_type": "closed",
+    "event_category": "Tech events",
+    "from_date": "2020-07-12T04:54:51.255Z",
+    "to_date": "2020-07-15T02:00:51.255Z",
+    "created_date": "2020-07-06T04:54:51.255Z",
+    "location": {
+              "lat": 12.113456,
+              "lang": 39.8765,
+              "homeTown": "Matara"
+              },
+    "no_of_participants": 200,
+    "participants": {},
+    "total_budget": 200000,
+    "event_segments": {
+      "tasks":[{
+        "task_id": "task_visit_dressing_saloon_123",
+        "title": "Visit Dressing Saloon",
+        "description": "test",
+        "sceduled_from_date":  "2020-07-08T04:54:51.255Z",
+        "scheduled_to_date":  "2020-07-08T04:54:51.255Z",
+        "state": "pending"
+      }],
+      "services":[{
+        "service_id": "S1",
+        "service_name": "Sarasi Hotel",
+        "service_category": "Reception halls",
+        "booking_id": "B1",
+        "appoint_id": null,
+        "allocated_budget": 90000,
+        "spent_budget": 87000,
+        "booking_from_date": "2020-07-12T04:54:51.255Z",
+        "booking_to_date": "2020-07-12T04:54:51.255Z",
+        "appointed_date": null,
+        "state": "booked"
+      }],
+      "products":[{
+        "product_id": "P1",
+        "product": "Dinusha Catering",
+        "product_category": "Catering Services",
+        "order_id": "OR1",
+        "allocated_budget": 25000,
+        "spent_budget": 27000,
+        "ordered_date": "2020-07-09T04:54:51.255Z",
+        "state": "ordered"
+      }]
+    },
+    "service_categories":[{
+                          "id": "1",
+                          "category": "Reception Halls",
+                          "precentage": 24
+                        }],
+    "product_categories":  [{
+                          "id": "1",
+                          "category": "Audio & Sound System",
+                         "precentage": 12
+                       }],
+    "feature_img": "./assets/images/events/2.jpg",
+    "qr_code": "",
+    "state": "planned",
+    "social_links":  {
+                    "fb": "",
+                    "instagram": "",
+                    "other":""
+                  },
+    "host": {
+            "user_id": "U01",
+            "email": "cmadusankahw@gmail.com",
+            "name": "Chiran"
+          }
+  }
+

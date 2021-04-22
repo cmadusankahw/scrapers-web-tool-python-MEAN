@@ -1,0 +1,68 @@
+<div class="pd-top-min">
+  <h4>
+    <mat-icon>library_books</mat-icon>
+    <b> Registered Admin Users</b>
+  </h4>
+
+  <mat-form-field>
+    <mat-label>
+      <mat-icon>search</mat-icon>
+      Search Users</mat-label
+    >
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Saman" />
+  </mat-form-field>
+
+  <div class="mat-elevation-z8">
+    <table
+      class="table-responsive"
+      mat-table
+      [dataSource]="dataSource"
+      *ngIf="admins.length"
+    >
+      <!-- ID Column -->
+      <ng-container matColumnDef="user_id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User ID</th>
+        <td mat-cell *matCellDef="let row">{{ row.userId }}</td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="user_type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User Type</th>
+        <td mat-cell *matCellDef="let row">{{ row.userType }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.first_name + " " + row.userName }}
+        </td>
+      </ng-container>
+
+      <!-- Color Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.userEmail }}
+        </td>
+      </ng-container>
+
+      <!-- Color Column -->
+      <ng-container matColumnDef="contact_no">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact No</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.userContactNo }}
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <div class="text-center pd-top-min" *ngIf="!admins.length">
+      No Users Found
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator>
+  </div>
+</div>
