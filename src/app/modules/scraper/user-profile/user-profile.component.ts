@@ -7,8 +7,8 @@ import { Router} from '@angular/router';
 
 import { ErrorComponent } from 'src/app/error/error.component';
 import { DatePipe } from '@angular/common';
-import { ScraperService } from '../scraper.service';
-import { Admin } from '../scraper.model';
+import { User } from '../scraper.model';
+import { AuthService } from '../../auth/auth.service';
 
 
 @Component({
@@ -18,20 +18,20 @@ import { Admin } from '../scraper.model';
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
 
-  private adminSubs: Subscription;
+  private userSubs: Subscription;
 
   // edit profile mode
   editmode = false;
 
   // bprofile data binding
-  admin: Admin = {
+  user: User = {
     userId: 'U01',
     userName: 'Test',
     userType: 'super-admin',
     profilePic: './assets/images/merchant/user.jpg',
     userEmail: 'abc@gmail.com',
     userContactNo: '0776789078',
-    gender: 'male'
+    status: 'Registered'
   }
 
 
@@ -40,7 +40,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
    imageUrl: any = './assets/images/merchant/nopic.png';
 
 
-  constructor(private adminService: ScraperService,
+  constructor(private authService: AuthService,
               public dialog: MatDialog,
               public datepipe: DatePipe,
               private router: Router) { }
@@ -54,8 +54,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.adminSubs) {
-      this.adminSubs.unsubscribe();
+    if (this.userSubs) {
+      this.userSubs.unsubscribe();
     }
     this.imageUrl = './assets/images/merchant/nopic.png';
     this.image = null;
@@ -76,19 +76,19 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     if (editForm.invalid) {
       console.log('Form Invalid');
     } else {
-      const admin: Admin = {
-        userId: this.admin.userId,
+      const user: User = {
+        userId: this.user.userId,
         userType: editForm.value.user_type,
         userName: editForm.value.user_name,
-        profilePic: this.admin.profilePic,
+        profilePic: this.user.profilePic,
         userEmail: editForm.value.email,
         userContactNo: editForm.value.contact_no,
-        gender: editForm.value.gender,
+        status: this.user.status,
         };
-      this.adminService.updateAdmin(admin, this.image);
-      this.adminSubs = this.adminService.getAdminUpdateListener()
+      this.authService.updateUser(user, this.image);
+      this.userSubs = this.authService.getUserUpdatteListener()
       .subscribe((res) => {
-        this.admin = res;
+        this.user = res;
       });
       console.log('Admin details updated successfully!');
       editForm.resetForm();

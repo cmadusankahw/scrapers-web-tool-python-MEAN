@@ -4,7 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Subscription } from 'rxjs';
-import { Driver, Passenger } from '../../../scraper.model';
+import { ScraperRun } from '../../../scraper.model';
 import { ScraperService } from '../../../scraper.service';
 
 @Component({
@@ -15,32 +15,36 @@ import { ScraperService } from '../../../scraper.service';
 export class DashDataComponent implements OnInit {
 
   displayedColumns: string[] = ['passengerId', 'passengerName','passengerMobile', 'pickup', 'dropoff','regDate', 'status', 'action'];
-  dataSource: MatTableDataSource<Passenger>;
+  dataSource: MatTableDataSource<ScraperRun>;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   // subscritions
+  private scraperSub: Subscription;
 
-  private passengerSub: Subscription;
-
-  passengers: Passenger[] = [
+  scrapers: ScraperRun[] = [
     {
-      passengerId: 'D01',
-      passengerName: 'Chiran HW',
-      passengerContactNo: '0778956789',
-      passengerEmail: 'abc@gmail.com',
-      profilePic: './assets/images/merchant/user.jpg',
-      pickup: 'Matara',
-      dropoff: 'Colombo',
-      passengerRegDate: '2021-01-23',
-      status: 'inactive'
+      scraperRunId: 'U1S12345678',
+      userId: 'U1',
+      scraperId: 'S1',
+      timestamp: 2345678,
+      noOfRuns: 1,
+      noOfCols: 15,
+      noOfRows: 2870,
+      executed_params:{
+        categories: ['all'],
+        locations: ['any'],
+      },
+      dataLocation: 'sdcrapers/data/rainbowpages.csv',
+      dataFormat: 'csv',
+      status: 'success'
     },
   ];
 
-  passenger: Passenger;
+  scraper: ScraperRun;
 
-  constructor( private adminService: ScraperService) { }
+  constructor( private scraperService: ScraperService) { }
 
   ngOnInit() {
   //  this.adminService.getPassengers();
@@ -48,7 +52,7 @@ export class DashDataComponent implements OnInit {
   //    res => {
   //      if (res) {
         //  this.passengers = res;
-         this.dataSource = new MatTableDataSource(this.passengers);
+         this.dataSource = new MatTableDataSource(this.scrapers);
          this.dataSource.paginator = this.paginator;
          this.dataSource.sort = this.sort;
     //   }
@@ -58,8 +62,8 @@ export class DashDataComponent implements OnInit {
 
   ngOnDestroy() {
 
-    if (this.passengerSub) {
-      this.passengerSub.unsubscribe();
+    if (this.scraperSub) {
+      this.scraperSub.unsubscribe();
     }
   }
 
@@ -74,10 +78,10 @@ export class DashDataComponent implements OnInit {
   }
 
   // get selected driver details
-  showUsertDetails(passengerId: string) {
-    for (const app of this.passengers) {
-      if (app.passengerId === passengerId) {
-        this.passenger = app;
+  showUsertDetails(scraperRunId: string) {
+    for (const app of this.scrapers) {
+      if (app.scraperRunId === scraperRunId) {
+        this.scraper = app;
       }
     }
   }

@@ -1,4 +1,4 @@
-# Admin Dashboard with Anglar 2
+# Scrapers Web Tool - MEAN Stack
 
 ## Development server
 

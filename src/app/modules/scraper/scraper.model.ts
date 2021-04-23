@@ -1,12 +1,45 @@
 
-export interface Admin {
+export interface Scraper {
+  scraperId: string;
+  scraperName: string;
+  description: string;
+  tags: string[];
+  baseURL: string;
+  scraperLocation: string;
+  script: string;
+  params: {
+    categories: string[];
+    locations: string[];
+  };
+  price: number;
+}
+
+export interface ScraperRun {
+  scraperRunId: string;
+  userId: string;
+  scraperId: string;
+  timestamp: number;
+  noOfRuns: number;
+  noOfCols: number;
+  noOfRows: number;
+  executed_params:{
+    categories: string[];
+    locations: string[];
+  };
+  dataLocation: string;
+  dataFormat: string;
+  status: string;
+}
+
+
+export interface User {
   userId: string;
   userName: string;
   userType: string;
   profilePic: string;
   userEmail: string;
   userContactNo: string;
-  gender: string;
+  status: string;
 }
 
 export interface DashStat {
@@ -15,102 +48,14 @@ export interface DashStat {
   monthlyIncome: number;
 }
 
-export interface Payment {
-  payId: string;
-  driverId: string;
-  driverName: string;
-  driverContactNo: string;
-  vehicleNo: string;
-  status: string;
-  payDate: DateObj;
-  payAmount: number;
-  serviceCharge: number;
-  passengerId: string;
-  passengerName: string;
-  passengerContactNo: string;
-}
-
-export interface Income {
-  payId: string;
-  driverId: string;
-  driverName: string;
-  status: string;
-  payDate: DateObj;
-  payAmount: number;
-  passengerId: string;
-  passengerName: string;
-  reason: string; 
-}
-
-export interface Passenger {
-  passengerId: string;
-  passengerName: string;
-  passengerContactNo: string; 
-  passengerEmail: string;
-  profilePic: string;
-  pickup: string;
-  dropoff: string;
-  passengerRegDate: string;
-  status: string;
-}
-
-export interface Driver {
-  driverId: string;
-  driverName: string;
-  driverContactNo: string; 
-  driverEmail: string;
-  profilePic: string;
-  pickup: string;
-  dropoff: string;
-  driverRegDate: string;
-  vehicleNo: string;
-  vehicleType: string;
-  noOfSeats: number;
-  availableSeats: number;
-  ACType: string;
-  vehiclePhotos: VehiclePhotos;
-  NICPhotos: LegalDocument;
-  driverLicensePhotos: LegalDocument;
-  revenueLicensePhotos: LegalDocument;
-  insurrencePhotos: LegalDocument
-  bankBookPhoto: string;
-  status: string;
-}
-
-export interface DuePayment {
-  payId: string;
-  driverId: string;
-  driverName: string;
-  passengerId: string;
-  passengerName: string;
-  driverProfilePic: string;
-  passengerProfilePic: string;
-  passengerContactNo: string;
-  driverContactNo: string; 
-  dueDate: DateObj;
-  dueAmount: number;
-  monthlyPayment: number;
-  pickup: string;
-  dropoff: string;
-  paymentStatus: string;
-}
-
 export interface DateObj {
   date: number;
   month: number;
   year: number;
 }
 
-export interface VehiclePhotos {
-  image1: string;
-  image2: string;
-  image3: string;
-  image4: string;
-  image5: string;
-  image6: string;
-}
-
 export interface LegalDocument {
   front: string;
   back: string;
 }
+

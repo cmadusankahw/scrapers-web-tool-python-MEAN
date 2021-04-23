@@ -3,56 +3,71 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
-import { SuccessComponent } from 'src/app/success/success.component';
-import { Admin, DashStat, Driver, DuePayment, Income, Passenger, Payment } from './scraper.model';
-import {url, getAdmin, getDashStat, duePayments, duePayment, newDrivers, getDrivers,  getPassengers, getDriverPayments, getPassengerPayments,  getAdmins, getIncomes} from './scraper.config';
+import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
+import {  DashStat, Scraper, ScraperRun } from './scraper.model';
+import {url,
+  getDashStat,
+  getScraper,
+  getAllScrapers,
+  getUserScrapers,
+  getUserScraperRuns,
+  putUpdateUser,
+  putUpdateScraper,
+  postRunScraper,
+  deleteScraper,
+  deleteScraperRun} from  './scraper.config';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
-  private duePaymentsUpdated = new Subject<DuePayment[]>();
-  private duePaymentUpdated = new Subject<DuePayment>();
-  private incomesUpdated = new Subject<Income[]>();
-  private incomeUpdated = new Subject<Income>();
-  private driverPaymentsUpdated = new Subject<Payment[]>();
-  private passengerPaymentsUpdated = new Subject<Payment[]>();
-  private adminUpdated = new Subject<Admin>();
-  private adminsUpdated = new Subject<Admin[]>();
   private dashStatUpdated = new Subject<DashStat>();
-  private driversUpdated = new Subject<Driver[]>();
-  private driverUpdated = new Subject<Driver>();
-  private passengersUpdated = new Subject<Passenger[]>();
-  private passengerUpdated = new Subject<Passenger>();
+  private scraperUpdated = new Subject<Scraper>();
+  private scrapersUpdated = new Subject<Scraper[]>();
+  private userScrapersUpdated = new Subject<Scraper[]>();
+  private scraperRunUpdated = new Subject<ScraperRun>();
+  private scraperRunsUpdated = new Subject<ScraperRun[]>();
 
-  // logged in admin
-  private admin: Admin;
 
   private dashStat: DashStat;
+  private scraper: Scraper;
+  private scrapers: Scraper[];
+  private userScrapers: Scraper[];
+  private scraperRun: ScraperRun;
+  private scraperRuns: ScraperRun[];
+
+    // snack bars for notification display
+  private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
+  private verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
   constructor(private http: HttpClient,
               private router: Router,
-              public dialog: MatDialog) {}
+              public dialog: MatDialog,
+              private _snackBar: MatSnackBar) {}
 
 
-  // get methods
+  // GET
+  getScraper(scraperId){
+    this.http.get<{scraper: Scraper}>(url + getScraper)
+    .subscribe((res) => {
+      this.scraper = res.scraper;
+      this.scraperUpdated.next(this.scraper);
+    });
+  }
 
-    // on login & settings : admin profile
-    getAdmin() {
-      this.http.get<{admin: Admin}>(url + getAdmin)
-        .subscribe((recievedMerchant) => {
-          this.admin = recievedMerchant.admin;
-          this.adminUpdated.next(this.admin);
-      });
-    }
+  getAllScrapers(){
+    this.http.get<{scrapers: Scraper[]}>(url + getAllScrapers)
+    .subscribe((res) => {
+      this.scrapers = res.scrapers;
+      this.scrapersUpdated.next(this.scrapers);
+    });
+  }
 
-    // get admin users
-    // settings
-    getAdmins() {
-      this.http.get<{admins: Admin[]}>(url + getAdmins)
-        .subscribe((res) => {
-          this.adminsUpdated.next(res.admins);
-      });
-    }
+  getUserScrapers(){
+    this.http.get<{scrapers: Scraper[]}>(url + getUserScrapers)
+    .subscribe((res) => {
+      this.userScrapers = res.scrapers;
+      this.userScrapersUpdated.next(this.userScrapers);
+    });
+  }
 
     // dashboard page
   getDashStat() {
@@ -63,206 +78,104 @@ export class ScraperService {
     });
   }
 
-  // dashboard page
-  getDuePayments(month: number) {
-        this.http.get<{paymntData: DuePayment[]}>(url + duePayments + '/' + month.toString() )
-        .subscribe((res) => {
-          this.duePaymentsUpdated.next(res.paymntData);
+  getUserScraperRuns(userId){
+    this.http.get<{scraperRuns: ScraperRun[]}>(url + getUserScraperRuns + userId)
+    .subscribe((res) => {
+      this.scraperRuns = res.scraperRuns;
+      this.scraperRunsUpdated.next(this.scraperRuns);
+    });
+  }
+
+
+
+  // POST, PUT
+  RunScraper(scraper: Scraper) {
+    this.http.post<{
+          message: string,
+          result: string,
+          status: string }>(url + postRunScraper , scraper)
+    .subscribe((recievedData) => {
+    console.log(recievedData.message);
+       return {
+         result: recievedData.result,
+         status: recievedData.status
+        }
+    }, (error) => {
+    console.log(error);
+        return null;
+    });
+  }
+
+  updateScraper(scraper: Scraper) {
+    // code here
+  }
+
+
+  // DELETE
+
+  removeScraper(scraperId){
+    this.http.delete<{ message: string }>(url + deleteScraper + scraperId)
+    .subscribe((recievedData) => {
+      if (this.scrapers.length) {
+        const updatedscrapers = this.scrapers.filter(scr => scr.scraperId !== scraperId);
+        this.scrapers = updatedscrapers;
+        this.scrapersUpdated.next(this.scrapers);
+        this._snackBar.open('Scraper :' + scraperId + ' removed!', 'Dismiss', {
+          duration: 2500,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          });
+      }
+      }, (error) => {
+        console.log(error);
         });
   }
 
-  // dashboard page - due payment details
-  getDuePayment(payId: string) {
-    this.http.get<{paymntData: DuePayment[]}>(url + duePayment + '/' + payId )
-    .subscribe((res) => {
-      this.duePaymentsUpdated.next(res.paymntData);
-    });
+
+  removeScraperRun(scraperRunId){
+    this.http.delete<{ message: string }>(url + deleteScraperRun + scraperRunId)
+    .subscribe((recievedData) => {
+      if (this.scrapers.length) {
+        const updatedscraperRuns = this.scraperRuns.filter(scr => scr.scraperRunId !== scraperRunId);
+        this.scraperRuns = updatedscraperRuns;
+        this.scrapersUpdated.next(this.scrapers);
+        this._snackBar.open('Scraper Eun entry and dataset removed!', 'Dismiss', {
+          duration: 2500,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          });
+      }
+      }, (error) => {
+        console.log(error);
+        });
   }
 
-  // dashboard page
-  getNewDrivers(month: number) {
-    this.http.get<{drivers: Driver[]}>(url + newDrivers + '/' +month.toString() )
-    .subscribe((res) => {
-      this.driversUpdated.next(res.drivers);
-    });
-  }
-
-  // drivers page
-  getDrivers() {
-    this.http.get<{drivers: Driver[]}>(url + getDrivers  )
-    .subscribe((res) => {
-      this.driversUpdated.next(res.drivers);
-    });
-  }
-
-  // dashboard page - new driver detaisl
-  // drivers page - driver details
-  getDriver(driverId: string) {
-    this.http.get<{driver: Driver}>(url + getDrivers +  '/' + driverId  )
-    .subscribe((res) => {
-      this.driverUpdated.next(res.driver);
-    });
-  }
-
-   // passengers page
-  getPassengers() {
-    this.http.get<{passengers: Passenger[]}>(url + getPassengers  )
-    .subscribe((res) => {
-      this.passengersUpdated.next(res.passengers);
-    });
-  }
-
-  // passengers page : passenger details
-  getPassenger(passengerId: string) {
-    this.http.get<{passenger: Passenger}>(url + getPassengers +  '/' + passengerId  )
-    .subscribe((res) => {
-      this.passengerUpdated.next(res.passenger);
-    });
-  }
-
-  // payments page : driver/ passenger payments (depend on status)
-  getDriverPayments() {
-    this.http.get<{payments: Payment[]}>(url + getDriverPayments  )
-    .subscribe((res) => {
-      this.passengerPaymentsUpdated.next(res.payments);
-    });
-  }
-
-  // payments page: payment details
-  getPassengerPayments() {
-    this.http.get<{payments: Payment[]}>(url + getPassengerPayments  )
-    .subscribe((res) => {
-      this.driverPaymentsUpdated.next(res.payments);
-    });
-  }
-
-    // payments page: incomes
-    getIncome(payId: string) {
-      this.http.get<{income: Income}>(url + getIncomes +  '/' + payId  )
-      .subscribe((res) => {
-        this.incomeUpdated.next(res.income);
-      });
-    }
-
-      // payments page: incomes
-    getIncomes() {
-      this.http.get<{income: Income[]}>(url + getIncomes  )
-      .subscribe((res) => {
-        this.incomesUpdated.next(res.income);
-      });
-    }
-
-
-
-  // POST requests
-
-  updateAdmin(admin: Admin, image: File) {
-    // if (image) {
-    //   const newImage = new FormData();
-    //   newImage.append('images[]', image, image.name);
-
-    //   this.http.post<{profile_pic: string}>(this.url + 'auth/admin/img', newImage )
-    //   .subscribe ((recievedImage) => {
-    //   console.log(recievedImage);
-    //   admin.profile_pic = recievedImage.profile_pic;
-    //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
-    //   .subscribe((recievedData) => {
-    //     console.log(recievedData.message);
-    //     this.admin = admin;
-    //     this.adminUpdated.next(this.admin);
-    //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    //     this.router.onSameUrlNavigation = 'reload';
-    //     this.router.navigate(['/admin/profile']);
-    //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
-    //   }, (error) => {
-    //     console.log(error);
-    //     });
-    //   });
-    // } else {
-    //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
-    //   .subscribe((recievedData) => {
-    //     console.log(recievedData.message);
-    //     this.admin = admin;
-    //     this.adminUpdated.next(this.admin);
-    //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    //     this.router.onSameUrlNavigation = 'reload';
-    //     this.router.navigate(['/admin/profile']);
-    //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
-    //   }, (error) => {
-    //     console.log(error);
-    //     });
-    //  }
-  }
-
-  createAdmin(admin: Admin) {
-     //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
-    //   .subscribe((recievedData) => {
-    //     console.log(recievedData.message);
-    //     this.admin = admin;
-    //     this.adminUpdated.next(this.admin);
-    //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-    //     this.router.onSameUrlNavigation = 'reload';
-    //     this.router.navigate(['/admin/profile']);
-    //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
-    //   }, (error) => {
-    //     console.log(error);
-    //     });
-  }
 
   // listners for subjects
-
-  getAdminUpdateListener() {
-    return this.adminUpdated.asObservable();
-  }
-
-  getAdminsUpdateListener() {
-    return this.adminsUpdated.asObservable();
-  }
 
   getDashStatUpdateListener() {
     return this.dashStatUpdated.asObservable();
   }
 
-  getDriverPaymentsUpdateListener() {
-    return this.driverPaymentsUpdated.asObservable();
+  getScraprUpdateListener() {
+    return this.scraperUpdated.asObservable();
   }
 
-  getDriversUpdateListener() {
-    return this.driversUpdated.asObservable();
+  getScrapersUpdateListener() {
+    return this.scrapersUpdated.asObservable();
   }
 
-  getDriverUpdateListener() {
-    return this.driverUpdated.asObservable();
+  getUserScrapersUpdateListener() {
+    return this.userScrapersUpdated.asObservable();
   }
 
-  getPassengersUpdateListener() {
-    return this.passengersUpdated.asObservable();
+  getScraperRunUpdateListener() {
+    return this.scraperRunUpdated.asObservable();
   }
 
-  getPassengerUpdateListener() {
-    return this.passengerUpdated.asObservable();
+  getScraperRunsUpdateListener() {
+    return this.scraperRunsUpdated.asObservable();
   }
-
-  getPassengerPaymentsUpdateListener() {
-    return this.passengerPaymentsUpdated.asObservable();
-  }
-
-  getDuePaymentUpdateListener() {
-    return this.duePaymentUpdated.asObservable();
-  }
-
-  getDuePaymentsUpdateListener() {
-    return this.duePaymentsUpdated.asObservable();
-  }
-
-  getIncomesUpdateListener() {
-    return this.incomesUpdated.asObservable();
-  }
-
-  getIncomeUpdateListener() {
-    return this.incomeUpdated.asObservable();
-  }
-
 
 
 
