@@ -3,18 +3,24 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material';
-import { Admin } from '../scraper/scraper.model';
-import { getAuthAdmin, getHeader, getLastId, getSignIn, url } from '../scraper/scraper.config';
+import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
+import { User } from '../scraper/scraper.model';
+import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser } from '../scraper/scraper.config';
 import { LogIn } from './auth.model';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
   private lastIdUpdated = new Subject<string>();
-  private adminUpdated = new Subject<Admin>();
+  private userUpdated = new Subject<User>();
+  private usersUpdated = new Subject<User[]>();
+  private authStatusListener = new Subject<boolean>();
+  private headerDetailsListener = new Subject<{userType: string, userName: string, profilePic: string}>();
 
   // to get admin once logged in
-  private admin: Admin;
+  private user: User;
+
+  // all users
+  private users: User[];
 
   // last signed user id
   private lastId: string;
@@ -25,30 +31,36 @@ export class AuthService {
   // timer to auto logout
   private tokenTimer: any;
 
-  // login details listener
-  private authStatusListener = new Subject<boolean>();
-
-  // details for app header
-  private headerDetailsListener = new Subject<{userType: string, userName: string, profilePic: string}>();
-
   private headerDetails: {userType: string, userName: string, profilePic: string};
 
   // user login status
   private isAuthenticated = false;
 
+  // snack bars for notification display
+  private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
+  private verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
 
   constructor(private http: HttpClient,
               private router: Router,
-              public dialog: MatDialog) {}
+              public dialog: MatDialog,
+              private _snackBar: MatSnackBar) {}
 
 
-  // get methods
+  // GET
 
-    getAdmin() {
-      this.http.get<{admin: Admin}>(url + getAuthAdmin)
-        .subscribe((recievedMerchant) => {
-          this.admin = recievedMerchant.admin;
-          this.adminUpdated.next(this.admin);
+    getUser(userId) {
+      this.http.get<{user: User}>(url + getUser + userId)
+        .subscribe((res) => {
+          this.user = res.user;
+          this.userUpdated.next(this.user);
+      });
+    }
+
+    getUsers() {
+      this.http.get<{users: User[]}>(url + getUsers)
+        .subscribe((res) => {
+          this.usersUpdated.next(res.users);
       });
     }
 
@@ -68,8 +80,8 @@ export class AuthService {
 
   // get user type in signup-select
   getUserType() {
-    if (this.admin) {
-      return this.admin.userType;
+    if (this.user) {
+      return this.user.userType;
     }
   }
 
@@ -88,7 +100,7 @@ export class AuthService {
     return this.token;
   }
 
-  // get authentication status
+  // get authentication statusgetAuthAdmin
   getisAuth() {
     return this.isAuthenticated;
   }
@@ -107,10 +119,90 @@ export class AuthService {
     return this.headerDetailsListener.asObservable();
   }
 
-
-  getAdminUpdatteListener() {
-    return this.adminUpdated.asObservable();
+  getUsersUpdateListener() {
+    return this.usersUpdated.asObservable();
   }
+
+  getUserUpdatteListener() {
+    return this.userUpdated.asObservable();
+  }
+
+// POST , PUT
+
+  signUp(user: User) {
+    //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
+   //   .subscribe((recievedData) => {
+   //     console.log(recievedData.message);
+   //     this.admin = admin;
+   //     this.adminUpdated.next(this.admin);
+   //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+   //     this.router.onSameUrlNavigation = 'reload';
+   //     this.router.navigate(['/admin/profile']);
+   //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
+   //   }, (error) => {
+   //     console.log(error);
+   //     });
+ }
+
+
+ updateUser(user: User, image: File) {
+  // if (image) {
+  //   const newImage = new FormData();
+  //   newImage.append('images[]', image, image.name);
+
+  //   this.http.post<{profile_pic: string}>(this.url + 'auth/admin/img', newImage )
+  //   .subscribe ((recievedImage) => {
+  //   console.log(recievedImage);
+  //   admin.profile_pic = recievedImage.profile_pic;
+  //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
+  //   .subscribe((recievedData) => {
+  //     console.log(recievedData.message);
+  //     this.admin = admin;
+  //     this.adminUpdated.next(this.admin);
+  //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  //     this.router.onSameUrlNavigation = 'reload';
+  //     this.router.navigate(['/admin/profile']);
+  //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
+  //   }, (error) => {
+  //     console.log(error);
+  //     });
+  //   });
+  // } else {
+  //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
+  //   .subscribe((recievedData) => {
+  //     console.log(recievedData.message);
+  //     this.admin = admin;
+  //     this.adminUpdated.next(this.admin);
+  //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+  //     this.router.onSameUrlNavigation = 'reload';
+  //     this.router.navigate(['/admin/profile']);
+  //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
+  //   }, (error) => {
+  //     console.log(error);
+  //     });
+  //  }
+}
+
+
+// DELETE
+
+removeUser(userId){
+    this.http.delete<{ message: string }>(url + deleteUser + userId)
+      .subscribe((recievedData) => {
+        if (this.users.length) {
+          const updatedUsers = this.users.filter(usr => usr.userId !== userId);
+          this.users = updatedUsers;
+          this.usersUpdated.next(this.users);
+          this._snackBar.open('User :' + userId + ' removed!', 'Dismiss', {
+            duration: 2500,
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            });
+        }
+        }, (error) => {
+          console.log(error);
+          });
+}
 
 
   // user profile change password
@@ -123,7 +215,7 @@ export class AuthService {
     this.http.post<{ message: string,
                      token: any,
                      expiersIn: number,
-                     user_type: string }>(url + getSignIn , login)
+                     user_type: string }>(url + postSignIn , login)
     .subscribe((recievedData) => {
       console.log(recievedData.message);
 

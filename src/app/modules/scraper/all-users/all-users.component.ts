@@ -5,8 +5,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Subscription } from 'rxjs';
-import { Admin } from '../scraper.model';
-import { ScraperService } from '../scraper.service';
+import { AuthService } from '../../auth/auth.service';
+import { User } from '../scraper.model';
 
 @Component({
   selector: 'app-all-users',
@@ -16,16 +16,16 @@ import { ScraperService } from '../scraper.service';
 export class AllUsersComponent implements OnInit, OnDestroy {
 
   displayedColumns: string[] = ['user_id', 'user_type', 'name', 'email', 'contact_no'];
-  dataSource: MatTableDataSource<Admin>;
+  dataSource: MatTableDataSource<User>;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   // subscritions
-  private adminSub: Subscription;
+  private userSub: Subscription;
 
   // final merchants list
-  admins: Admin[] = [
+  users: User[] = [
     {
       userId: 'U01',
       userName: 'Test',
@@ -33,11 +33,11 @@ export class AllUsersComponent implements OnInit, OnDestroy {
       profilePic: './assets/images/merchant/user.jpg',
       userEmail: 'abc@gmail.com',
       userContactNo: '0776789078',
-      gender: 'male'
+      status: 'Registered'
     }
   ];
 
-  constructor( private adminService: ScraperService) { }
+  constructor( private authService: AuthService) { }
 
   ngOnInit() {
      // get admin for child comp use
@@ -46,7 +46,7 @@ export class AllUsersComponent implements OnInit, OnDestroy {
   //    res => {
   //      if (res) {
   //        this.admins = res;
-         this.dataSource = new MatTableDataSource(this.admins);
+         this.dataSource = new MatTableDataSource(this.users);
          this.dataSource.paginator = this.paginator;
          this.dataSource.sort = this.sort;
     //   }
@@ -55,8 +55,8 @@ export class AllUsersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
 
-    if (this.adminSub) {
-      this.adminSub.unsubscribe();
+    if (this.userSub) {
+      this.userSub.unsubscribe();
     }
   }
 

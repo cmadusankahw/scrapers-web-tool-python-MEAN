@@ -1,15 +1,51 @@
 <div class="pd-top-min">
+
+  <div class="row">
+    <div class="col-md-5">
+      <div class="top-image">
+
+        <div class="text-center">
+          <img
+            src="./assets/images/scraper/scraper_home.gif"
+            alt="Scraper List"
+            width="100%"
+          />
+        </div>
+
+    </div>
+    </div>
+
+    <div class="col-md-7">
+      <div class="top-nav txt-center">
+        <div class="text-center">
+          <h1><b> Data matters..!</b></h1>
+            <br>
+            <h5>  Pioneer your business with a ready-to-go web scraper today... </h5>
+            <br>
+            <a type="button" mdbBtn color="primary" class="waves-light btn btn-md"
+            href="#" mdbWavesEffect>
+            <mdb-icon fas icon="plus"> </mdb-icon>
+            Get New scrapers
+            </a>
+          </div>
+      </div>
+    </div>
+  </div>
+<br>
   <h4>
     <mat-icon>library_books</mat-icon>
-    <b> Newly Registered Drivers</b>
+    <b> Your scrapers </b>
   </h4>
+
+  <div class="container">
+
 
   <mat-form-field>
     <mat-label>
       <mat-icon>search</mat-icon>
-      Search Drivers</mat-label
+      Search a scraper...</mat-label
     >
-    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Ranjith" />
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ikman.lk" />
   </mat-form-field>
 
   <div class="mat-elevation-z8">
@@ -17,30 +53,36 @@
       class="table-responsive"
       mat-table
       [dataSource]="dataSource"
-      *ngIf="drivers.length"
+      *ngIf="scrapers.length"
     >
-      <ng-container matColumnDef="profilePic">
+      <ng-container matColumnDef="scraperIcon">
         <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
         <td mat-cell *matCellDef="let row">
           <div class="driver-raw">
-            <img src="{{ row.profilePic }}" class="profile-pic" />
+            <img src="./assets/images/scraper/icon.png" class="profile-pic" />
             <div class="driver-name">
-              {{ row.driverName }}
+              {{ row.scraperName }}
             </div>
           </div>
         </td>
       </ng-container>
 
-      <!-- Progress Column -->
-      <ng-container matColumnDef="driverName">
+       <!-- Progress Column -->
+       <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
         <td mat-cell *matCellDef="let row" style="text-align: left">
           <div>
-            {{ row.vehicleType }} | {{ row.noOfSeats }} Seats |
-            {{ row.availableSeats }} Available
+           {{row.description.slice(0,70) + '...'}}
           </div>
-          <div class="pickup-dropoff">
-            {{ row.pickup }} to {{ row.dropoff }}
+        </td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="baseURL">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <td mat-cell *matCellDef="let row" style="text-align: left">
+          <div>
+           {{row.baseURL}}
           </div>
         </td>
       </ng-container>
@@ -51,13 +93,13 @@
         <td mat-cell *matCellDef="let row" class="text-center">
           <button
             mdbBtn
-            color="green"
+            color="primary"
             text="white"
             class="btn btn-sm text-center"
-            (click)="showUsertDetails(row.driverId)"
-            (click)="idOptions.show()"
+            (click)="showUsertDetails(row.scraperId)"
           >
-            View Details
+          <mdb-icon fas icon="play"> </mdb-icon>
+            Run Scraper
           </button>
         </td>
       </ng-container>
@@ -66,79 +108,12 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
-    <div class="text-center pd-top-min" *ngIf="!drivers.length">
-      No Any Drivers Found
+    <div class="text-center pd-top-min" *ngIf="!scrapers.length">
+      No Any Scrapers Found
     </div>
 
     <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator>
   </div>
 </div>
-
-<!--View Details Modal-->
-<div
-  mdbModal
-  #idOptions="mdbModal"
-  class="modal fade"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="myBasicModalLabel"
-  [config]="{ backdrop: false, ignoreBackdropClick: true }"
-  aria-hidden="true"
->
-  <div
-    class="modal-dialog modal-dialog-centered"
-    role="document"
-    style="overflow-y: initial !important"
-  >
-    <div class="modal-content">
-      <div class="modal-header">
-        <button
-          type="button"
-          class="close pull-right"
-          aria-label="Close"
-          (click)="idOptions.hide()"
-        >
-          <span aria-hidden="true">×</span>
-        </button>
-        <h4 class="modal-title w-100" id="myModalLabel">Driver Details</h4>
-      </div>
-
-      <div class="modal-body" style="height: 450px; overflow-y: auto">
-        <app-admin-driver-details-popup
-          [driver]="driver"
-        ></app-admin-driver-details-popup>
-      </div>
-
-      <div class="modal-footer">
-        <button
-          mdbBtn
-          class="btn btn-sm"
-          color="green"
-          (click)="idOptions.hide()"
-          mdbWavesEffect
-        >
-          Approve
-        </button>
-        <button
-          mdbBtn
-          class="btn btn-sm"
-          color="danger"
-          (click)="idOptions.hide()"
-          mdbWavesEffect
-        >
-          Cancel
-        </button>
-        <button
-          mdbBtn
-          color="dark"
-          outline="yes"
-          class="btn btn-sm"
-          (click)="idOptions.hide()"
-          mdbWavesEffect
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
+

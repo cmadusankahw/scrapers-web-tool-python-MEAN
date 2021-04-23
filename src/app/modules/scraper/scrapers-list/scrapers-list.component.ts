@@ -5,7 +5,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { Subscription } from 'rxjs';
-import { Driver } from '../scraper.model';
+import { Scraper } from '../scraper.model';
 import { ScraperService } from '../scraper.service';
 
 @Component({
@@ -15,63 +15,50 @@ import { ScraperService } from '../scraper.service';
 })
 export class ScrapersListComponent implements OnInit, OnDestroy {
 
-  displayedColumns: string[] = ['profilePic', 'driverName', 'action'];
-  dataSource: MatTableDataSource<Driver>;
+  displayedColumns: string[] = ['scraperIcon', 'description', 'baseURL',  'action'];
+  dataSource: MatTableDataSource<Scraper>;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   // subscritions
 
-  private driverSub: Subscription;
+  private scraperSub: Subscription;
 
-  drivers: Driver[] = [
+  scrapers: Scraper[] = [
     {
-      driverId: 'D01',
-      driverName: 'Chiran HW',
-      driverContactNo: '0778956789',
-      driverEmail: 'abc@gmail.com',
-      profilePic: './assets/images/merchant/user.jpg',
-      pickup: 'Matara',
-      dropoff: 'Colombo',
-      driverRegDate: '2021-01-23',
-      vehicleNo: 'CAF2345',
-      vehicleType: 'Car',
-      noOfSeats: 4,
-      availableSeats: 3,
-      ACType: 'AC',
-      vehiclePhotos: {
-        image1: './assets/images/merchant/nopic.png',
-        image2: './assets/images/merchant/nopic.png',
-        image3: './assets/images/merchant/nopic.png',
-        image4: './assets/images/merchant/nopic.png',
-        image5: './assets/images/merchant/nopic.png',
-        image6: './assets/images/merchant/nopic.png'
+      scraperId: 'S1',
+      scraperName: 'Rainbow Pages',
+      description: 'SLT RAINBOW PAGES is Sri Lanka’s only telephone directory published by SLT Digital Services (Pvt) Ltd [formerly SLT Publications (Pvt) Ltd], a fully-owned subsidiary of Sri Lanka Telecom PLC (SLT) - the pioneer and foremost telecommunication solutions provider to the nation.',
+      tags: ['mobile', 'landline', 'phone-book'],
+      baseURL: 'https://rainbowpages.lk/',
+      scraperLocation: 'scrapers/',
+      script: 'python raibow_pages.py ',
+      params: {
+        categories: ['all', 'advertising', 'agriculture', 'baby goods', 'banking', 'bauty culture', 'computer'],
+        locations: ['any', 'colombo', 'matara', 'galle'],
       },
-      NICPhotos: {
-        front: './assets/images/merchant/nopic.png',
-        back: './assets/images/merchant/nopic.png',
-      },
-      driverLicensePhotos: {
-        front: './assets/images/merchant/nopic.png',
-        back: './assets/images/merchant/nopic.png',
-      },
-      revenueLicensePhotos: {
-        front: './assets/images/merchant/nopic.png',
-        back: './assets/images/merchant/nopic.png',
-      },
-      insurrencePhotos: {
-        front: './assets/images/merchant/nopic.png',
-        back: './assets/images/merchant/nopic.png',
-      },
-      bankBookPhoto: './assets/images/merchant/nopic.png',
-      status: ' pending'
+      price: 2499
     },
+    {
+      scraperId: 'S2',
+      scraperName: 'Rainbow Pages',
+      description: 'SLT RAINBOW PAGES is Sri Lanka’s only telephone directory published by SLT Digital Services (Pvt) Ltd [formerly SLT Publications (Pvt) Ltd], a fully-owned subsidiary of Sri Lanka Telecom PLC (SLT) - the pioneer and foremost telecommunication solutions provider to the nation.',
+      tags: ['mobile', 'landline', 'phone-book'],
+      baseURL: 'https://rainbowpages.lk/',
+      scraperLocation: 'scrapers/',
+      script: 'python raibow_pages.py ',
+      params: {
+        categories: ['all', 'advertising', 'agriculture', 'baby goods', 'banking', 'bauty culture', 'computer'],
+        locations: ['any', 'colombo', 'matara', 'galle'],
+      },
+      price: 2499
+    }
   ];
 
-  driver: Driver;
+  scraper: Scraper;
 
-  constructor( private adminService: ScraperService) { }
+  constructor( private scraperService: ScraperService) { }
 
   ngOnInit() {
     // get admin for child comp use
@@ -80,7 +67,7 @@ export class ScrapersListComponent implements OnInit, OnDestroy {
   //    res => {
   //      if (res) {
   //        this.drivers = res;
-         this.dataSource = new MatTableDataSource(this.drivers);
+         this.dataSource = new MatTableDataSource(this.scrapers);
          this.dataSource.paginator = this.paginator;
          this.dataSource.sort = this.sort;
   //     }
@@ -90,8 +77,8 @@ export class ScrapersListComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
 
-    if (this.driverSub) {
-      this.driverSub.unsubscribe();
+    if (this.scraperSub) {
+      this.scraperSub.unsubscribe();
     }
   }
 
@@ -106,10 +93,10 @@ export class ScrapersListComponent implements OnInit, OnDestroy {
   }
 
   // get selected driver details
-  showUsertDetails(driverId: string) {
-    for (const app of this.drivers) {
-      if (app.driverId === driverId) {
-        this.driver = app;
+  showUsertDetails(scraperId: string) {
+    for (const app of this.scrapers) {
+      if (app.scraperId === scraperId) {
+        this.scraper = app;
       }
     }
   }

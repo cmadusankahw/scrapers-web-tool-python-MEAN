@@ -1,20 +1,49 @@
-const url: string = "http://localhost:3000/admin-dashboard/v1/";
+const url: string = "http://localhost:3000/web-scraper/v1/";
 
-const getAdmin = "users/self";
-const getAdmins = "users/all";
 const getDashStat = "dash-counts";
-const duePayments = "due-payments";
-const duePayment = "due-payment";
-const getDriverPayments = "payments/driver";
-const getPassengerPayments = "payments/passenger";
-const getIncomes = "incomes";
-const newDrivers = "new-drivers";
-const getDrivers = "drivers";
-const getPassengers = "passengers";
+const getScraperPayments = "payment/scraper/"; // scraperId
+const getUserPayments = "payment/user/"; // userId
+const getScraper = "scraper/one/"; // scraperId
+const getAllScrapers = "scraper/all"
+const getUserScrapers = "scraper/user/"; // userId
+const getScraperRun = "scraper-run/one/"; // userId
+const getUserScraperRuns = "scraper-run/user/"; // userId
 
-const getAuthAdmin = 'auth/get/admin';
-const getHeader =  'auth/get/header';
-const getLastId = 'auth/last';
-const getSignIn = 'auth/signin';
+const getUser = 'auth/user/one'; // userId
+const getUsers = "auth/user/all";
+const getHeader =  'auth/header';
+const getLastId = 'auth/last-id';
 
-export {url, getAdmin, getDashStat, duePayments, getDriverPayments, getPassengerPayments, duePayment, newDrivers, getPassengers, getDrivers, getAdmins, getIncomes, getAuthAdmin, getHeader, getLastId, getSignIn};
+const postSignIn = 'auth/signin';
+const postSignUp = 'auth/signup';
+const putUpdateUser = 'auth/user/one/'; // userId
+const putUpdateScraper = 'scraper/one/'; // scraperId
+
+const postRunScraper = 'scraper/run'; // userId, scraperId
+const deleteScraper = 'scraper/one/'; // scraperRunId
+const deleteScraperRun = 'scraper-run/one/'; // scraperRunId
+const deleteUser = "auth/user/one/" // userId
+
+export {
+  url,
+  getDashStat,
+  getUser,
+  getUsers,
+  getScraperPayments,
+  getUserPayments,
+  getScraper,
+  getScraperRun,
+  getAllScrapers,
+  getUserScrapers,
+  getUserScraperRuns,
+  getHeader,
+  getLastId,
+  postSignIn,
+  postSignUp,
+  putUpdateUser,
+  putUpdateScraper,
+  postRunScraper,
+  deleteScraper,
+  deleteScraperRun,
+  deleteUser
+};

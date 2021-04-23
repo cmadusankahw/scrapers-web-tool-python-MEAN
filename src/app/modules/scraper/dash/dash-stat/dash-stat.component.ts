@@ -17,7 +17,7 @@ export class AdminDashStatComponent implements OnInit, OnDestroy {
 
   orderCounts: DashStat;
 
-  constructor(private adminService: ScraperService) { }
+  constructor(private scraperService: ScraperService) { }
 
   ngOnInit() {
     // this.adminService.getreportData();

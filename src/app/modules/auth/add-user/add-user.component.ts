@@ -3,8 +3,8 @@ import { Router, NavigationEnd } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 
-import { ScraperService } from '../../scraper/scraper.service';
-import { Admin } from '../../scraper/scraper.model';
+import { User } from '../../scraper/scraper.model';
+import { AuthService } from '../auth.service';
 
 
 @Component({
@@ -16,7 +16,7 @@ export class AddUserComponent implements OnInit, OnDestroy {
 
   constructor(private router: Router,
               public datepipe: DatePipe,
-              public adminService: ScraperService) { }
+              public authService: AuthService) { }
 
   ngOnInit() {
     // get merchant temp
@@ -38,16 +38,16 @@ export class AddUserComponent implements OnInit, OnDestroy {
     if (signupForm.invalid) {
       console.log('Form Invalid');
     } else {
-      const admin: Admin = {
+      const user: User = {
         userId: '',
         userType: signupForm.value.user_type,
         userName: signupForm.value.user_name,
         profilePic: './assets/images/merchant/nopic.png',
         userEmail: signupForm.value.email,
         userContactNo: signupForm.value.contact_no,
-        gender: signupForm.value.gender,
+        status: 'Registered'
         };
-      this.adminService.createAdmin(admin);
+      this.authService.signUp(user);
       console.log('User created successfully!');
       signupForm.resetForm();
     }
