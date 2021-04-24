@@ -14,30 +14,7 @@ export class DashDataComponent implements OnInit, OnDestroy {
 
   user: User;
 
-  userScrapers: UserScraper[] = [
-    {
-      scraperId: 'S1',
-      scraperName: 'Rainbow Pages',
-      scraperRuns: [
-        {
-          scraperRunId: 'U1S12345678',
-          userId: 'U1',
-          scraperId: 'S1',
-          timestamp: 1382086394000,
-          noOfRuns: 1,
-          noOfCols: 15,
-          noOfRows: 2870,
-          executed_params:{
-            categories: ['computers', 'industry', 'telcom'],
-            locations: ['any'],
-          },
-          dataLocation: 'sdcrapers/data/rainbowpages.csv',
-          dataFormat: 'csv',
-          status: 'success'
-        },
-      ]
-    }
-  ];
+  userScrapers: UserScraper[] = [];
 
 
   constructor(private authService: AuthService) { }

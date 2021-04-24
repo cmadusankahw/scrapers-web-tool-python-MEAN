@@ -16,8 +16,6 @@ export interface Scraper {
 
 export interface ScraperRun {
   scraperRunId: string;
-  userId: string;
-  scraperId: string;
   timestamp: number;
   noOfRuns: number;
   noOfCols: number;
@@ -46,6 +44,7 @@ export interface User {
 export interface UserScraper {
   scraperId: string;
   scraperName: string;
+  status: string;
   scraperRuns: ScraperRun[];
 }
 

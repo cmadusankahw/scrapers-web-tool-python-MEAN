@@ -29,7 +29,7 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
 
   @Input() scraperId: string;
 
-  @Input() scraperRuns: ScraperRun[];
+  @Input() scraperRuns: ScraperRun[] = [];
 
   scraperRun: ScraperRun;
 

@@ -15,7 +15,8 @@ import {url,
   putUpdateScraper,
   postRunScraper,
   deleteScraper,
-  deleteScraperRun} from  './scraper.config';
+  deleteScraperRun,
+  getUserScraperStatus} from  './scraper.config';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
@@ -27,6 +28,7 @@ export class ScraperService {
   private scraperRunsUpdated = new Subject<ScraperRun[]>();
   private resultsUpdated = new Subject<ResultUpdated>();
   private scrapedJSONUpdated = new Subject<any[]>();
+  private scraperStatusUpdated = new Subject<string>();
 
 
   private dashStat: DashStat;
@@ -35,6 +37,10 @@ export class ScraperService {
   private userScrapers: Scraper[];
   private scraperRun: ScraperRun;
   private scraperRuns: ScraperRun[];
+  private scraperStatus: string;
+
+  // script execution related
+  downloadable = false;
 
     // snack bars for notification display
   private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
@@ -48,7 +54,7 @@ export class ScraperService {
 
   // GET
   getScraper(scraperId){
-    this.http.get<{scraper: Scraper}>(url + getScraper)
+    this.http.get<{scraper: Scraper}>(url + getScraper + scraperId)
     .subscribe((res) => {
       this.scraper = res.scraper;
       this.scraperUpdated.next(this.scraper);
@@ -72,12 +78,12 @@ export class ScraperService {
     });
   }
 
-    // dashboard page
-  getDashStat() {
-    this.http.get<{dashboardData: DashStat}>(url + getDashStat)
+   // userId from backend
+  getUserScraperStatus(scraperId) {
+    this.http.get<{status: string}>(url + getUserScraperStatus + scraperId)
     .subscribe((res) => {
-      this.dashStat = res.dashboardData;
-      this.dashStatUpdated.next(this.dashStat);
+      this.scraperStatus = res.status;
+      this.scraperStatusUpdated.next(this.scraperStatus);
     });
   }
 
@@ -136,6 +142,11 @@ export class ScraperService {
     }, (error) => {
     console.log(error);
     });
+  }
+
+  // update user scraper status runnig , failed, or ideal
+  updateUserScraperStatus(scraperId, status){
+
   }
 
   updateScraper(scraper: Scraper) {
@@ -230,6 +241,11 @@ export class ScraperService {
   getScrapedJSONUpdatedListener() {
     return this.scrapedJSONUpdated.asObservable();
   }
+
+  getScraperStatusUpdatedListener() {
+    return this.scraperStatusUpdated.asObservable();
+  }
+
 
 
 

@@ -20,9 +20,9 @@
         <mat-form-field class="mfield">
           <mat-label>Select Your Plan</mat-label>
           <mat-select required name="user_type" #user_type="ngModel" ngModel>
-            <mat-option value="superAdmin"> $5 /mo (3 months free)</mat-option>
-            <mat-option value="financialAdmin"> $10 /mo (3 months free)</mat-option>
-            <mat-option value="moderator"> $25 /mo (3 months free</mat-option>
+            <mat-option value="usertype_1"> $5 /mo (3 months free)</mat-option>
+            <mat-option value="usertype_2"> $10 /mo (3 months free)</mat-option>
+            <mat-option value="usertype_3"> $25 /mo (3 months free</mat-option>
           </mat-select>
           <mat-error *ngIf="user_type.invalid">Select User Type</mat-error>
         </mat-form-field>

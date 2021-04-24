@@ -6,17 +6,15 @@ require('dotenv').config();
 
 const app = express();
 
+// to get from env
+const url = "/web-scraper/v1/"
+
 //import app segments
 const auth = require ('./controller/auth/auth');
-const product = require ('./controller/product/product');
-const service = require ('./controller/service/service');
-const eventPlanner = require ('./controller/eventplanner/eventPlanner');
-const serviceProvider = require ('./controller/serviceprovider/serviceProvider');
-const seller = require ('./controller/seller/seller');
-const event = require ('./controller/event/event');
-const admin = require ('./controller/admin/admin');
+const scraper = require ('./controller/scraper/scraper');
+// const scraper_run = require ('./controller/scraper/scraper-run');
 
-mongoose.connect('mongodb+srv://admin:abcd1234@cluster0.xnfvc.gcp.mongodb.net/evenza?retryWrites=true&w=majority', // mongodb+srv://:${process.env.DB_PASS}@cluster0.xnfvc.gcp.mongodb.net/evenza?retryWrites=true&w=majority    mongodb://localhost:27017/evenza
+mongoose.connect('mongodb+srv://admin:adminWS123@cluster0.69yxf.mongodb.net/scraper?retryWrites=true&w=majority', // mongodb+srv://:${process.env.DB_PASS}@cluster0.xnfvc.gcp.mongodb.net/evenza?retryWrites=true&w=majority    mongodb://localhost:27017/evenza
   { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to monogodb database..');
@@ -31,7 +29,7 @@ app.use("/images",express.static(path.join("src/assets/images/")));
 
 //Allow CROS
 app.use( (req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "*"); //ToDo update in production
   res.setHeader(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-Width, Content-Type, Accept, Authorization"
@@ -43,13 +41,9 @@ app.use( (req, res, next) => {
 
 
 //functions here
-app.use('/api/auth', auth);
-app.use('/api/product', product);
-app.use('/api/service', service);
-app.use('/api/planner', eventPlanner);
-app.use('/api/sp', serviceProvider);
-app.use('/api/seller', seller);
-app.use('/api/event', event);
-app.use('/api/admin', admin);
+app.use(url+'auth', auth);
+app.use(url+'scraper', scraper);
+// app.use('/api/scraper-run', scraper_run);
+// app.use('/api/payment', payment);
 
 module.exports = app;

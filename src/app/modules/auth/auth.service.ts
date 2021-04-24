@@ -5,8 +5,9 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 import { User } from '../scraper/scraper.model';
-import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser } from '../scraper/scraper.config';
+import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser, postSignUp, postUploadImage, putUpdateUser } from '../scraper/scraper.config';
 import { LogIn } from './auth.model';
+import { SuccessComponent } from 'src/app/success/success.component';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
@@ -143,58 +144,56 @@ export class AuthService {
 
 // POST , PUT
 
-  signUp(user: User) {
-    //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
-   //   .subscribe((recievedData) => {
-   //     console.log(recievedData.message);
-   //     this.admin = admin;
-   //     this.adminUpdated.next(this.admin);
-   //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-   //     this.router.onSameUrlNavigation = 'reload';
-   //     this.router.navigate(['/admin/profile']);
-   //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
-   //   }, (error) => {
-   //     console.log(error);
-   //     });
+  signUp(user: User, password: string) {
+      this.http.post<{message: string}>(url + postSignUp , {user, password})
+     .subscribe((recievedData) => {
+       console.log(recievedData.message);
+       this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+       this.router.onSameUrlNavigation = 'reload';
+       this.router.navigate(['/']);
+       this.dialog.open(SuccessComponent, {data: {message: 'Successfully signed up!'}});
+     }, (error) => {
+       console.log(error);
+       });
  }
 
-
+// update user profile
  updateUser(user: User, image: File) {
-  // if (image) {
-  //   const newImage = new FormData();
-  //   newImage.append('images[]', image, image.name);
+  if (image) {
+    const newImage = new FormData();
+    newImage.append('images[]', image, image.name);
 
-  //   this.http.post<{profile_pic: string}>(this.url + 'auth/admin/img', newImage )
-  //   .subscribe ((recievedImage) => {
-  //   console.log(recievedImage);
-  //   admin.profile_pic = recievedImage.profile_pic;
-  //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
-  //   .subscribe((recievedData) => {
-  //     console.log(recievedData.message);
-  //     this.admin = admin;
-  //     this.adminUpdated.next(this.admin);
-  //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-  //     this.router.onSameUrlNavigation = 'reload';
-  //     this.router.navigate(['/admin/profile']);
-  //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
-  //   }, (error) => {
-  //     console.log(error);
-  //     });
-  //   });
-  // } else {
-  //   this.http.post<{message: string}>(this.url + 'auth/admin' , admin)
-  //   .subscribe((recievedData) => {
-  //     console.log(recievedData.message);
-  //     this.admin = admin;
-  //     this.adminUpdated.next(this.admin);
-  //     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-  //     this.router.onSameUrlNavigation = 'reload';
-  //     this.router.navigate(['/admin/profile']);
-  //     this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
-  //   }, (error) => {
-  //     console.log(error);
-  //     });
-  //  }
+    this.http.post<{profile_pic: string}>(url + postUploadImage, newImage )
+    .subscribe ((recievedImage) => {
+    console.log(recievedImage);
+    user.profilePic = recievedImage.profile_pic;
+    this.http.post<{message: string}>(url + putUpdateUser, user)
+    .subscribe((recievedData) => {
+      console.log(recievedData.message);
+      this.currentUser = user;
+      this.currentUserUpdated.next(this.currentUser);
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+      this.router.onSameUrlNavigation = 'reload';
+      this.router.navigate(['/scraper/settings']);
+      this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
+    }, (error) => {
+      console.log(error);
+      });
+    });
+  } else {
+    this.http.post<{message: string}>(url + putUpdateUser , user)
+    .subscribe((recievedData) => {
+      console.log(recievedData.message);
+      this.currentUser = user;
+      this.currentUserUpdated.next(this.currentUser);
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+      this.router.onSameUrlNavigation = 'reload';
+      this.router.navigate(['/scraper/settings']);
+      this.dialog.open(SuccessComponent, {data: {message: 'Your Profile Details Updated Successfully!'}});
+    }, (error) => {
+      console.log(error);
+      });
+   }
 }
 
 
@@ -207,7 +206,7 @@ removeUser(userId){
           const updatedUsers = this.users.filter(usr => usr.userId !== userId);
           this.users = updatedUsers;
           this.usersUpdated.next(this.users);
-          this._snackBar.open('User :' + userId + ' removed!', 'Dismiss', {
+          this._snackBar.open(recievedData.message , 'Dismiss', {
             duration: 2500,
             horizontalPosition: this.horizontalPosition,
             verticalPosition: this.verticalPosition,

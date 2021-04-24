@@ -81,7 +81,7 @@
     <button
       mdbBtn
       class="btn btn-md"
-      [disabled] = "!runStarted"
+      [disabled] = "scraperStatus == 'ideal'"
       color="red"
       (click)="confirmDialog.show()"
       mdbWavesEffect

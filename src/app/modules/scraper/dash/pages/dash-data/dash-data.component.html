@@ -8,3 +8,21 @@
   </div>
 </div>
 
+<div *ngIf="!userScrapers.length">
+  <div class="text-center mt-3 pt-4">
+    <img src="./assets/images/scraper/scraper_not_run.png" height="300px">
+    <h4><string>You haven't run any scrapers yet!</string></h4>
+    <br>
+    <a
+    type="button"
+    mdbBtn
+    color="primary"
+    class="waves-light btn btn-md cust-btn btn-lg"
+    mdbWavesEffect
+    routerLink="/scraper"
+  >
+    Run a Scraper
+  </a>
+  </div>
+</div>
+

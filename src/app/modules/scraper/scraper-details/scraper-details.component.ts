@@ -17,9 +17,13 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   private scraperSub: Subscription;
 
+  private scraperStatusSub: Subscription;
+
   private resultsSub: Subscription;
 
   private scraperId: string;
+
+  scraperStatus: string = 'ideal';
 
   categories = new FormControl();
 
@@ -40,10 +44,6 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     price: 2499
   }
 
-  runStarted = false;
-
-  downloadable = false;
-
   // printed status from terminal
   results =  'Scraper loaded successfully at ' + this.scraper.scraperLocation + '\nScraper is ready to run...';
 
@@ -59,7 +59,15 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     this.scraperSub = this.scraperService.getScraprUpdateListener()
       .subscribe((rec: Scraper) => {
         if (rec) {
+          this.scraperService.getUserScraperStatus(this.scraperId);
+          this.scraperStatusSub = this.scraperService.getScraperStatusUpdatedListener()
+      .subscribe((status: string) => {
+        if (status){
+          this.scraperStatus = status;
+        }
           this.scraper = rec;
+      })
+
         }
   }, (error) => {
     console.log(error);
@@ -70,15 +78,21 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     if (this.scraperSub) {
       this.scraperSub.unsubscribe();
     }
+
     if (this.resultsSub) {
       this.resultsSub.unsubscribe();
+    }
+
+    if (this.scraperStatusSub) {
+      this.scraperStatusSub.unsubscribe();
     }
   }
 
   // run scraper
   runScraper() {
-    // scraper runnigg code
-    this.runStarted = true;
+
+    this.scraperService.updateUserScraperStatus(this.scraperId, 'running');
+    this.scraperStatus = 'running';
 
     this.scraperService.runScraper(this.scraper);
     this.resultsSub = this.scraperService.getResultsUpdateListener()
@@ -98,7 +112,9 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
   terminateScraper() {
     this.scraperService.terminateScraper(this.scraper);
 
-    this.runStarted = false;
+    this.scraperService.updateUserScraperStatus(this.scraperId, 'ideal');
+    this.scraperStatus = 'ideal';
+    console.log(this.scraperStatus);
   }
 
 
