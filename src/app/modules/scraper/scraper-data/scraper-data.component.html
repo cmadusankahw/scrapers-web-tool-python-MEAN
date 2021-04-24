@@ -1,0 +1,336 @@
+<div class="pd-top-min container-fluid">
+  <h4>
+    <mat-icon>library_books</mat-icon>
+    <b> {{scraperName}} Scraper: Generated Data</b>
+  </h4>
+
+  <mat-form-field>
+    <mat-label>
+      <mat-icon>search</mat-icon>
+      Search for Runs</mat-label
+    >
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. 2021" />
+  </mat-form-field>
+
+  <div class="mat-elevation-z8">
+    <table
+      class="table-responsive"
+      mat-table
+      [dataSource]="dataSource"
+      *ngIf="scraperRuns.length"
+    >
+      <!-- ID Column -->
+      <ng-container matColumnDef="scraperId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper ID</th>
+        <td mat-cell *matCellDef="let row">{{ row.scraperRunId }}</td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="scraperName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper</th>
+        <td mat-cell *matCellDef="let row">{{ scraperName }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="lastRun">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Last run on</th>
+        <td mat-cell *matCellDef="let row">
+          {{ convertTimeStamptoDate(row.timestamp)}}
+        </td>
+      </ng-container>
+
+        <!-- Progress Column -->
+        <ng-container matColumnDef="noOfRuns">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            No of Runs
+          </th>
+          <td mat-cell *matCellDef="let row">{{ row.noOfRuns }}</td>
+        </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td
+          mat-cell
+          *matCellDef="let row"
+          style="font-weight: bold; color: darkgreen"
+        >
+          {{ row.status }}
+        </td>
+      </ng-container>
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          style="text-align: center"
+        >
+          ACTION
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <button
+            mdbBtn
+            color="blue"
+            text="white"
+            class="btn btn-sm text-center"
+            (click)="showScraperRunDetails(row.scraperRunId)"
+            (click)="idOptions.show()"
+          >
+            View Data
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <div class="text-center pd-top-min" *ngIf="!scraperRuns.length">
+      No Scraper Run Records Found
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator>
+  </div>
+</div>
+
+<!--View Details Modal-->
+<div
+  mdbModal
+  #idOptions="mdbModal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myBasicModalLabel"
+  [config]="{ backdrop: false, ignoreBackdropClick: true }"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-lg modal-dialog-centered"
+    role="document"
+    style="overflow-y: initial !important"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="idOptions.hide()"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+        <h4 class="modal-title w-100" id="myModalLabel">Generated Data</h4>
+      </div>
+
+      <div
+        class="modal-body"
+        style="height: 450px; overflow-y: auto"
+        *ngIf="scraperRun"
+      >
+        <div class="text-center">
+          <section class="text-center dark-grey-text scraper-details">
+            <div class="driver-raw">
+              <div class="col-md-1 text-center">
+                <img
+                  src="./assets/images/scraper/icon.png"
+                  class="profile-pic"
+                />
+              </div>
+              <div class="col-md-9 driver-name-details">
+
+                    <div class="driver-name-large">
+                      {{ scraperName }}
+                    </div>
+                    <div class="small-info">
+                      No of Runs: {{ scraperRun.noOfRuns }}
+                    </div>
+
+
+              </div>
+            </div>
+            <hr>
+
+
+            <div class="data-preview">
+
+              <div *ngIf="recievedDisplayedColumns && recievedDataSource" class="table-container">
+              <mat-table #table [dataSource]="recievedDataSource" class="table-responsive" >
+                <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
+                  <mat-header-cell *matHeaderCellDef>{{ column.header }}</mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{ column.cell(row) }}</mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="recievedDisplayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: recievedDisplayedColumns;"></mat-row>
+              </mat-table>
+            </div>
+            <div class="text-center pt-5 pb-4" *ngIf="!recievedDisplayedColumns || !recievedDataSource">
+              <img src="./assets/images/scraper/loader.gif" width="70px">
+              <br><br>
+              <p>
+                Data loading.... Please wait
+              </p>
+
+            </div>
+            </div>
+            <hr />
+
+            <div class="row scraper-run-details">
+              <div class="col-md-4">
+
+                <div class="bold-text">
+                  <mdb-icon far icon="time"></mdb-icon> Last Run:
+                </div>
+                   <p>
+                     {{convertTimeStamptoDate(scraperRun.timestamp)}}
+                   </p>
+
+                   <div class="bold-text">
+                    <mdb-icon far icon="globe"></mdb-icon> Fromat:
+                  </div>
+                     <p>
+                       {{scraperRun.dataFormat}}
+                     </p>
+
+               </div>
+
+                   <div class="col-md-4 text-center">
+                   <div class="bold-text">
+                    <mdb-icon far icon="globe"></mdb-icon> Categories:
+                  </div>
+                  <div class="text-center">
+                    <div style="display:flex; align-items:center;" *ngIf="scraperRun.executed_params.categories.length">
+                      <div class="item-tag"  *ngFor="let cat of scraperRun.executed_params.categories">
+                        {{cat}}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+
+                <div class="col-md-4 text-center">
+                   <div class="bold-text">
+                    <mdb-icon far icon="globe"></mdb-icon> Locations:
+                  </div>
+                  <div class="text-center">
+                    <div style="display:flex; align-items:center;" *ngIf="scraperRun.executed_params.locations.length">
+                      <div class="item-tag"  *ngFor="let loc of scraperRun.executed_params.locations">
+                        {{loc}}
+                      </div>
+                    </div>
+                  </div>
+
+            </div>
+            </div>
+
+            <hr />
+
+
+          </section>
+        </div>
+      </div>
+
+      <div class="modal-footer" *ngIf="scraperRun">
+        <button
+          *ngIf="scraperRun.status == 'success'"
+          mdbBtn
+          color="primary"
+          class="btn btn-sm"
+          (click)="idOptions.hide()"
+          mdbWavesEffect
+        >
+        <mdb-icon fas icon="download"> </mdb-icon>  Download Data to CSV
+
+        </button>
+
+        <button
+          mdbBtn
+          color="red"
+          class="btn btn-sm"
+          (click)="confirmDialog.show()"
+
+          mdbWavesEffect
+        >
+        <mdb-icon fas icon="ban"> </mdb-icon>  Remove Data
+
+        </button>
+
+        <button
+          mdbBtn
+          color="dark"
+          outline="yes"
+          class="btn btn-sm"
+          (click)="idOptions.hide()"
+          mdbWavesEffect
+        >
+          Close
+        </button>
+      </div>
+      <div
+        class="modal-body"
+        style="height: 450px; overflow-y: auto"
+        *ngIf="!scraperRun"
+      >
+        <app-not-found-page></app-not-found-page>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- confirm order deliveery dialog-->
+<div mdbModal #confirmDialog="mdbModal"
+class="modal fade"
+id="frameModalTop" tabindex="-1" role="dialog"
+[config]="{ backdrop: false, ignoreBackdropClick: true }"
+aria-labelledby="myModalLabel" aria-hidden="true"
+ >
+<div class="modal-dialog modal-notify modal-danger modal-dialog-centered" role="document">
+  <!--Content-->
+  <div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+      <p class="heading">Removing dataset</p>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmDialog.hide()">
+        <span aria-hidden="true" class="white-text">&times;</span>
+      </button>
+    </div>
+
+    <!--Body-->
+    <div class="modal-body">
+
+      <div class="row">
+        <div class="col-3">
+          <p></p>
+          <p class="text-center">
+            <mdb-icon fas icon="ban" size="3x" class="mb-3 animated rotateIn"></mdb-icon>
+          </p>
+        </div>
+
+        <div class="col-9">
+          <h5>Are you sure want to remove <b>generated Data and entries</b> ?</h5>
+        </div>
+      </div>
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer justify-content-center">
+      <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
+      (click) = "removeDataset(scraperRun.scraperRunId)"
+      (click)="confirmDialog.hide()"
+      (click)="idOptions.hide()"
+      mdbWavesEffect> Remove dataset
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a>
+      <a type="button" mdbBtn color="red" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      (click)="confirmDialog.hide()"
+        data-dismiss="modal">not now</a>
+    </div>
+  </div>
+  <!--/.Content-->
+</div>
+</div>

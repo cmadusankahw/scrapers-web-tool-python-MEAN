@@ -24,20 +24,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   editmode = false;
 
   // bprofile data binding
-  user: User = {
-    userId: 'U01',
-    userName: 'Test',
-    userType: 'super-admin',
-    profilePic: './assets/images/merchant/user.jpg',
-    userEmail: 'abc@gmail.com',
-    userContactNo: '0776789078',
-    status: 'Registered'
-  }
+  user: User;
 
 
    // image to upload
    image: File;
-   imageUrl: any = './assets/images/merchant/nopic.png';
+   imageUrl: any = './assets/images/scraper/user.png';
 
 
   constructor(private authService: AuthService,
@@ -46,18 +38,22 @@ export class UserProfileComponent implements OnInit, OnDestroy {
               private router: Router) { }
 
   ngOnInit() {
-    // this.adminService.getAdmin();
-    // this.adminSubs = this.authService.getAdminUpdatteListener().subscribe (
-    //   admin => {
-    //       this.admin = admin;
-    //   });
+    this.authService.getAuthUser();
+    this.userSubs = this.authService.getCurrentUserUpdatteListener().subscribe (
+      user => {
+        if (user) {
+          this.user = user;
+        }
+      }, (error) => {
+        console.log(error);
+        });
   }
 
   ngOnDestroy() {
     if (this.userSubs) {
       this.userSubs.unsubscribe();
     }
-    this.imageUrl = './assets/images/merchant/nopic.png';
+    this.imageUrl = './assets/images/scraper/user.png';
     this.image = null;
   }
 
@@ -78,12 +74,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     } else {
       const user: User = {
         userId: this.user.userId,
-        userType: editForm.value.user_type,
+        userType:this.user.userType,
         userName: editForm.value.user_name,
         profilePic: this.user.profilePic,
         userEmail: editForm.value.email,
         userContactNo: editForm.value.contact_no,
         status: this.user.status,
+        scrapers: this.user.scrapers
         };
       this.authService.updateUser(user, this.image);
       this.userSubs = this.authService.getUserUpdatteListener()

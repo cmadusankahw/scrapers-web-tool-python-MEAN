@@ -92,14 +92,5 @@ export class ScrapersListComponent implements OnInit, OnDestroy {
     }
   }
 
-  // get selected driver details
-  showUsertDetails(scraperId: string) {
-    for (const app of this.scrapers) {
-      if (app.scraperId === scraperId) {
-        this.scraper = app;
-      }
-    }
-  }
-
 
 }

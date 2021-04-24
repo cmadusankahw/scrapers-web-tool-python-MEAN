@@ -1,0 +1,162 @@
+<div class="pd-top-min" *ngIf="scraper">
+<div class="scraper-box">
+  <div class="row container-fluid">
+    <div class="col-md-7">
+      <div class="left-content">
+        <div class="driver-raw">
+        <img src="./assets/images/scraper/icon.png" class="profile-pic" />
+        <div class="scraper-title">
+          <h2><strong>{{scraper.scraperName}}</strong></h2>
+        </div>
+
+        </div>
+        <br>
+        <p>
+          {{scraper.description}}
+        </p>
+      </div>
+    </div>
+    <div class="col-md-5">
+          <div class="right-content">
+
+            <div class="flex-item row">
+              <div class="col-md-4 bold-text">
+                <mdb-icon far icon="globe"></mdb-icon> Base Url:
+              </div>
+              <div class="col-md-8">
+                  {{scraper.baseURL}}
+              </div>
+            </div>
+
+            <div class="flex-item row">
+              <div class="col-md-4 bold-text">
+                <mdb-icon far icon="globe"></mdb-icon> Tags:
+              </div>
+              <div class="col-md-8">
+                  <div class="row" *ngIf="scraper.tags.length">
+                    <div class="item-tag"  *ngFor="let tag of scraper.tags">
+                      {{tag}}
+                    </div>
+                  </div>
+              </div>
+            </div>
+
+          </div>
+
+    </div>
+    </div>
+    <hr>
+    <div class="button-content row">
+
+      <div class="col-md-8">
+        <div class="row">
+          <mat-form-field appearance="fill" *ngIf="scraper.params.categories.length" class="dropdown-box">
+            <mat-label>Select Categories..</mat-label>
+            <mat-select [formControl]="categories" multiple>
+              <mat-option *ngFor="let cat of scraper.params.categories" [value]="cat">{{cat}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" *ngIf="scraper.params.locations.length" class="dropdown-box">
+            <mat-label>Select Locations..</mat-label>
+            <mat-select [formControl]="locations" multiple>
+              <mat-option *ngFor="let loc of scraper.params.locations" [value]="loc">{{loc}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+      </div>
+
+     <div class="col-md-4">
+      <button
+      mdbBtn
+      class="btn btn-md"
+      color="primary"
+      mdbWavesEffect
+      (click)="runScraper()"
+      style="margin-right:10px;"
+    >
+      Run Scraper
+    </button>
+    <button
+      mdbBtn
+      class="btn btn-md"
+      [disabled] = "scraperStatus == 'ideal'"
+      color="red"
+      (click)="confirmDialog.show()"
+      mdbWavesEffect
+    >
+      Abort
+    </button>
+     </div>
+    </div>
+
+    <hr>
+    <div class="result-box">
+      <mat-form-field class="service-full-width">
+        <textarea matInput rows="16" disabled
+        [value]="results" name="result" ></textarea>
+      </mat-form-field>
+    </div>
+
+    </div>
+</div>
+
+<div class="pd-top-min" *ngIf="!scraper">
+  <app-not-found-page></app-not-found-page>
+</div>
+
+
+
+<!-- confirm order deliveery dialog-->
+<div mdbModal #confirmDialog="mdbModal"
+class="modal fade"
+id="frameModalTop" tabindex="-1" role="dialog"
+[config]="{ backdrop: false, ignoreBackdropClick: true }"
+aria-labelledby="myModalLabel" aria-hidden="true"
+ >
+<div class="modal-dialog modal-notify modal-danger modal-dialog-centered" role="document">
+  <!--Content-->
+  <div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+      <p class="heading">Terminate Scraper</p>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmDialog.hide()">
+        <span aria-hidden="true" class="white-text">&times;</span>
+      </button>
+    </div>
+
+    <!--Body-->
+    <div class="modal-body">
+
+      <div class="row">
+        <div class="col-3">
+          <p></p>
+          <p class="text-center">
+            <mdb-icon fas icon="ban" size="3x" class="mb-3 animated rotateIn"></mdb-icon>
+          </p>
+        </div>
+
+        <div class="col-9">
+          <h5>Are you sure want to terminate execution of <b>{{scraper.scraperName}}</b> ?</h5>
+        </div>
+      </div>
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer justify-content-center">
+      <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
+      (click) = "terminateScraper()"
+      (click)="confirmDialog.hide()"
+      mdbWavesEffect> Abort execution
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a>
+      <a type="button" mdbBtn color="red" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      (click)="confirmDialog.hide()"
+        data-dismiss="modal">not now</a>
+    </div>
+  </div>
+  <!--/.Content-->
+</div>
+</div>

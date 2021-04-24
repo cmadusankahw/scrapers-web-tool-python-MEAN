@@ -66,6 +66,23 @@
           <mat-icon>arrow_right</mat-icon>
         </div>
       </a>
+
+      <a
+      class="txt-white row"
+      mat-list-item
+      [ngClass]="accSettings"
+      (click)="navAccSettings()"
+    >
+      <div class="col-md-11 side-start">
+        <mat-icon>build</mat-icon>
+        <span class="side-text"> Account Settings</span>
+      </div>
+      <div class="ol-md-1 side-end">
+        <mat-icon>arrow_right</mat-icon>
+      </div>
+    </a>
+
+
     </mat-nav-list>
   </mat-sidenav>
 

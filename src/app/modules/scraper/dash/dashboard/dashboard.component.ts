@@ -15,6 +15,7 @@ export class DashboardComponent implements OnInit {
   home = 'txt-white row';
   data = 'txt-white row';
   settings = 'txt-white row';
+  accSettings = 'txt-white row';
 
   topIcon = "./assets/images/scraper/logo_lg.png";
 
@@ -49,17 +50,22 @@ export class DashboardComponent implements OnInit {
 
  navHome() {
    this.home = 'txt-white row active-nav';
-   this.data = this.settings  = 'txt-white row';
+   this.data = this.accSettings = this.settings  = 'txt-white row';
  }
 
  navData() {
    this.data = 'txt-white row active-nav';
-   this.home = this.settings  = 'txt-white row';
+   this.home = this.accSettings =this.settings  = 'txt-white row';
  }
 
  navSettings() {
    this.settings = 'txt-white row active-nav';
-   this.data = this.home  = 'txt-white row';
+   this.data = this.accSettings =this.home  = 'txt-white row';
  }
+
+ navAccSettings() {
+  this.accSettings = 'txt-white row active-nav';
+  this.data = this.settings =this.home  = 'txt-white row';
+}
 
 }

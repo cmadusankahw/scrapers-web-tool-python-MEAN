@@ -16,8 +16,6 @@ export interface Scraper {
 
 export interface ScraperRun {
   scraperRunId: string;
-  userId: string;
-  scraperId: string;
   timestamp: number;
   noOfRuns: number;
   noOfCols: number;
@@ -40,6 +38,14 @@ export interface User {
   userEmail: string;
   userContactNo: string;
   status: string;
+  scrapers: UserScraper[];
+}
+
+export interface UserScraper {
+  scraperId: string;
+  scraperName: string;
+  status: string;
+  scraperRuns: ScraperRun[];
 }
 
 export interface DashStat {
@@ -54,8 +60,9 @@ export interface DateObj {
   year: number;
 }
 
-export interface LegalDocument {
-  front: string;
-  back: string;
+export interface ResultUpdated {
+  result: string;
+  scraperRunId: string;
+  status: boolean;
 }
 

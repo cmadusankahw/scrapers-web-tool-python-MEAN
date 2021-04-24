@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
-import {  DashStat, Scraper, ScraperRun } from './scraper.model';
+import {  DashStat, ResultUpdated, Scraper, ScraperRun } from './scraper.model';
 import {url,
   getDashStat,
   getScraper,
@@ -15,7 +15,8 @@ import {url,
   putUpdateScraper,
   postRunScraper,
   deleteScraper,
-  deleteScraperRun} from  './scraper.config';
+  deleteScraperRun,
+  getUserScraperStatus} from  './scraper.config';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
@@ -25,6 +26,9 @@ export class ScraperService {
   private userScrapersUpdated = new Subject<Scraper[]>();
   private scraperRunUpdated = new Subject<ScraperRun>();
   private scraperRunsUpdated = new Subject<ScraperRun[]>();
+  private resultsUpdated = new Subject<ResultUpdated>();
+  private scrapedJSONUpdated = new Subject<any[]>();
+  private scraperStatusUpdated = new Subject<string>();
 
 
   private dashStat: DashStat;
@@ -33,6 +37,10 @@ export class ScraperService {
   private userScrapers: Scraper[];
   private scraperRun: ScraperRun;
   private scraperRuns: ScraperRun[];
+  private scraperStatus: string;
+
+  // script execution related
+  downloadable = false;
 
     // snack bars for notification display
   private horizontalPosition: MatSnackBarHorizontalPosition = 'end';
@@ -46,7 +54,7 @@ export class ScraperService {
 
   // GET
   getScraper(scraperId){
-    this.http.get<{scraper: Scraper}>(url + getScraper)
+    this.http.get<{scraper: Scraper}>(url + getScraper + scraperId)
     .subscribe((res) => {
       this.scraper = res.scraper;
       this.scraperUpdated.next(this.scraper);
@@ -61,6 +69,7 @@ export class ScraperService {
     });
   }
 
+  // user Id from backend
   getUserScrapers(){
     this.http.get<{scrapers: Scraper[]}>(url + getUserScrapers)
     .subscribe((res) => {
@@ -69,44 +78,92 @@ export class ScraperService {
     });
   }
 
-    // dashboard page
-  getDashStat() {
-    this.http.get<{dashboardData: DashStat}>(url + getDashStat)
+   // userId from backend
+  getUserScraperStatus(scraperId) {
+    this.http.get<{status: string}>(url + getUserScraperStatus + scraperId)
     .subscribe((res) => {
-      this.dashStat = res.dashboardData;
-      this.dashStatUpdated.next(this.dashStat);
+      this.scraperStatus = res.status;
+      this.scraperStatusUpdated.next(this.scraperStatus);
     });
   }
 
-  getUserScraperRuns(userId){
-    this.http.get<{scraperRuns: ScraperRun[]}>(url + getUserScraperRuns + userId)
+  // userId from backend
+  getUserScraperRuns(){
+    this.http.get<{scraperRuns: ScraperRun[]}>(url + getUserScraperRuns )
     .subscribe((res) => {
       this.scraperRuns = res.scraperRuns;
       this.scraperRunsUpdated.next(this.scraperRuns);
     });
   }
 
+  // get JSON table data
+  getScrapedJSON(scraperRun: ScraperRun){
+    // code here
+    // test only
+    this.scrapedJSONUpdated.next([
+      {position: 1, name: 'sdd', weight: 1.0079, symbol: 'H', foo: 'bar'},
+      {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'}
+    ]);
+  }
+
 
 
   // POST, PUT
-  RunScraper(scraper: Scraper) {
+  runScraper(scraper: Scraper) {
+    this._snackBar.open('Scraper execution started...', 'Dismiss', {
+      duration: 2500,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      });
     this.http.post<{
           message: string,
           result: string,
-          status: string }>(url + postRunScraper , scraper)
+          scraperRunId: string, // creates a new scraperRun and returns the ID
+          status: boolean }>(url + postRunScraper , scraper)
     .subscribe((recievedData) => {
     console.log(recievedData.message);
-       return {
-         result: recievedData.result,
-         status: recievedData.status
-        }
+    this.resultsUpdated.next({result: recievedData.result, scraperRunId: recievedData.scraperRunId, status: recievedData.status});
     }, (error) => {
     console.log(error);
-        return null;
     });
   }
 
+  // update user scraper status runnig , failed, or ideal
+  updateUserScraperStatus(scraperId, status){
+
+  }
+
   updateScraper(scraper: Scraper) {
+    // code here
+  }
+
+  terminateScraper(scraper: Scraper) {
+    // code here
+    this._snackBar.open('Scraper execution terminated', 'Dismiss', {
+      duration: 2500,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      });
+  }
+
+  // check runnig status
+  checkScraperStatus(scraper: Scraper){
     // code here
   }
 
@@ -176,6 +233,19 @@ export class ScraperService {
   getScraperRunsUpdateListener() {
     return this.scraperRunsUpdated.asObservable();
   }
+
+  getResultsUpdateListener() {
+    return this.resultsUpdated.asObservable();
+  }
+
+  getScrapedJSONUpdatedListener() {
+    return this.scrapedJSONUpdated.asObservable();
+  }
+
+  getScraperStatusUpdatedListener() {
+    return this.scraperStatusUpdated.asObservable();
+  }
+
 
 
 

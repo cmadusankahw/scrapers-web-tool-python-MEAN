@@ -25,32 +25,22 @@ export class AllUsersComponent implements OnInit, OnDestroy {
   private userSub: Subscription;
 
   // final merchants list
-  users: User[] = [
-    {
-      userId: 'U01',
-      userName: 'Test',
-      userType: 'super-admin',
-      profilePic: './assets/images/merchant/user.jpg',
-      userEmail: 'abc@gmail.com',
-      userContactNo: '0776789078',
-      status: 'Registered'
-    }
-  ];
+  users: User[];
 
   constructor( private authService: AuthService) { }
 
   ngOnInit() {
-     // get admin for child comp use
-  //  this.adminService.getAdmins();
-  //  this.adminSub = this.adminService.getAdminsUpdateListener().subscribe(
-  //    res => {
-  //      if (res) {
-  //        this.admins = res;
+     // get all users
+   this.authService.getUsers();
+   this.userSub = this.authService.getUsersUpdateListener().subscribe(
+     res => {
+       if (res) {
+         this.users = res;
          this.dataSource = new MatTableDataSource(this.users);
          this.dataSource.paginator = this.paginator;
          this.dataSource.sort = this.sort;
-    //   }
-    //  });
+      }
+     });
   }
 
   ngOnDestroy() {
