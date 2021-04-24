@@ -63,6 +63,8 @@ import { DashSettingsComponent } from './modules/scraper/dash/pages/dash-setting
 import { CreateNewPasswordComponent } from './modules/auth/create-new-password/create-new-password.component';
 import { PasswordResetComponent } from './modules/auth/password-reset/password-reset.component';
 import { HomepageComponent } from './modules/home/homepage/homepage.component';
+import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
+import { ScraperDataComponent } from './modules/scraper/scraper-data/scraper-data.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +87,8 @@ import { HomepageComponent } from './modules/home/homepage/homepage.component';
     AllUsersComponent,
     ScrapersListComponent,
     DashSettingsComponent,
+    ScraperDetailsComponent,
+    ScraperDataComponent,
   ],
   imports: [
     BrowserModule,

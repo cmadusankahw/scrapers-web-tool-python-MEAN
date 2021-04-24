@@ -25,6 +25,7 @@ export class ScraperService {
   private userScrapersUpdated = new Subject<Scraper[]>();
   private scraperRunUpdated = new Subject<ScraperRun>();
   private scraperRunsUpdated = new Subject<ScraperRun[]>();
+  private resultsUpdated = new Subject<{result: string, status: boolean}>();
 
 
   private dashStat: DashStat;
@@ -61,6 +62,7 @@ export class ScraperService {
     });
   }
 
+  // user Id from backend
   getUserScrapers(){
     this.http.get<{scrapers: Scraper[]}>(url + getUserScrapers)
     .subscribe((res) => {
@@ -78,8 +80,9 @@ export class ScraperService {
     });
   }
 
-  getUserScraperRuns(userId){
-    this.http.get<{scraperRuns: ScraperRun[]}>(url + getUserScraperRuns + userId)
+  // userId from backend
+  getUserScraperRuns(){
+    this.http.get<{scraperRuns: ScraperRun[]}>(url + getUserScraperRuns )
     .subscribe((res) => {
       this.scraperRuns = res.scraperRuns;
       this.scraperRunsUpdated.next(this.scraperRuns);
@@ -89,25 +92,35 @@ export class ScraperService {
 
 
   // POST, PUT
-  RunScraper(scraper: Scraper) {
+  runScraper(scraper: Scraper) {
+    this._snackBar.open('Scraper execution started...', 'Dismiss', {
+      duration: 2500,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      });
     this.http.post<{
           message: string,
           result: string,
-          status: string }>(url + postRunScraper , scraper)
+          status: boolean }>(url + postRunScraper , scraper)
     .subscribe((recievedData) => {
     console.log(recievedData.message);
-       return {
-         result: recievedData.result,
-         status: recievedData.status
-        }
+    this.resultsUpdated.next({result: recievedData.result, status: recievedData.status});
     }, (error) => {
     console.log(error);
-        return null;
     });
   }
 
   updateScraper(scraper: Scraper) {
     // code here
+  }
+
+  terminateScraper(scraper: Scraper) {
+    // code here
+    this._snackBar.open('Scraper execution terminated', 'Dismiss', {
+      duration: 2500,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      });
   }
 
 
@@ -175,6 +188,10 @@ export class ScraperService {
 
   getScraperRunsUpdateListener() {
     return this.scraperRunsUpdated.asObservable();
+  }
+
+  getResultsUpdateListener() {
+    return this.resultsUpdated.asObservable();
   }
 
 

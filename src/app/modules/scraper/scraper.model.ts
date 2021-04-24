@@ -40,6 +40,13 @@ export interface User {
   userEmail: string;
   userContactNo: string;
   status: string;
+  scrapers: UserScraper[];
+}
+
+export interface UserScraper {
+  scraperId: string;
+  scraperName: string;
+  scraperRuns: ScraperRun[];
 }
 
 export interface DashStat {

@@ -5,22 +5,24 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 import { User } from '../scraper/scraper.model';
-import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser } from '../scraper/scraper.config';
+import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser } from '../scraper/scraper.config';
 import { LogIn } from './auth.model';
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
   private lastIdUpdated = new Subject<string>();
   private userUpdated = new Subject<User>();
+  private currentUserUpdated = new Subject<User>();
   private usersUpdated = new Subject<User[]>();
   private authStatusListener = new Subject<boolean>();
   private headerDetailsListener = new Subject<{userType: string, userName: string, profilePic: string}>();
 
-  // to get admin once logged in
-  private user: User;
+  // user logged in
+  private currentUser: User;
 
   // all users
   private users: User[];
+  private user: User;
 
   // last signed user id
   private lastId: string;
@@ -55,6 +57,14 @@ export class AuthService {
           this.user = res.user;
           this.userUpdated.next(this.user);
       });
+    }
+
+    getAuthUser() {
+      this.http.get<{user: User}>(url + getAuthUser )
+      .subscribe((res) => {
+        this.currentUser = res.user;
+        this.currentUserUpdated.next(this.currentUser);
+    });
     }
 
     getUsers() {
@@ -125,6 +135,10 @@ export class AuthService {
 
   getUserUpdatteListener() {
     return this.userUpdated.asObservable();
+  }
+
+  getCurrentUserUpdatteListener() {
+    return this.currentUserUpdated.asObservable();
   }
 
 // POST , PUT
@@ -232,7 +246,7 @@ removeUser(userId){
         const expirationDate = new Date (now.getTime() + recievedData.expiersIn * 1000 );
         this.saveAuthData(recievedData.token, expirationDate );
 
-        this.router.navigate(['/admin']);
+        this.router.navigate(['/scraper']);
       }
    }, (error) => {
      console.log(error);

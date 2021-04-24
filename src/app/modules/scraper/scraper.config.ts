@@ -10,6 +10,7 @@ const getScraperRun = "scraper-run/one/"; // userId
 const getUserScraperRuns = "scraper-run/user/"; // userId
 
 const getUser = 'auth/user/one'; // userId
+const getAuthUser = 'auth/user/current'; // userId
 const getUsers = "auth/user/all";
 const getHeader =  'auth/header';
 const getLastId = 'auth/last-id';
@@ -29,6 +30,7 @@ export {
   getDashStat,
   getUser,
   getUsers,
+  getAuthUser,
   getScraperPayments,
   getUserPayments,
   getScraper,

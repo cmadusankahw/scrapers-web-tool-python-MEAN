@@ -11,6 +11,7 @@ import { PasswordResetComponent } from './modules/auth/password-reset/password-r
 import { CreateNewPasswordComponent } from './modules/auth/create-new-password/create-new-password.component';
 import { HomepageComponent } from './modules/home/homepage/homepage.component';
 import { ContactUsComponent } from './modules/home/contact-us/contact-us.component';
+import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
 
 const routes: Routes = [
   {
@@ -18,6 +19,7 @@ const routes: Routes = [
     component: DashboardComponent,
     children: [
       { path: '', component: DashHomeComponent },
+      { path: 'run/:id', component: ScraperDetailsComponent },
       { path: 'data', component: DashDataComponent },
       { path: 'settings', component: DashSettingsComponent },
       { path: '**', component: NotFoundPageComponent },

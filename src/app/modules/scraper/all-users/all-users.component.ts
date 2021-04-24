@@ -33,7 +33,8 @@ export class AllUsersComponent implements OnInit, OnDestroy {
       profilePic: './assets/images/merchant/user.jpg',
       userEmail: 'abc@gmail.com',
       userContactNo: '0776789078',
-      status: 'Registered'
+      status: 'Registered',
+      scrapers: null
     }
   ];
 

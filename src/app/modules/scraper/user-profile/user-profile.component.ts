@@ -31,7 +31,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     profilePic: './assets/images/merchant/user.jpg',
     userEmail: 'abc@gmail.com',
     userContactNo: '0776789078',
-    status: 'Registered'
+    status: 'Registered',
+    scrapers: null
   }
 
 
@@ -84,6 +85,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         userEmail: editForm.value.email,
         userContactNo: editForm.value.contact_no,
         status: this.user.status,
+        scrapers: null
         };
       this.authService.updateUser(user, this.image);
       this.userSubs = this.authService.getUserUpdatteListener()

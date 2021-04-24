@@ -45,7 +45,8 @@ export class AddUserComponent implements OnInit, OnDestroy {
         profilePic: './assets/images/merchant/nopic.png',
         userEmail: signupForm.value.email,
         userContactNo: signupForm.value.contact_no,
-        status: 'Registered'
+        status: 'Registered',
+        scrapers: null
         };
       this.authService.signUp(user);
       console.log('User created successfully!');
