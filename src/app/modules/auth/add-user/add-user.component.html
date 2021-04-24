@@ -1,7 +1,11 @@
 <mdb-card>
-  <mdb-card-header class="green white-text text-center py-4">
-    <h4><b>Add New Users</b></h4>
-  </mdb-card-header>
+  <div class="text-center container-fluid mt-5 mb-2">
+    <img src="./assets/images/scraper/logo_lg.png" height="80" alt="web_scraper_logo"/>
+  </div>
+  <div class="text-center">
+    <h3><strong>Create a free WebScraper Account</strong></h3>
+    <p> Fill required details to create your free account</p>
+  </div>
 
   <!--Card content-->
   <mdb-card-body class="px-lg-5 pt-0">
@@ -14,20 +18,25 @@
     >
       <div class="text-center">
         <mat-form-field class="mfield">
-          <mat-label>User type</mat-label>
+          <mat-label>Select Your Plan</mat-label>
           <mat-select required name="user_type" #user_type="ngModel" ngModel>
-            <mat-option value="superAdmin"> Super Admin</mat-option>
-            <mat-option value="financialAdmin"> Financial Admin</mat-option>
-            <mat-option value="moderator"> Moderator</mat-option>
+            <mat-option value="superAdmin"> $5 /mo (3 months free)</mat-option>
+            <mat-option value="financialAdmin"> $10 /mo (3 months free)</mat-option>
+            <mat-option value="moderator"> $25 /mo (3 months free</mat-option>
           </mat-select>
           <mat-error *ngIf="user_type.invalid">Select User Type</mat-error>
         </mat-form-field>
+        <p> Read more Details about available package <a href="#">here. </a> <br> <b>No amount will be charged within the free trail period.</b></p>
+        <hr>
+        <div class="pt-2" >
+          <h5>Your details</h5>
+        </div>
 
         <mat-form-field class="mfield">
           <input
             matInput
             type="text"
-            placeholder="Enter User Name"
+            placeholder="Enter Your Name"
             required
             name="user_name"
             #user_name="ngModel"
@@ -40,7 +49,7 @@
           <input
             matInput
             type="email"
-            placeholder="Enter User Email"
+            placeholder="Enter Your Email"
             required
             name="user_email"
             #user_email="ngModel"
@@ -54,14 +63,14 @@
         <mat-form-field class="mfield">
           <input
             matInput
-            placeholder="Enter User Contact No"
+            placeholder="Enter Contact No"
             required
             name="contact_no"
             #contact_no="ngModel"
             ngModel
           />
           <mat-error *ngIf="contact_no.invalid"
-            >Please Provide a Contact No</mat-error
+            >Please Provide a Valid Contact No</mat-error
           >
         </mat-form-field>
 <!--
@@ -118,17 +127,18 @@
       </div>
 
       <br />
+      <br>
 
       <!-- Sign up complete button -->
       <button
         mdbBtn
-        color="green"
+        color="primary"
         rounded="true"
         block="true"
         mdbWavesEffect
         type="submit"
       >
-        Create User
+        Create Free Account
       </button>
       <br />
     </form>

@@ -1,19 +1,22 @@
-<!--Business Profile View-->
-<div class="card mt-4 container-fluid" *ngIf="!editmode">
+
+
+<div  *ngIf="user">
+
+<div class="card mt-5 container-fluid" *ngIf="!editmode">
   <section class="dark-grey-text">
     <!--profile header-->
     <div class="container-fluid pt-3">
       <div class="row" style="display: flex; align-items: center">
-        <div class="col-md-3">
+        <div class="col-md-2">
           <img
-            src="{{ admin ? admin.profilePic : imageUrl }}"
+            src="{{ user ? user.profilePic : imageUrl }}"
             alt="User Pic"
             class="img-thumbnail logo-img"
           />
         </div>
         <div class="col-md-9">
           <h2 class="txt-title">
-            {{ admin ? admin.userName : "Loading..." }}
+            {{ user ? user.userName : "Loading..." }}
           </h2>
         </div>
       </div>
@@ -25,76 +28,100 @@
         <!--row 1-->
         <div class="row">
           <div class="col-md-5 inst-text">
-            <mdb-icon fas icon="envelope"></mdb-icon> <span> User ID </span>
+            <mdb-icon fas icon="user-alt"></mdb-icon> <span style="margin-left:4px;"> User ID </span>
           </div>
 
           <div class="col-md-7 profile-text">
-            <span> {{ admin ? admin.userId : "Loading..." }}</span>
+            <span> {{ user ? user.userId : "Loading..." }}</span>
           </div>
         </div>
 
         <!--row 1-->
         <div class="row div-content">
           <div class="col-md-5 inst-text">
-            <mdb-icon fas icon="envelope"></mdb-icon> <span> Email </span>
+            <mdb-icon fas icon="envelope"></mdb-icon> <span style="margin-left:4px;"> Email </span>
           </div>
 
           <div class="col-md-7 profile-text">
-            <span> {{ admin ? admin.userEmail : "Loading..." }}</span>
+            <span> {{ user ? user.userEmail : "Loading..." }}</span>
           </div>
         </div>
 
         <!--row 2-->
         <div class="row div-content">
           <div class="col-md-5 inst-text">
-            <mdb-icon fas icon="birthday-cake"></mdb-icon>
-            <span> Admin Type</span>
+            <mdb-icon fas icon="user-cog"></mdb-icon> <span style="margin-left:4px;"> Active Plan</span>
           </div>
 
           <div class="col-md-7 profile-text">
-            <span> {{ admin ? admin.userType : "Loading..." }}</span>
+            <span> {{ user ? user.userType : "Loading..." }}</span>
           </div>
         </div>
 
         <!--row 2-->
         <div class="row div-content">
           <div class="col-md-5 inst-text">
-            <mdb-icon fas icon="phone"></mdb-icon>
-            <span> Contact No </span>
+            <mdb-icon fas icon="phone"></mdb-icon> <span style="margin-left:4px;"> Contact No </span>
           </div>
 
           <div class="col-md-7 profile-text">
-            <span> {{ admin ? admin.userContactNo : "Loading..." }}</span>
+            <span> {{ user ? user.userContactNo : "Loading..." }}</span>
           </div>
         </div>
+
+          <!--row 2-->
+          <div class="row div-content">
+            <div class="col-md-5 inst-text pb-3">
+              <mdb-icon fas icon="bars"></mdb-icon>
+              <span style="margin-left:4px;"> Purchased Scrapers </span>
+            </div>
+
+            <div class="col-md-7 profile-text">
+              <div class="user-scraper" *ngIf="user.scrapers && user.scrapers.length">
+                  <div class="scraper-item" *ngFor="let scraper of user.scrapers">
+                    {{scraper.scraperName}}
+                  </div>
+              </div>
+              <div  *ngIf="!user.scrapers || !user.scrapers.length">
+                None
+              </div>
+
+            </div>
+          </div>
+
+          <hr>
+          <br>
+          <h5>
+            Authentication
+          </h5>
 
         <!--row 2-->
         <div class="row div-content">
           <div class="col-md-5 inst-text">
-            <mdb-icon fas icon="mercury"></mdb-icon> <span> Gender</span>
+            <mdb-icon fas icon="info-circle"></mdb-icon> <span style="margin-left:4px;"> Status</span>
           </div>
 
           <div class="col-md-7 profile-text">
-            <span> {{ admin ? admin.gender : "Loading..." }}</span>
+            <span> {{ user ? user.status : "Loading..." }}</span>
           </div>
         </div>
 
         <!--row 4-->
         <div class="row div-content">
-          <div class="col-md-5 inst-text" style="padding-bottom: 100px">
-            <mdb-icon fas icon="key"></mdb-icon> <span> Password </span>
+          <div class="col-md-5 inst-text" style="padding-bottom: 20px">
+            <mdb-icon fas icon="key"></mdb-icon> <span style="margin-left:4px;"> Password </span>
           </div>
 
           <div class="col-md-7 profile-text">
             <span> ******* </span>
           </div>
           <br />
-          <div class="btn-gr">
+          <div class="btn-gr mb-2">
             <hr />
             <a
               type="button"
               mdbBtn
-              color="green"
+              color="primary"
               outline="yes"
               class="waves-light btn btn-md cust-btn btn-lm"
               mdbWavesEffect
@@ -114,7 +141,6 @@
             </a>
           </div>
         </div>
-        <hr />
       </div>
     </div>
   </section>
@@ -140,7 +166,7 @@
           <div class="col-md-4 text-center">
             <a role="button" mdbWavesEffect (click)="img.click()">
               <img
-                [src]="image ? imageUrl : admin.profilePic"
+                [src]="image ? imageUrl : user.profilePic"
                 alt="Profile Picture"
                 class="img-thumbnail logo-img-edit"
               />
@@ -171,7 +197,7 @@
             <mat-form-field class="service-full-width">
               <input
                 matInput
-                [ngModel]="admin.userName"
+                [ngModel]="user.userName"
                 required
                 name="user_name"
                 #userName="ngModel"
@@ -193,7 +219,7 @@
             <mat-form-field class="service-full-width">
               <input
                 matInput
-                [ngModel]="admin.userEmail"
+                [ngModel]="user.userEmail"
                 required
                 type="email"
                 #email="ngModel"
@@ -217,7 +243,7 @@
             <mat-form-field class="service-full-width">
               <input
                 matInput
-                [ngModel]="admin.userContactNo"
+                [ngModel]="user.userContactNo"
                 required
                 #contactNo="ngModel"
                 minlength="10"
@@ -231,29 +257,6 @@
           </div>
         </div>
 
-        <!--row 3-->
-        <div class="row page-content" style="padding-bottom: 120px">
-          <div class="col-md-4 inst-text">
-            <mdb-icon fas icon="mercury"></mdb-icon> <span> Gender:</span>
-          </div>
-
-          <div class="col-md-7 text-center">
-            <mat-form-field class="service-full-width">
-              <mat-label>Select Gender</mat-label>
-              <mat-select
-                [ngModel]="admin.gender"
-                required
-                ngModel
-                name="gender"
-              >
-                <mat-option value="male">Male</mat-option>
-                <mat-option value="female">Female</mat-option>
-                <mat-option value="none">Prefer Not to Say</mat-option>
-              </mat-select>
-            </mat-form-field>
-          </div>
-        </div>
-
         <hr />
       </div>
     </section>
@@ -263,7 +266,7 @@
       <button
         type="button"
         mdbBtn
-        color="green"
+        color="primary"
         class="waves-light btn btn-md cust-btn btn-tab"
         mdbWavesEffect
         type="submit"
@@ -273,7 +276,7 @@
       <button
         type="button"
         mdbBtn
-        color="green"
+        color="primary"
         class="waves-light btn btn-md cust-btn btn-tab"
         mdbWavesEffect
         outline="yes"
@@ -283,8 +286,9 @@
         Discard
       </button>
     </div>
-    <hr />
   </form>
+</div>
+
 </div>
 
 <!--change password Modal-->
@@ -394,8 +398,8 @@
         <div class="modal-footer">
           <button
             mdbBtn
-            class="btn btn-md"
-            color="green"
+            class="btn btn-sm"
+            color="primary"
             type="submit"
             mdbWavesEffect
           >
@@ -403,8 +407,8 @@
           </button>
           <button
             mdbBtn
-            class="btn btn-md"
-            color="green"
+            class="btn btn-sm"
+            color="primary"
             outline="yes"
             (click)="changePassword.hide()"
             mdbWavesEffect

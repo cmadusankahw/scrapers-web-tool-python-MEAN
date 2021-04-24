@@ -28,7 +28,7 @@ export class DashDataComponent implements OnInit, OnDestroy {
           noOfCols: 15,
           noOfRows: 2870,
           executed_params:{
-            categories: ['all'],
+            categories: ['computers', 'industry', 'telcom'],
             locations: ['any'],
           },
           dataLocation: 'sdcrapers/data/rainbowpages.csv',

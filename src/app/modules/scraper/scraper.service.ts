@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
-import {  DashStat, Scraper, ScraperRun } from './scraper.model';
+import {  DashStat, ResultUpdated, Scraper, ScraperRun } from './scraper.model';
 import {url,
   getDashStat,
   getScraper,
@@ -25,7 +25,8 @@ export class ScraperService {
   private userScrapersUpdated = new Subject<Scraper[]>();
   private scraperRunUpdated = new Subject<ScraperRun>();
   private scraperRunsUpdated = new Subject<ScraperRun[]>();
-  private resultsUpdated = new Subject<{result: string, status: boolean}>();
+  private resultsUpdated = new Subject<ResultUpdated>();
+  private scrapedJSONUpdated = new Subject<any[]>();
 
 
   private dashStat: DashStat;
@@ -89,6 +90,32 @@ export class ScraperService {
     });
   }
 
+  // get JSON table data
+  getScrapedJSON(scraperRun: ScraperRun){
+    // code here
+    // test only
+    this.scrapedJSONUpdated.next([
+      {position: 1, name: 'sdd', weight: 1.0079, symbol: 'H', foo: 'bar'},
+      {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
+      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
+      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
+      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
+      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'}
+    ]);
+  }
+
 
 
   // POST, PUT
@@ -101,10 +128,11 @@ export class ScraperService {
     this.http.post<{
           message: string,
           result: string,
+          scraperRunId: string, // creates a new scraperRun and returns the ID
           status: boolean }>(url + postRunScraper , scraper)
     .subscribe((recievedData) => {
     console.log(recievedData.message);
-    this.resultsUpdated.next({result: recievedData.result, status: recievedData.status});
+    this.resultsUpdated.next({result: recievedData.result, scraperRunId: recievedData.scraperRunId, status: recievedData.status});
     }, (error) => {
     console.log(error);
     });
@@ -121,6 +149,11 @@ export class ScraperService {
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
       });
+  }
+
+  // check runnig status
+  checkScraperStatus(scraper: Scraper){
+    // code here
   }
 
 
@@ -192,6 +225,10 @@ export class ScraperService {
 
   getResultsUpdateListener() {
     return this.resultsUpdated.asObservable();
+  }
+
+  getScrapedJSONUpdatedListener() {
+    return this.scrapedJSONUpdated.asObservable();
   }
 
 

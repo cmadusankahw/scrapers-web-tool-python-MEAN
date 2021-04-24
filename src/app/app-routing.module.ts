@@ -12,6 +12,7 @@ import { CreateNewPasswordComponent } from './modules/auth/create-new-password/c
 import { HomepageComponent } from './modules/home/homepage/homepage.component';
 import { ContactUsComponent } from './modules/home/contact-us/contact-us.component';
 import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
+import { AddUserComponent } from './modules/auth/add-user/add-user.component';
 
 const routes: Routes = [
   {
@@ -27,6 +28,7 @@ const routes: Routes = [
   },
   { path: '', component: HomepageComponent },
   { path: 'signin', component: LoginComponent },
+  { path: 'signup', component: AddUserComponent },
   { path: 'resetpw', component: PasswordResetComponent },
   { path: 'createpw', component: CreateNewPasswordComponent },
   { path: 'contactus', component: ContactUsComponent },

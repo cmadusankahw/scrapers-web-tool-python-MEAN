@@ -5,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { Subscription } from 'rxjs';
 import { ScraperRun } from '../scraper.model';
+import { ScraperService } from '../scraper.service';
 
 
 @Component({
@@ -32,7 +33,12 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
 
   scraperRun: ScraperRun;
 
-  constructor() { }
+  // dynamic table
+  columns:Array<any>
+  recievedDisplayedColumns:Array<any>
+  recievedDataSource:any
+
+  constructor(private scraperService: ScraperService) { }
 
   ngOnInit() {
          this.dataSource = new MatTableDataSource(this.scraperRuns);
@@ -63,13 +69,47 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
     for (const app of this.scraperRuns) {
       if (app.scraperRunId === scraperRunId) {
         this.scraperRun = app;
+        this.scraperService.getScrapedJSON(this.scraperRun);
+        this.scraperSub = this.scraperService.getScrapedJSONUpdatedListener()
+          .subscribe((res: any[]) => {
+            if (res) {
+              const columns = res
+              .reduce((columns, row) => {
+                return [...columns, ...Object.keys(row)]
+              }, [])
+              .reduce((columns, column) => {
+                return columns.includes(column)
+                  ? columns
+                  : [...columns, column]
+              }, [])
+            // Describe the columns for <mat-table>.
+            this.columns = columns.map(column => {
+              return {
+                columnDef: column,
+                header: column,
+                cell: (element: any) => `${element[column] ? element[column] : ``}`
+              }
+            })
+            this.recievedDisplayedColumns = this.columns.map(c => c.columnDef);
+            // Set the dataSource for <mat-table>.
+            this.recievedDataSource = res
+            }
+       });
+
       }
     }
-  }
+   }
+
+
 
   // get date from timestamp
   convertTimeStamptoDate(timestamp: number){
     return new Date(timestamp).toLocaleString();
+  }
+
+  // remove a dataset
+  removeDataset(scraperRunId){
+    this.scraperService.removeScraperRun(scraperRunId);
   }
 
 }

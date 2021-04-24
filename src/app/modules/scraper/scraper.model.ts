@@ -61,8 +61,9 @@ export interface DateObj {
   year: number;
 }
 
-export interface LegalDocument {
-  front: string;
-  back: string;
+export interface ResultUpdated {
+  result: string;
+  scraperRunId: string;
+  status: boolean;
 }
 

@@ -83,7 +83,7 @@
       class="btn btn-md"
       [disabled] = "!runStarted"
       color="red"
-      (click)="terminateScraper()"
+      (click)="confirmDialog.show()"
       mdbWavesEffect
     >
       Abort
@@ -107,3 +107,56 @@
 </div>
 
 
+
+<!-- confirm order deliveery dialog-->
+<div mdbModal #confirmDialog="mdbModal"
+class="modal fade"
+id="frameModalTop" tabindex="-1" role="dialog"
+[config]="{ backdrop: false, ignoreBackdropClick: true }"
+aria-labelledby="myModalLabel" aria-hidden="true"
+ >
+<div class="modal-dialog modal-notify modal-danger modal-dialog-centered" role="document">
+  <!--Content-->
+  <div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+      <p class="heading">Terminate Scraper</p>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmDialog.hide()">
+        <span aria-hidden="true" class="white-text">&times;</span>
+      </button>
+    </div>
+
+    <!--Body-->
+    <div class="modal-body">
+
+      <div class="row">
+        <div class="col-3">
+          <p></p>
+          <p class="text-center">
+            <mdb-icon fas icon="ban" size="3x" class="mb-3 animated rotateIn"></mdb-icon>
+          </p>
+        </div>
+
+        <div class="col-9">
+          <h5>Are you sure want to terminate execution of <b>{{scraper.scraperName}}</b> ?</h5>
+        </div>
+      </div>
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer justify-content-center">
+      <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
+      (click) = "terminateScraper()"
+      (click)="confirmDialog.hide()"
+      mdbWavesEffect> Abort execution
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a>
+      <a type="button" mdbBtn color="red" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      (click)="confirmDialog.hide()"
+        data-dismiss="modal">not now</a>
+    </div>
+  </div>
+  <!--/.Content-->
+</div>
+</div>
