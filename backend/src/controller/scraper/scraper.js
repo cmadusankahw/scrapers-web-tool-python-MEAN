@@ -152,16 +152,13 @@ scraper.post('/json',checkAuth, (req, res, next) => {
 // download csv file
 scraper.post('/csv/download',checkAuth, (req, res) => {
   filePath = path.join(__dirname, '..', '..','..', req.body.dataLocation);
-  csv()
-  .fromFile(filePath)
-  .then((jsonObj)=>{
-      res.set('Content-Type', 'text/csv');
-      res.status(200).send(jsonObj);
-  }).catch((err) => {
-    console.log(err);
-    res.status(500).json({ message: "Dataset download failed! Please retry!" });
-  })
-
+  res.download(filePath, (err) => {
+    if (err) {
+      res.status(500).send({
+        message: "Could not download the file. " + err,
+      });
+    }
+  });
 });
 
 

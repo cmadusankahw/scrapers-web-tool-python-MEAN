@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { saveAs } from 'file-saver';
 
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
@@ -100,10 +101,12 @@ export class ScraperService {
   // download data to csv
   downloadDataCSV(dataLocation: string){
     // code here
-    this.http.post<{jsonObj: string}>(url + postDownloadCSV , {dataLocation} )
+    const today = new Date().toISOString();
+    this.http.post(url + postDownloadCSV ,{dataLocation}, {responseType: 'blob'} )
     .subscribe((res) => {
       if (res) {
-        console.log(res)
+          console.log(res);
+          saveAs(res, "dataset"+today.slice(0,10)+".csv");
           this._snackBar.open('Data CSV downloading started...', 'Dismiss', {
           duration: 2500,
           horizontalPosition: this.horizontalPosition,
