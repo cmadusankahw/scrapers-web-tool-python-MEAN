@@ -16,7 +16,8 @@ import {url,
   postRunScraper,
   deleteScraper,
   deleteScraperRun,
-  getUserScraperStatus} from  './scraper.config';
+  getUserScraperStatus,
+  postUpdateUserScraperStatus} from  './scraper.config';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
@@ -31,7 +32,6 @@ export class ScraperService {
   private scraperStatusUpdated = new Subject<string>();
 
 
-  private dashStat: DashStat;
   private scraper: Scraper;
   private scrapers: Scraper[];
   private userScrapers: Scraper[];
@@ -71,8 +71,9 @@ export class ScraperService {
 
   // user Id from backend
   getUserScrapers(){
-    this.http.get<{scrapers: Scraper[]}>(url + getUserScrapers)
+    this.http.get<{message:string, scrapers: Scraper[]}>(url + getUserScrapers)
     .subscribe((res) => {
+      console.log(res.message);
       this.userScrapers = res.scrapers;
       this.userScrapersUpdated.next(this.userScrapers);
     });
@@ -80,8 +81,9 @@ export class ScraperService {
 
    // userId from backend
   getUserScraperStatus(scraperId) {
-    this.http.get<{status: string}>(url + getUserScraperStatus + scraperId)
+    this.http.get<{message: string, status: string}>(url + getUserScraperStatus + scraperId)
     .subscribe((res) => {
+      console.log(res.message);
       this.scraperStatus = res.status;
       this.scraperStatusUpdated.next(this.scraperStatus);
     });
@@ -146,7 +148,17 @@ export class ScraperService {
 
   // update user scraper status runnig , failed, or ideal
   updateUserScraperStatus(scraperId, status){
-
+    this.http.post<{
+          message: string
+        }>(url + postUpdateUserScraperStatus , {scraperId, status})
+    .subscribe((recievedData) => {
+      if (recievedData) {
+        console.log(recievedData.message);
+        this.scraperStatusUpdated.next(status);
+      }
+    }, (error) => {
+    console.log(error);
+    });
   }
 
   updateScraper(scraper: Scraper) {

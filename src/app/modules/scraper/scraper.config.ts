@@ -21,6 +21,7 @@ const postSignUp = 'auth/signup';
 const postUploadImage = 'auth/user/image'
 const putUpdateUser = 'auth/user/one'; // current userId
 const putUpdateScraper = 'scraper/one/'; // scraperId
+const postUpdateUserScraperStatus = 'scraper/status'; // scraperId
 
 const postRunScraper = 'scraper/exec'; // userId, scraperId
 const deleteScraper = 'scraper/one/'; // scraperRunId
@@ -49,6 +50,7 @@ export {
   putUpdateUser,
   putUpdateScraper,
   postRunScraper,
+  postUpdateUserScraperStatus,
   deleteScraper,
   deleteScraperRun,
   deleteUser

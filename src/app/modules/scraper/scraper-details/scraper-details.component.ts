@@ -1,3 +1,4 @@
+import { ThrowStmt } from '@angular/compiler';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
@@ -23,29 +24,16 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   private scraperId: string;
 
-  scraperStatus: string = 'ideal';
+  scraperStatus: string;
 
   categories = new FormControl();
 
   locations = new FormControl();
 
-  scraper: Scraper = {
-    scraperId: 'S1',
-    scraperName: 'Rainbow Pages',
-    description: 'SLT RAINBOW PAGES is Sri Lanka’s only telephone directory published by SLT Digital Services (Pvt) Ltd [formerly SLT Publications (Pvt) Ltd], a fully-owned subsidiary of Sri Lanka Telecom PLC (SLT) - the pioneer and foremost telecommunication solutions provider to the nation.',
-    tags: ['mobile', 'landline', 'phone-book'],
-    baseURL: 'https://rainbowpages.lk/',
-    scraperLocation: 'scrapers/',
-    script: 'python raibow_pages.py ',
-    params: {
-      categories: ['all', 'advertising', 'agriculture', 'baby goods', 'banking', 'bauty culture', 'computer'],
-      locations: ['any', 'colombo', 'matara', 'galle'],
-    },
-    price: 2499
-  }
+  scraper: Scraper;
 
   // printed status from terminal
-  results =  'Scraper loaded successfully at ' + this.scraper.scraperLocation + '\nScraper is ready to run...';
+  results: string;
 
   constructor(private router: Router,
               public scraperService: ScraperService,
@@ -66,6 +54,7 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
           this.scraperStatus = status;
         }
           this.scraper = rec;
+          this.results = 'Scraper loaded successfully at ' + this.scraper.scraperLocation + '\nScraper is ready to run...'
       })
 
         }

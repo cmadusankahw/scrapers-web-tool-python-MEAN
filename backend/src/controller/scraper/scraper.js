@@ -42,43 +42,117 @@ scraper.use(bodyParser.json());
 scraper.use(bodyParser.urlencoded({ extended: false }));
 
 
-//add new product
-scraper.post('/add',checkAuth, (req, res, next) => {
-  // var lastid;
-  // Product.find(function (err, products) {
-  //   if(products.length){
-  //     lastid = products[products.length-1].product_id;
-  //   } else {
-  //     lastid= 'P0';
-  //   }
-  //   let mId = +(lastid.slice(1));
-  //   ++mId;
-  //   lastid = 'P' + mId.toString();
-  //   console.log(lastid);
-  //   if (err) return handleError(err => {
-  //     res.status(500).json({
-  //       message: 'Error occured while getting product ID details!'
-  //     });
-  //   });
-  // }).then( () => {
-  //   const reqProduct = req.body;
-  //   reqProduct['product_id']= lastid;
-  //   reqProduct['user_id']= req.userData.user_id;
-  //   const newProduct = new Product(reqProduct);
-  //   console.log(newProduct);
-  //   newProduct.save()
-  //   .then(result => {
-  //       res.status(200).json({
-  //         message: 'product added successfully!',
-  //         result: result
-  //       });
-  //     })
-  //     .catch(err=>{
-  //       res.status(500).json({
-  //         message: 'Product creation was unsuccessful! Please try again!'
-  //       });
-  //     });
-  // });
+
+// get methods
+
+//get list of products for search
+scraper.get('/user',checkAuth, (req, res, next) => {
+  let scraperList = []
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (scp of user.scrapers){
+        scraperList.push(scp.scraperId)
+      }
+      Scraper.find( { scraperId : { $in : scraperList } }).then(
+        scrapers => {
+          res.status(200).json({
+            message: "User\'s Scrapers retrived!" ,
+            scrapers: scrapers
+          });
+        }
+      )
+    }
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scrapers retrival failed! Please retry!" });
+  })
+});
+
+
+
+//get selected scraper
+scraper.get('/one/:id', (req, res, next) => {
+
+  Scraper.findOne({ scraperId: req.params.id }, function (err,scraper) {
+    if (err) return handleError(err => {
+      console.log(err);
+      res.status(500).json(
+        { message: 'Error while retriving scraper! Please try another time!'}
+        );
+    });
+    res.status(200).json(
+      {
+        message: 'scraper retrived successfully!',
+        scraper: scraper
+      }
+    );
+  });
+});
+
+
+//get all scrapers
+scraper.get('/all', (req, res, next) => {
+
+  Scraper.find({}, function (err,scrapers) {
+    if (err) return handleError(err => {
+      console.log(err);
+      res.status(500).json(
+        { message: 'Error while retriving scrapers! Please try another time!'}
+        );
+    });
+    res.status(200).json(
+      {
+        message: 'scrapers retrived successfully!',
+        scrapers: scrapers
+      }
+    );
+  });
+});
+
+//get scraper status
+scraper.get('/status/:id',checkAuth, (req, res, next) => {
+
+  let scraperStatus = ""
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (scp of user.scrapers){
+        if (scp.scraperId == req.params.id) {
+          scraperStatus = scp.status
+        }
+      }
+      res.status(200).json({
+        message: "User\'s Scraper status retrived!" ,
+        status: scraperStatus
+      });
+    }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper statud retrival failed! Please retry!" });
+  })
+});
+
+
+// update scraper status
+scraper.post('/status',checkAuth, (req, res, next) => {
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (let i=0; i< user.scrapers.length; i++){
+        if (user.scrapers[i].scraperId == req.body.scraperId) {
+          user.scrapers[i].status = req.body.status
+        }
+      }
+      console.log(user);
+      User.updateOne({ userId: req.userData.user_id}, user)
+      .then(() => {
+        res.status(200).json({
+          message: 'user scraper status updated successfully!',
+        });
+      }).catch((err) => {
+        console.log(err);
+      })
+    }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper status update failed! Please retry!" });
+  })
  });
 
 
@@ -222,48 +296,44 @@ scraper.post('/promotion/add',checkAuth, (req, res, next) => {
 });
 
 
+// var lastid;
+// Product.find(function (err, products) {
+//   if(products.length){
+//     lastid = products[products.length-1].product_id;
+//   } else {
+//     lastid= 'P0';
+//   }
+//   let mId = +(lastid.slice(1));
+//   ++mId;
+//   lastid = 'P' + mId.toString();
+//   console.log(lastid);
+//   if (err) return handleError(err => {
+//     res.status(500).json({
+//       message: 'Error occured while getting product ID details!'
+//     });
+//   });
+// }).then( () => {
+//   const reqProduct = req.body;
+//   reqProduct['product_id']= lastid;
+//   reqProduct['user_id']= req.userData.user_id;
+//   const newProduct = new Product(reqProduct);
+//   console.log(newProduct);
+//   newProduct.save()
+//   .then(result => {
+//       res.status(200).json({
+//         message: 'product added successfully!',
+//         result: result
+//       });
+//     })
+//     .catch(err=>{
+//       res.status(500).json({
+//         message: 'Product creation was unsuccessful! Please try again!'
+//       });
+//     });
+// });
 
 
-// get methods
 
-//get list of products for search
-scraper.get('/get', (req, res, next) => {
-  // Product.find({'availability': true,
-  //               'inventory': {$gte: 1}},function (err, products) {
-  //   console.log(products);
-  //   if (err) return handleError(err => {
-  //     res.status(500).json(
-  //       { message: 'No matching Products Found! Please check your filters again!'}
-  //       );
-  //   });
-  //   res.status(200).json(
-  //     {
-  //       message: 'Product list recieved successfully!',
-  //       products: products
-  //     }
-  //   );
-  // });
-});
-
-
-
-//get selected product
-scraper.get('/get/:id', (req, res, next) => {
-
-  // Product.findOne({ product_id: req.params.id }, function (err,product) {
-  //   if (err) return handleError(err => {
-  //     res.status(500).json(
-  //       { message: 'Error while loading product Details! Please try another time!'}
-  //       );
-  //   });
-  //   res.status(200).json(
-  //     {
-  //       message: 'product recieved successfully!',
-  //       product: product
-  //     }
-  //   );
-  // });
-});
 
 // create custom HTML
 function createHTML(content) {

@@ -151,7 +151,11 @@ export class AuthService {
        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
        this.router.onSameUrlNavigation = 'reload';
        this.router.navigate(['/']);
-       this.dialog.open(SuccessComponent, {data: {message: 'Successfully signed up!'}});
+       this._snackBar.open(recievedData.message , 'Dismiss', {
+        duration: 2500,
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+        });
      }, (error) => {
        console.log(error);
        });

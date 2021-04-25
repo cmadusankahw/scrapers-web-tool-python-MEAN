@@ -35,12 +35,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
       headerDetails => {
         if (headerDetails) {
           this.headerDetails = headerDetails;
-          console.log(headerDetails);
           this.userIsAuthenticated = this.authService.getisAuth();
           this.authSubs = this.authService.getAuhStatusListener().subscribe(
           isAuthenticated => {
             this.userIsAuthenticated = isAuthenticated;
-            console.log(isAuthenticated);
           }
         );
         }
