@@ -155,8 +155,8 @@
 
             <div class="data-preview">
 
-              <div *ngIf="recievedDisplayedColumns && recievedDataSource" class="table-container">
-              <mat-table #table [dataSource]="recievedDataSource" class="table-responsive" >
+              <div *ngIf="recievedDataSource" class="table-container">
+              <mat-table #table [dataSource]="recievedDataSource"  >
                 <ng-container *ngFor="let column of columns" [matColumnDef]="column.columnDef">
                   <mat-header-cell *matHeaderCellDef>{{ column.header }}</mat-header-cell>
                   <mat-cell *matCellDef="let row">{{ column.cell(row) }}</mat-cell>
@@ -165,7 +165,7 @@
                 <mat-row *matRowDef="let row; columns: recievedDisplayedColumns;"></mat-row>
               </mat-table>
             </div>
-            <div class="text-center pt-5 pb-4" *ngIf="!recievedDisplayedColumns || !recievedDataSource">
+            <div class="text-center pt-5 pb-4" *ngIf="!recievedDataSource">
               <img src="./assets/images/scraper/loader.gif" width="70px">
               <br><br>
               <p>
@@ -238,7 +238,7 @@
           mdbBtn
           color="primary"
           class="btn btn-sm"
-          (click)="idOptions.hide()"
+          (click) = "downloadCSV()"
           mdbWavesEffect
         >
         <mdb-icon fas icon="download"> </mdb-icon>  Download Data to CSV
@@ -320,7 +320,7 @@ aria-labelledby="myModalLabel" aria-hidden="true"
     <!--Footer-->
     <div class="modal-footer justify-content-center">
       <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
-      (click) = "removeDataset(scraperRun.scraperRunId)"
+      (click) = "removeScraperRun(scraperRun.scraperRunId)"
       (click)="confirmDialog.hide()"
       (click)="idOptions.hide()"
       mdbWavesEffect> Remove dataset

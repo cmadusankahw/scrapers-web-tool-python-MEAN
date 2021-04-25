@@ -121,11 +121,28 @@ td {
 }
 
 
-.table-container{
+
+mat-table {
   overflow-x: scroll;
   overflow-y: scroll;
   max-height: 280px;
-  max-width:800px;
+}
+
+mat-cell,
+mat-header-cell {
+word-wrap: initial;
+display: table-cell;
+padding: 0px 10px;
+line-break: unset;
+width: 100%;
+white-space: nowrap;
+overflow: hidden;
+vertical-align: middle;
+}
+
+mat-row,
+mat-header-row {
+display: table-row;
 }
 
 .bold-text{

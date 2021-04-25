@@ -138,7 +138,7 @@ auth.post('/signin', (req, res, next) => {
     res.status(200).json({
       message: 'user authentication successfull!',
       token:token,
-      expiersIn: 15000,
+      expiersIn: 1500000,
       user_type: fetchedUser.user_type,
     });
   })

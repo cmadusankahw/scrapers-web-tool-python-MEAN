@@ -2,8 +2,10 @@ import { Component, OnInit, ViewChild, Input, OnDestroy } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
 
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 import { ScraperRun } from '../scraper.model';
 import { ScraperService } from '../scraper.service';
 
@@ -38,7 +40,7 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
   recievedDisplayedColumns:Array<any>
   recievedDataSource:any
 
-  constructor(private scraperService: ScraperService) { }
+  constructor(private scraperService: ScraperService, private authService: AuthService) { }
 
   ngOnInit() {
          this.dataSource = new MatTableDataSource(this.scraperRuns);
@@ -69,7 +71,7 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
     for (const app of this.scraperRuns) {
       if (app.scraperRunId === scraperRunId) {
         this.scraperRun = app;
-        this.scraperService.getScrapedJSON(this.scraperRun);
+        this.scraperService.getScrapedJSON(this.scraperRun.dataLocation);
         this.scraperSub = this.scraperService.getScrapedJSONUpdatedListener()
           .subscribe((res: any[]) => {
             if (res) {
@@ -100,16 +102,18 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
     }
    }
 
-
-
   // get date from timestamp
   convertTimeStamptoDate(timestamp: number){
     return new Date(timestamp).toLocaleString();
   }
 
   // remove a dataset
-  removeDataset(scraperRunId){
-    this.scraperService.removeScraperRun(scraperRunId);
+  removeScraperRun(scraperRunId){
+    this.authService.removeScraperRun(this.scraperId, scraperRunId);
+  }
+
+  downloadCSV(){
+    this.scraperService.downloadDataCSV(this.scraperRun.dataLocation);
   }
 
 }

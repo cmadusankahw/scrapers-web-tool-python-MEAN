@@ -9,6 +9,9 @@ const getUserScrapers = "scraper/user"; // userId
 const getUserScraperStatus = "scraper/status/"; //scraperId,  userId
 const getScraperRun = "scraper/run/one"; // userId
 const getUserScraperRuns = "scraper/run/user"; // userId
+const getScrapedJSONData = "scraper/json" // data location
+
+const postDownloadCSV = "scraper/csv/download" // data location
 
 const getUser = 'auth/user/one'; // userId
 const getAuthUser = 'auth/user/current'; // userId
@@ -25,7 +28,7 @@ const postUpdateUserScraperStatus = 'scraper/status'; // scraperId
 
 const postRunScraper = 'scraper/exec'; // userId, scraperId
 const deleteScraper = 'scraper/one/'; // scraperRunId
-const deleteScraperRun = 'scraper/run/one/'; // scraperRunId
+const deleteScraperRun = 'scraper/run/one/'; // scraperId and scraperRunId
 const deleteUser = "auth/user/one/" // given userId
 
 export {
@@ -42,6 +45,7 @@ export {
   getUserScrapers,
   getUserScraperRuns,
   getUserScraperStatus,
+  getScrapedJSONData,
   getHeader,
   getLastId,
   postSignIn,
@@ -51,6 +55,7 @@ export {
   putUpdateScraper,
   postRunScraper,
   postUpdateUserScraperStatus,
+  postDownloadCSV,
   deleteScraper,
   deleteScraperRun,
   deleteUser

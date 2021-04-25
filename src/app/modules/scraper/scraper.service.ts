@@ -17,7 +17,9 @@ import {url,
   deleteScraper,
   deleteScraperRun,
   getUserScraperStatus,
-  postUpdateUserScraperStatus} from  './scraper.config';
+  postUpdateUserScraperStatus,
+  getScrapedJSONData,
+  postDownloadCSV} from  './scraper.config';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
@@ -25,8 +27,6 @@ export class ScraperService {
   private scraperUpdated = new Subject<Scraper>();
   private scrapersUpdated = new Subject<Scraper[]>();
   private userScrapersUpdated = new Subject<Scraper[]>();
-  private scraperRunUpdated = new Subject<ScraperRun>();
-  private scraperRunsUpdated = new Subject<ScraperRun[]>();
   private resultsUpdated = new Subject<ResultUpdated>();
   private scrapedJSONUpdated = new Subject<any[]>();
   private scraperStatusUpdated = new Subject<string>();
@@ -35,8 +35,6 @@ export class ScraperService {
   private scraper: Scraper;
   private scrapers: Scraper[];
   private userScrapers: Scraper[];
-  private scraperRun: ScraperRun;
-  private scraperRuns: ScraperRun[];
   private scraperStatus: string;
 
   // script execution related
@@ -89,42 +87,31 @@ export class ScraperService {
     });
   }
 
-  // userId from backend
-  getUserScraperRuns(){
-    this.http.get<{scraperRuns: ScraperRun[]}>(url + getUserScraperRuns )
+
+  // get JSON table data
+  getScrapedJSON(dataLocation: string){
+    // code here
+    this.http.post<{JSONData: any[]}>(url + getScrapedJSONData , {dataLocation} )
     .subscribe((res) => {
-      this.scraperRuns = res.scraperRuns;
-      this.scraperRunsUpdated.next(this.scraperRuns);
+      this.scrapedJSONUpdated.next(res.JSONData);
     });
   }
 
-  // get JSON table data
-  getScrapedJSON(scraperRun: ScraperRun){
+  // download data to csv
+  downloadDataCSV(dataLocation: string){
     // code here
-    // test only
-    this.scrapedJSONUpdated.next([
-      {position: 1, name: 'sdd', weight: 1.0079, symbol: 'H', foo: 'bar'},
-      {position: 2, name: 'Helium', weight: 4.0026, symbol: 'He'},
-      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'},
-      {position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'},
-      {position: 4, name: 'Beryllium', weight: 9.0122, symbol: 'Be'},
-      {position: 5, name: 'Boron', weight: 10.811, symbol: 'B'},
-      {position: 6, name: 'Carbon', weight: 12.0107, symbol: 'C'}
-    ]);
+    this.http.post<{jsonObj: string}>(url + postDownloadCSV , {dataLocation} )
+    .subscribe((res) => {
+      if (res) {
+        console.log(res)
+          this._snackBar.open('Data CSV downloading started...', 'Dismiss', {
+          duration: 2500,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          });
+      }
+    });
   }
-
-
 
   // POST, PUT
   runScraper(scraper: Scraper) {
@@ -201,25 +188,6 @@ export class ScraperService {
   }
 
 
-  removeScraperRun(scraperRunId){
-    this.http.delete<{ message: string }>(url + deleteScraperRun + scraperRunId)
-    .subscribe((recievedData) => {
-      if (this.scrapers.length) {
-        const updatedscraperRuns = this.scraperRuns.filter(scr => scr.scraperRunId !== scraperRunId);
-        this.scraperRuns = updatedscraperRuns;
-        this.scrapersUpdated.next(this.scrapers);
-        this._snackBar.open('Scraper Eun entry and dataset removed!', 'Dismiss', {
-          duration: 2500,
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-          });
-      }
-      }, (error) => {
-        console.log(error);
-        });
-  }
-
-
   // listners for subjects
 
   getDashStatUpdateListener() {
@@ -236,14 +204,6 @@ export class ScraperService {
 
   getUserScrapersUpdateListener() {
     return this.userScrapersUpdated.asObservable();
-  }
-
-  getScraperRunUpdateListener() {
-    return this.scraperRunUpdated.asObservable();
-  }
-
-  getScraperRunsUpdateListener() {
-    return this.scraperRunsUpdated.asObservable();
   }
 
   getResultsUpdateListener() {

@@ -8,6 +8,8 @@ const email = require("../common/mail");
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require ("multer");
+const csv=require('csvtojson');
+var path = require('path');
 
 //express app declaration
 const scraper = express();
@@ -131,6 +133,39 @@ scraper.get('/status/:id',checkAuth, (req, res, next) => {
 });
 
 
+//get scraper JSON Data
+scraper.post('/json',checkAuth, (req, res, next) => {
+  jsonPath = path.join(__dirname, '..', '..','..', req.body.dataLocation);
+  csv()
+.fromFile(jsonPath)
+.then((jsonObj)=>{
+    res.status(200).json({
+      message: "JSON data retrived!" ,
+      JSONData: jsonObj.slice(0,30)
+    });
+}).catch((err) => {
+  console.log(err);
+  res.status(500).json({ message: "JSON data retrival failed! Please retry!" });
+})
+});
+
+// download csv file
+scraper.post('/csv/download',checkAuth, (req, res) => {
+  filePath = path.join(__dirname, '..', '..','..', req.body.dataLocation);
+  csv()
+  .fromFile(filePath)
+  .then((jsonObj)=>{
+      res.set('Content-Type', 'text/csv');
+      res.status(200).send(jsonObj);
+  }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "Dataset download failed! Please retry!" });
+  })
+
+});
+
+
+
 // update scraper status
 scraper.post('/status',checkAuth, (req, res, next) => {
   User.findOne({ userId: req.userData.user_id}).then(
@@ -140,7 +175,6 @@ scraper.post('/status',checkAuth, (req, res, next) => {
           user.scrapers[i].status = req.body.status
         }
       }
-      console.log(user);
       User.updateOne({ userId: req.userData.user_id}, user)
       .then(() => {
         res.status(200).json({
@@ -155,8 +189,46 @@ scraper.post('/status',checkAuth, (req, res, next) => {
   })
  });
 
+ //remove a scraper
+scraper.delete('/one/:id',checkAuth, (req, res, next) => {
+  Scraper.deleteOne({scraperId: req.params.id}).then(
+    result => {
+      console.log(result);
+      res.status(200).json({ message: "Scraper removed!" });
+    }
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "Scraper was not removed! Please retry" });
+  })
+});
 
-// add product photos
+ //remove a scraper-run
+ scraper.delete('/run/one/:scraperId/:scraperRunId',checkAuth, (req, res, next) => {
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (let i=0; i< user.scrapers.length; i++){
+        if (user.scrapers[i].scraperId == req.params.scraperId) {
+          newScraperRuns = user.scrapers[i].scraperRuns.filter(scr => scr.scraperRunId !== req.params.scraperRunId);
+          user.scrapers[i].scraperRuns = newScraperRuns
+        }
+      }
+      User.updateOne({ userId: req.userData.user_id}, user)
+      .then(() => {
+        res.status(200).json({
+          message: 'user scraper run removed successfully!',
+          userScrapers: user.scrapers
+        });
+      }).catch((err) => {
+        console.log(err);
+      })
+    }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper run removal failed! Please retry!" });
+  })
+});
+
+
+// add scraper images
 scraper.post('/add/img',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
     // const url = req.protocol + '://' + req.get("host");
     // let imagePaths = [];
@@ -208,20 +280,7 @@ scraper.post('/edit',checkAuth, (req, res, next) => {
 });
 
 
-//remove a product
-scraper.delete('/edit/:id',checkAuth, (req, res, next) => {
-  // Product.deleteOne({'product_id': req.params.id}).then(
-  //   result => {
-  //     console.log(result);
-  //     res.status(200).json({ message: "Product deleted!" });
-  //   }
-  // ).catch((err) => {
-  //   res.status(500).json({ message: "Product was not deleted! Please try again!" });
-  // })
-});
-
-
-//search products
+//search scrapers
 scraper.post('/search', (req, res, next) => {
 
   // Product.find({product_category: req.body.category,
@@ -296,52 +355,11 @@ scraper.post('/promotion/add',checkAuth, (req, res, next) => {
 });
 
 
-// var lastid;
-// Product.find(function (err, products) {
-//   if(products.length){
-//     lastid = products[products.length-1].product_id;
-//   } else {
-//     lastid= 'P0';
-//   }
-//   let mId = +(lastid.slice(1));
-//   ++mId;
-//   lastid = 'P' + mId.toString();
-//   console.log(lastid);
-//   if (err) return handleError(err => {
-//     res.status(500).json({
-//       message: 'Error occured while getting product ID details!'
-//     });
-//   });
-// }).then( () => {
-//   const reqProduct = req.body;
-//   reqProduct['product_id']= lastid;
-//   reqProduct['user_id']= req.userData.user_id;
-//   const newProduct = new Product(reqProduct);
-//   console.log(newProduct);
-//   newProduct.save()
-//   .then(result => {
-//       res.status(200).json({
-//         message: 'product added successfully!',
-//         result: result
-//       });
-//     })
-//     .catch(err=>{
-//       res.status(500).json({
-//         message: 'Product creation was unsuccessful! Please try again!'
-//       });
-//     });
-// });
-
-
-
-
 // create custom HTML
 function createHTML(content) {
-   const message = "<h3> You have new Order on " + content.product + "</h3><hr><h4>Order ID : <b> " + content.order_id + "</b></h4><h4>Date : <b> " +content.created_date.slice(0,10) + ' ' + content.created_date.slice(11,19) + " </b></h4><h4>Quantity : <b> " + content.quantity + " </b></h4><hr><div class='text-center'><p><b> Please log in to view more details.<br><br><a class='btn btn-lg' href='evenza.biz//login'>Log In</a></b></p></div>"
+   const message = ""
    return message;
   }
-
-
 
 
 module.exports = scraper;
