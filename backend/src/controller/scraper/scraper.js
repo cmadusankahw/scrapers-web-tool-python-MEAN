@@ -162,7 +162,6 @@ scraper.post('/csv/download',checkAuth, (req, res) => {
 });
 
 
-
 // update scraper status
 scraper.post('/status',checkAuth, (req, res, next) => {
   User.findOne({ userId: req.userData.user_id}).then(

@@ -23,6 +23,7 @@ const postSignIn = 'auth/signin';
 const postSignUp = 'auth/signup';
 const postUploadImage = 'auth/user/image'
 const putUpdateUser = 'auth/user/one'; // current userId
+const putUpdateSelectedUser = 'auth/user/selected'; // current userId
 const putUpdateScraper = 'scraper/one/'; // scraperId
 const postUpdateUserScraperStatus = 'scraper/status'; // scraperId
 
@@ -53,6 +54,7 @@ export {
   postUploadImage,
   putUpdateUser,
   putUpdateScraper,
+  putUpdateSelectedUser,
   postRunScraper,
   postUpdateUserScraperStatus,
   postDownloadCSV,

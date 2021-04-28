@@ -86,8 +86,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       this.userSubs = this.authService.getUserUpdatteListener()
       .subscribe((res) => {
         this.user = res;
+        console.log('User details updated successfully!');
       });
-      console.log('Admin details updated successfully!');
       editForm.resetForm();
       this.editmode = false;
     }

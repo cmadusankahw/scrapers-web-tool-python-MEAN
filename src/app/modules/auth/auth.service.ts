@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
 import { ScraperRun, User, UserScraper } from '../scraper/scraper.model';
-import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser, postSignUp, postUploadImage, putUpdateUser, deleteScraperRun } from '../scraper/scraper.config';
+import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser, postSignUp, postUploadImage, putUpdateUser, deleteScraperRun, putUpdateSelectedUser } from '../scraper/scraper.config';
 import { LogIn } from './auth.model';
 import { SuccessComponent } from 'src/app/success/success.component';
 
@@ -211,6 +211,25 @@ export class AuthService {
    }
 }
 
+// update selected user
+updateSlectedUser(user: User) {
+  this.http.post<{message: string}>(url + putUpdateSelectedUser , user)
+  .subscribe((recievedData) => {
+    console.log(recievedData.message);
+    this.userUpdated.next(user);
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.router.navigate(['/admin/users']);
+    this._snackBar.open('User\'s scrapers details updated!', 'Dismiss', {
+      duration: 2500,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      });
+  }, (error) => {
+    console.log(error);
+    });
+}
+
   // user profile change password
   changeUserPassword(userType: string, currentPword: string, newPword: string) {
     // code here
@@ -284,8 +303,11 @@ removeUser(userId){
         const now = new Date();
         const expirationDate = new Date (now.getTime() + recievedData.expiersIn * 1000 );
         this.saveAuthData(recievedData.token, expirationDate );
-
-        this.router.navigate(['/scraper']);
+        if (recievedData.user_type == 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/scraper']);
+        }
       }
    }, (error) => {
      console.log(error);

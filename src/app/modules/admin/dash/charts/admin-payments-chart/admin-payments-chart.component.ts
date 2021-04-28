@@ -1,6 +1,5 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { ScraperService } from '../../../scraper.service';
 
 @Component({
   selector: 'app-admin-payments-chart',
@@ -77,7 +76,7 @@ public chartLabels: Array<any> = ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'O
     public chartClicked(e: any): void { }
     public chartHovered(e: any): void { }
 
-  constructor( private adminService: ScraperService) { }
+  constructor() { }
 
   ngOnInit() {
   }

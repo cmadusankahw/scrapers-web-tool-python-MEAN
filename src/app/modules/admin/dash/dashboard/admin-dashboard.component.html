@@ -1,0 +1,110 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
+    <!--profile pic-->
+    <div class="pd-img">
+      <img
+        [src]="topIcon"
+        alt="headerDetails Pic"
+        class="img-thumbnail"
+      />
+    </div>
+
+    <mat-nav-list>
+      <a
+        class="txt-white row"
+        mat-list-item
+        [ngClass]="home"
+        (click)="navHome()"
+        routerLink="/admin"
+      >
+        <div class="col-md-11 side-start">
+          <mat-icon>home</mat-icon>
+          <span class="side-text"> Dashboard </span>
+        </div>
+        <div class="ol-md-1 side-end">
+          <mat-icon>arrow_right</mat-icon>
+        </div>
+      </a>
+
+      <a
+        class="txt-white row"
+        mat-list-item
+        [ngClass]="scrapers"
+        (click)="navScrapers()"
+        routerLink="/admin/scrapers"
+      >
+        <div class="col-md-11 side-start">
+          <mat-icon>list</mat-icon>
+          <span class="side-text"> Manage Scrapers</span>
+        </div>
+        <div class="ol-md-1 side-end">
+          <mat-icon>arrow_right</mat-icon>
+        </div>
+      </a>
+
+      <a
+      class="txt-white row"
+      mat-list-item
+      [ngClass]="users"
+      (click)="navUsers()"
+      routerLink="/admin/users"
+    >
+      <div class="col-md-11 side-start">
+        <mat-icon>people</mat-icon>
+        <span class="side-text"> Manage Users</span>
+      </div>
+      <div class="ol-md-1 side-end">
+        <mat-icon>arrow_right</mat-icon>
+      </div>
+    </a>
+
+
+      <a
+        class="txt-white row"
+        mat-list-item
+        [ngClass]="settings"
+        (click)="navSettings()"
+        routerLink="/admin/settings"
+      >
+        <div class="col-md-11 side-start">
+          <mat-icon>perm_identity</mat-icon>
+          <span class="side-text"> Admin's Profile</span>
+        </div>
+        <div class="ol-md-1 side-end">
+          <mat-icon>arrow_right</mat-icon>
+        </div>
+      </a>
+
+
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!--dashboard content-->
+  <mat-sidenav-content>
+    <mat-toolbar color="bg-primary">
+      <button
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+        *ngIf="isHandset$ | async"
+      >
+        <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <!--dashboard content-->
+    <div class="container-fluid">
+      <router-outlet></router-outlet>
+    </div>
+    <!--end dashboard content-->
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -154,7 +154,7 @@ auth.post('/signin', (req, res, next) => {
 
 
 // add profile pic for user
-auth.post('/user/img',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
+auth.post('/user/image',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
   const url = req.protocol + '://' + req.get("host");
   imagePath = url+ "/images/scraper/user/" +  req.files[0].filename;
   res.status(200).json({
@@ -188,6 +188,26 @@ auth.post('/user/one',checkAuth, (req, res, next) => {
   });
 });
 
+//update user
+auth.post('/user/selected',checkAuth, (req, res, next) => {
+  User.updateOne({ userId: req.body.userId}, {
+    scrapers: req.body.scrapers
+  })
+  .then((result) => {
+    console.log(result);
+    res.status(200).json({
+      message: 'user scrapers updated successfully!',
+    });
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      message: 'user scrapers update failed! Please Try Again!'
+    });
+  });
+});
+
+
 
 // get auth user
 auth.get('/user/current',checkAuth, (req, res, next) => {
@@ -208,9 +228,11 @@ auth.get('/user/current',checkAuth, (req, res, next) => {
   });
 });
 
-// get all users
+// for ADMIN
+// get all users except current user(admin)
 auth.get('/user/all',checkAuth, (req, res, next) => {
-  User.find({}, function (err,users) {
+
+  User.find({userId: {$ne: req.userData.user_id}}, function (err,users) {
     if (err) return handleError(err => {
       console.log(err);
       res.status(500).json(

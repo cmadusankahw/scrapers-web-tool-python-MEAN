@@ -13,6 +13,11 @@ import { HomepageComponent } from './modules/home/homepage/homepage.component';
 import { ContactUsComponent } from './modules/home/contact-us/contact-us.component';
 import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
 import { AddUserComponent } from './modules/auth/add-user/add-user.component';
+import { AdminHomeComponent } from './modules/admin/dash/pages/admin-home/admin-home.component';
+import { AdminScrapersComponent } from './modules/admin/dash/pages/admin-scrapers/admin-scrapers.component';
+import { AdminSettingsComponent } from './modules/admin/dash/pages/admin-settings/admin-settings.component';
+import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admin-users.component';
+import { AdminDashboardComponent } from './modules/admin/dash/dashboard/admin-dashboard.component';
 
 const routes: Routes = [
   {
@@ -23,6 +28,17 @@ const routes: Routes = [
       { path: 'run/:id', component: ScraperDetailsComponent },
       { path: 'data', component: DashDataComponent },
       { path: 'settings', component: DashSettingsComponent },
+      { path: '**', component: NotFoundPageComponent },
+    ], canActivate: [AuthGuard]
+  },
+  {
+    path: 'admin',
+    component: AdminDashboardComponent,
+    children: [
+      { path: '', component: AdminHomeComponent },
+      { path: 'scrapers', component: AdminScrapersComponent },
+      { path: 'users', component: AdminUsersComponent },
+      { path: 'settings', component: AdminSettingsComponent },
       { path: '**', component: NotFoundPageComponent },
     ], canActivate: [AuthGuard]
   },

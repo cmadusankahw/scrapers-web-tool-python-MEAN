@@ -1,0 +1,25 @@
+
+<div *ngIf="scrapers.length">
+
+
+
+</div>
+
+<div *ngIf="!scrapers.length">
+  <div class="text-center mt-3 pt-4">
+    <img src="./assets/images/scraper/scraper_not_run.png" height="300px">
+    <h4><string>No Scrapers adde yet..</string></h4>
+    <br>
+    <a
+    type="button"
+    mdbBtn
+    color="primary"
+    class="waves-light btn btn-md cust-btn btn-lg"
+    mdbWavesEffect
+    routerLink="/scraper/add"
+  >
+    Add New
+  </a>
+  </div>
+</div>
+

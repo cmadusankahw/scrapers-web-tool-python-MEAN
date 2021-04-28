@@ -1,22 +1,15 @@
-* Complete Home page/ Landing page
 * Images downloading
-* about us
+* contact us
 * privacy policy/ terms and conditions
 
-1) secure authentication
-- Password Reset Confirmation (with email)
-- OTP Verification/ two-factor authentication
-- scial media signup
-- data backups to drive/ external storages
-- email notifications
 
-2) scraper marketplace
+1) scraper marketplace
 - scraper catalog
 - scraper purchasing capability
 - cart/checkout pages
 - connecting payment gateways
 
-3)Admin dashboard
+2)Admin dashboard
   - to manage registered users
   - manage available scrapers
   - manage scraper catalog
@@ -26,5 +19,12 @@
   - monthly reports
   - insight/performance visualizations
   - sales/marketing reports/visualizations
+
+3) secure authentication
+- OTP Verification/ two-factor authentication
+- scial media signup
+- data backups to drive/ external storages
+- email notifications
+
 
 

@@ -57,7 +57,7 @@ import { SuccessComponent } from './success/success.component';
 import { DashboardComponent } from './modules/scraper/dash/dashboard/dashboard.component';
 import { DashHomeComponent } from './modules/scraper/dash/pages/dash-home/dash-home.component';
 import { DashDataComponent } from './modules/scraper/dash/pages/dash-data/dash-data.component';
-import { AllUsersComponent } from './modules/scraper/all-users/all-users.component';
+import { AllUsersComponent } from './modules/admin/all-users/all-users.component';
 import { ScrapersListComponent } from './modules/scraper/scrapers-list/scrapers-list.component';
 import { DashSettingsComponent } from './modules/scraper/dash/pages/dash-settings/dash-settings.component';
 import { CreateNewPasswordComponent } from './modules/auth/create-new-password/create-new-password.component';
@@ -65,6 +65,13 @@ import { PasswordResetComponent } from './modules/auth/password-reset/password-r
 import { HomepageComponent } from './modules/home/homepage/homepage.component';
 import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
 import { ScraperDataComponent } from './modules/scraper/scraper-data/scraper-data.component';
+import { AdminDashStatComponent } from './modules/admin/dash/dash-stat/dash-stat.component';
+import { AdminDashboardComponent } from './modules/admin/dash/dashboard/admin-dashboard.component';
+import { AdminHomeComponent } from './modules/admin/dash/pages/admin-home/admin-home.component';
+import { AdminScrapersComponent } from './modules/admin/dash/pages/admin-scrapers/admin-scrapers.component';
+import { AdminSettingsComponent } from './modules/admin/dash/pages/admin-settings/admin-settings.component';
+import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admin-users.component';
+import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admin-add-scraper.component';
 
 @NgModule({
   declarations: [
@@ -89,6 +96,13 @@ import { ScraperDataComponent } from './modules/scraper/scraper-data/scraper-dat
     DashSettingsComponent,
     ScraperDetailsComponent,
     ScraperDataComponent,
+    AdminDashStatComponent,
+    AdminDashboardComponent,
+    AdminHomeComponent,
+    AdminScrapersComponent,
+    AdminSettingsComponent,
+    AdminUsersComponent,
+    AdminAddScraperComponent
   ],
   imports: [
     BrowserModule,
