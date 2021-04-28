@@ -5,6 +5,7 @@ const getScraperPayments = "payment/scraper/"; // scraperId
 const getUserPayments = "payment/user"; // userId
 const getScraper = "scraper/one/"; // scraperId
 const getAllScrapers = "scraper/all"
+const getLastScraperId = "scraper/last-id"
 const getUserScrapers = "scraper/user"; // userId
 const getUserScraperStatus = "scraper/status/"; //scraperId,  userId
 const getScraperRun = "scraper/run/one"; // userId
@@ -25,6 +26,7 @@ const postUploadImage = 'auth/user/image'
 const putUpdateUser = 'auth/user/one'; // current userId
 const putUpdateSelectedUser = 'auth/user/selected'; // current userId
 const putUpdateScraper = 'scraper/one/'; // scraperId
+const postAddScraper = 'scraper/add';
 const postUpdateUserScraperStatus = 'scraper/status'; // scraperId
 
 const postRunScraper = 'scraper/exec'; // userId, scraperId
@@ -47,6 +49,7 @@ export {
   getUserScraperRuns,
   getUserScraperStatus,
   getScrapedJSONData,
+  getLastScraperId,
   getHeader,
   getLastId,
   postSignIn,
@@ -55,6 +58,7 @@ export {
   putUpdateUser,
   putUpdateScraper,
   putUpdateSelectedUser,
+  postAddScraper,
   postRunScraper,
   postUpdateUserScraperStatus,
   postDownloadCSV,

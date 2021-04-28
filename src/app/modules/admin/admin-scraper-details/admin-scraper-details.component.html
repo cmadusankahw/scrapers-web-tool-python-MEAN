@@ -1,0 +1,215 @@
+<div class="pd-top-min" *ngIf="scraper">
+  <div class="scraper-box">
+    <div class="row container-fluid">
+      <div class="col-md-7">
+        <div class="left-content">
+          <div class="driver-raw">
+          <img src="./assets/images/scraper/icon.png" class="profile-pic" />
+          <div class="scraper-title">
+            <h2><strong>{{scraper.scraperName}}</strong></h2>
+          </div>
+
+          </div>
+          <br>
+          <p>
+            {{scraper.description}}
+          </p>
+        </div>
+      </div>
+      <div class="col-md-5">
+            <div class="right-content">
+
+              <div class="flex-item row">
+                <div class="col-md-4 bold-text">
+                  <mdb-icon far icon="globe"></mdb-icon> Base Url:
+                </div>
+                <div class="col-md-8">
+                    {{scraper.baseURL}}
+                </div>
+              </div>
+
+              <div class="flex-item row">
+                <div class="col-md-4 bold-text">
+                  <mdb-icon far icon="globe"></mdb-icon> Tags:
+                </div>
+                <div class="col-md-8">
+                    <div class="row" *ngIf="scraper.tags.length">
+                      <div class="item-tag"  *ngFor="let tag of scraper.tags">
+                        {{tag}}
+                      </div>
+                    </div>
+                </div>
+              </div>
+
+            </div>
+
+      </div>
+      </div>
+      <hr>
+
+      <div class="below-content">
+
+        <div class="flex-item row">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> Stored Location:
+          </div>
+          <div class="col-md-8">
+             {{scraper.scraperLocation}}
+          </div>
+        </div>
+
+        <div class="flex-item row">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> Execution Script:
+          </div>
+          <div class="col-md-8">
+             {{scraper.script}}
+          </div>
+        </div>
+
+        <div class="flex-item row">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> Updatability:
+          </div>
+          <div class="col-md-8">
+             {{scraper.updaterMode ? 'Auto-updateble': 'Not Updatable. Scraping Only'}}
+          </div>
+        </div>
+
+        <div class="flex-item row" *ngIf="scraper.updaterMode">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> Updater Script:
+          </div>
+          <div class="col-md-8">
+             {{scraper.updaterScript}}
+          </div>
+        </div>
+
+        <div class="flex-item row" *ngIf="scraper.updaterMode">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> Price(Rs.):
+          </div>
+          <div class="col-md-8" style="font-weight:bold;">
+             {{scraper.price}}
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="flex-item row">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> All Categories:
+          </div>
+          <div class="col-md-8">
+              <div class="row" *ngIf="scraper.params.categories.length">
+                <div class="item-tag"  *ngFor="let cat of scraper.params.categories">
+                  {{cat}}
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <div class="flex-item row">
+          <div class="col-md-3 bold-text">
+            <mdb-icon far icon="globe"></mdb-icon> All Locations:
+          </div>
+          <div class="col-md-8">
+              <div class="row" *ngIf="scraper.params.locations.length">
+                <div class="item-tag"  *ngFor="let loc of scraper.params.locations">
+                  {{loc}}
+                </div>
+              </div>
+          </div>
+        </div>
+
+      </div>
+
+      <hr>
+      <div class="button-content text-center">
+
+        <button
+        mdbBtn
+        class="btn btn-md"
+        color="primary"
+        mdbWavesEffect
+        routerLink="/admin/scrapers/edit/{{scraper.scraperId}}"
+        style="margin-right:10px;"
+      >
+        Update Scraper
+      </button>
+      <button
+        mdbBtn
+        class="btn btn-md"
+        [disabled] = "scraperStatus == 'ideal'"
+        color="red"
+        (click)="confirmDialog.show()"
+        mdbWavesEffect
+      >
+        Remove Scraper
+      </button>
+
+      </div>
+
+
+
+      </div>
+  </div>
+
+  <div class="pd-top-min" *ngIf="!scraper">
+    <app-not-found-page></app-not-found-page>
+  </div>
+
+
+
+  <!-- confirm order deliveery dialog-->
+  <div mdbModal #confirmDialog="mdbModal"
+  class="modal fade"
+  id="frameModalTop" tabindex="-1" role="dialog"
+  [config]="{ backdrop: false, ignoreBackdropClick: true }"
+  aria-labelledby="myModalLabel" aria-hidden="true"
+   >
+  <div class="modal-dialog modal-notify modal-danger modal-dialog-centered" role="document">
+    <!--Content-->
+    <div class="modal-content">
+      <!--Header-->
+      <div class="modal-header">
+        <p class="heading">Remove Scraper</p>
+
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmDialog.hide()">
+          <span aria-hidden="true" class="white-text">&times;</span>
+        </button>
+      </div>
+
+      <!--Body-->
+      <div class="modal-body">
+
+        <div class="row">
+          <div class="col-3">
+            <p></p>
+            <p class="text-center">
+              <mdb-icon fas icon="ban" size="3x" class="mb-3 animated rotateIn"></mdb-icon>
+            </p>
+          </div>
+
+          <div class="col-9">
+            <h5>Are you sure want to permenently delete the <b>selected scraper</b>? <br> (Please Note: This action is permenent and cannot be undone)</h5>
+          </div>
+        </div>
+      </div>
+
+      <!--Footer-->
+      <div class="modal-footer justify-content-center">
+        <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
+        (click) = "removeScraper(scraper.scraperId)"
+        (click)="confirmDialog.hide()"
+        mdbWavesEffect> Remove Scraper
+          <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+        </a>
+        <a type="button" mdbBtn color="red" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+        (click)="confirmDialog.hide()"
+          data-dismiss="modal">not now</a>
+      </div>
+    </div>
+    <!--/.Content-->
+  </div>
+  </div>

@@ -10,7 +10,7 @@ const scraperSchema = mongoose.Schema(
     baseURL: {type: String, required: true},
     scraperLocation: {type: String, required: true},
     script: {type: String, required: true},
-    updateMode: {type: Boolean, required: true},
+    updaterMode: {type: Boolean, required: true},
     updaterScript: {type: String},
     params: {
       categories:  {type: [String]},

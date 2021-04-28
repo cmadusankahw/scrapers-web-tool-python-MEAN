@@ -18,6 +18,8 @@ import { AdminScrapersComponent } from './modules/admin/dash/pages/admin-scraper
 import { AdminSettingsComponent } from './modules/admin/dash/pages/admin-settings/admin-settings.component';
 import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admin-users.component';
 import { AdminDashboardComponent } from './modules/admin/dash/dashboard/admin-dashboard.component';
+import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-details/admin-scraper-details.component';
+import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admin-add-scraper.component';
 
 const routes: Routes = [
   {
@@ -37,6 +39,9 @@ const routes: Routes = [
     children: [
       { path: '', component: AdminHomeComponent },
       { path: 'scrapers', component: AdminScrapersComponent },
+      { path: 'scrapers/details/:id', component: AdminScraperDetailsComponent },
+      { path: 'scrapers/add', component: AdminAddScraperComponent },
+      { path: 'scrapers/edit/:id', component: AdminAddScraperComponent },
       { path: 'users', component: AdminUsersComponent },
       { path: 'settings', component: AdminSettingsComponent },
       { path: '**', component: NotFoundPageComponent },

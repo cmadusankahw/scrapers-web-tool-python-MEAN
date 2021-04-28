@@ -72,6 +72,8 @@ import { AdminScrapersComponent } from './modules/admin/dash/pages/admin-scraper
 import { AdminSettingsComponent } from './modules/admin/dash/pages/admin-settings/admin-settings.component';
 import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admin-users.component';
 import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admin-add-scraper.component';
+import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-details/admin-scraper-details.component';
+
 
 @NgModule({
   declarations: [
@@ -102,7 +104,8 @@ import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admi
     AdminScrapersComponent,
     AdminSettingsComponent,
     AdminUsersComponent,
-    AdminAddScraperComponent
+    AdminAddScraperComponent,
+    AdminScraperDetailsComponent
   ],
   imports: [
     BrowserModule,

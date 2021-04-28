@@ -20,7 +20,9 @@ import {url,
   getUserScraperStatus,
   postUpdateUserScraperStatus,
   getScrapedJSONData,
-  postDownloadCSV} from  './scraper.config';
+  postDownloadCSV,
+  getLastScraperId,
+  postAddScraper} from  './scraper.config';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
@@ -31,12 +33,16 @@ export class ScraperService {
   private resultsUpdated = new Subject<ResultUpdated>();
   private scrapedJSONUpdated = new Subject<any[]>();
   private scraperStatusUpdated = new Subject<string>();
+  private lastScraperIdUpdated = new Subject<string>();
+
 
 
   private scraper: Scraper;
   private scrapers: Scraper[];
   private userScrapers: Scraper[];
   private scraperStatus: string;
+  private lastId: string;
+
 
   // script execution related
   downloadable = false;
@@ -65,6 +71,14 @@ export class ScraperService {
     .subscribe((res) => {
       this.scrapers = res.scrapers;
       this.scrapersUpdated.next(this.scrapers);
+    });
+  }
+
+  getLastScraperId(){
+    this.http.get<{lastid: string}>(url + getLastScraperId )
+    .subscribe((res) => {
+      this.lastId = res.lastid;
+      this.lastScraperIdUpdated.next(this.lastId);
     });
   }
 
@@ -152,7 +166,46 @@ export class ScraperService {
   }
 
   updateScraper(scraper: Scraper) {
-    // code here
+    this.http.post<{
+      message: string
+    }>(url + putUpdateScraper, scraper)
+    .subscribe((recievedData) => {
+        if (recievedData) {
+          console.log(recievedData.message);
+          this.scraperUpdated.next(scraper);
+          this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+          this.router.onSameUrlNavigation = 'reload';
+          this.router.navigate(['/admin/scrapers/details/' + scraper.scraperId]);
+          this._snackBar.open('Scraper updated successfully...', 'Dismiss', {
+            duration: 2500,
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            });
+        }
+      }, (error) => {
+      console.log(error);
+      });
+  }
+
+  addScraper(scraper: Scraper) {
+    this.http.post<{
+      message: string
+    }>(url + postAddScraper , scraper)
+    .subscribe((recievedData) => {
+      if (recievedData) {
+        console.log(recievedData.message);
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        this.router.onSameUrlNavigation = 'reload';
+        this.router.navigate(['/admin/scrapers']);
+        this._snackBar.open('Scraper added successfully...', 'Dismiss', {
+          duration: 2500,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          });
+      }
+    }, (error) => {
+    console.log(error);
+    });
   }
 
   terminateScraper(scraper: Scraper) {
@@ -179,12 +232,16 @@ export class ScraperService {
         const updatedscrapers = this.scrapers.filter(scr => scr.scraperId !== scraperId);
         this.scrapers = updatedscrapers;
         this.scrapersUpdated.next(this.scrapers);
-        this._snackBar.open('Scraper :' + scraperId + ' removed!', 'Dismiss', {
-          duration: 2500,
-          horizontalPosition: this.horizontalPosition,
-          verticalPosition: this.verticalPosition,
-          });
       }
+      console.log(recievedData.message);
+      this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+      this.router.onSameUrlNavigation = 'reload';
+      this.router.navigate(['/admin/scrapers']);
+      this._snackBar.open('Scraper :' + scraperId + ' removed!', 'Dismiss', {
+        duration: 2500,
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+        });
       }, (error) => {
         console.log(error);
         });
@@ -221,7 +278,8 @@ export class ScraperService {
     return this.scraperStatusUpdated.asObservable();
   }
 
-
-
+  getLastScraperIdUpdatedListener() {
+    return this.lastScraperIdUpdated.asObservable();
+  }
 
 }

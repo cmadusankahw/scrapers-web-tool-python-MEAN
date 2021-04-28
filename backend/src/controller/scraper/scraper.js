@@ -111,6 +111,27 @@ scraper.get('/all', (req, res, next) => {
   });
 });
 
+
+//get last scraper ID
+scraper.get('/last-id', (req, res, next) => {
+  Scraper.find(function (err, scrapers) {
+    var lastid;
+    if(scrapers.length){
+      lastid = scrapers[scrapers.length-1].scraperId;
+      var eId = +(lastid.slice(1));
+      lastid = ('S' + (++eId).toString());
+    } else {
+      lastid= 'S0';
+    }
+    if (err) return handleError(err);
+    res.status(200).json(
+      {
+        lastid: lastid
+      }
+    );
+  });
+});
+
 //get scraper status
 scraper.get('/status/:id',checkAuth, (req, res, next) => {
 
@@ -237,65 +258,52 @@ scraper.post('/add/img',checkAuth, multer({storage:storage}).array("images[]"), 
 
 });
 
-//edit product
-scraper.post('/edit',checkAuth, (req, res, next) => {
-  // const newProduct = new Product(req.body);
-  // console.log(newProduct);
-  // Product.updateOne({ product_id: req.body.product_id}, {
-  //   business_name:  req.body.business_name,
-  //   product: req.body.product,
-  //   product_category: req.body.product_category,
-  //   qty_type: req.body.qty_type,
-  //   description: req.body.description,
-  //   created_date: req.body.created_date,
-  //   created_time: req.body.created_time,
-  //   availability: req.body.availability,
-  //   inventory: req.body.inventory,
-  //   rating: req.body.rating,
-  //   no_of_ratings: req.body.no_of_ratings,
-  //   no_of_orders: req.body.no_of_orders,
-  //   delivery_service: req.body.delivery_service,
-  //   price: req.body.price,
-  //   pay_on_delivery: req.body.pay_on_delivery,
-  //   image_01: req.body.image_01,
-  //   image_02: req.body.image_02,
-  //   image_03: req.body.image_03,
-  //   user_id: req.userData.user_id
-  // })
-  // .then(result => {
-  //   res.status(200).json({
-  //     message: 'product updated successfully!',
-  //     result: result
-  //   });
-  // })
-  // .catch(err=>{
-  //   res.status(500).json({
-  //     message: 'Product update was unsuccessful! Please Try again!'
-  //   });
-  // });
+//edit scraper
+scraper.post('/one',checkAuth, (req, res, next) => {
+  Scraper.updateOne({ scraperId: req.body.scraperId}, {
+    scraperId: req.body.scraperId,
+    scraperName: req.body.scraperName,
+    description: req.body.description,
+    tags: req.body.tags,
+    baseURL: req.body.baseURL,
+    scraperLocation: req.body.scraperLocation,
+    script: req.body.script,
+    updaterMode: req.body.updaterMode,
+    updaterScript: req.body.updaterScript,
+    params: req.body.params,
+    price: req.body.price,
+  })
+  .then((result) => {
+    console.log(result);
+    res.status(200).json({
+      message: 'scraper updated successfully!',
+    });
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      message: 'Scraper update failed! Please Try Again!'
+    });
+  });
 });
 
 
 //search scrapers
-scraper.post('/search', (req, res, next) => {
+scraper.post('/add', (req, res, next) => {
 
-  // Product.find({product_category: req.body.category,
-  //               price: {$lte: req.body.maxPrice},
-  //               pay_on_delivery:req.body.payOnDelivery,
-  //               rating: {$gte: req.body.userRating},
-  //               'availability': true,
-  //               'inventory': {$gte: 1}})
-  // .then(result => {
-  //     res.status(200).json({
-  //       message: 'products recieved successfully!',
-  //       products: result
-  //     });
-  //   })
-  //   .catch(err=>{
-  //     res.status(500).json({
-  //       message: 'No matching products Found!'
-  //     });
-  //   });
+  const scraper = new Scraper (req.body);
+  scraper.save()
+  .then(() => {
+    res.status(200).json({
+      message: 'scraper saved successfully!',
+    });
+  })
+  .catch( err => {
+    console.log(err);
+    res.status(500).json({
+      message: 'Scraper saving unsuccessful! Please try again!'
+    });
+  });
 });
 
 
