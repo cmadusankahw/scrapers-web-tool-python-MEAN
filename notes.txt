@@ -27,9 +27,19 @@
 - email notifications
 
 
-Python:
+Python Naming Convensions:
 
-python scraper.py [categories] [locations]
+python scraper.py categories,a,b locations,a,b
 
+python scraper_updater.py categories,a,b locations,a,b
+
+scraperLocation:
+backend/scrapers
+
+dataLocation:
+backend/scraped_data/{scraper_name}/{scraper_name}_data.csv
+
+updater Data Location:
+backend/scraped_data/{scraper_name}/{scraper_name}_updater/{scraper_name}_data.csv
 
 
