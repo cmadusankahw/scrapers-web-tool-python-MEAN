@@ -23,6 +23,8 @@ import {url,
   postDownloadCSV,
   getLastScraperId,
   postAddScraper} from  './scraper.config';
+import { SuccessComponent } from 'src/app/success/success.component';
+import { ErrorComponent } from 'src/app/error/error.component';
 
 @Injectable({providedIn: 'root'})
 export class ScraperService {
@@ -145,6 +147,11 @@ export class ScraperService {
     .subscribe((recievedData) => {
     console.log(recievedData.message);
     this.resultsUpdated.next({result: recievedData.result, scraperRunId: recievedData.scraperRunId, status: recievedData.status});
+    if (recievedData.status) {
+      this.dialog.open(SuccessComponent, {data: {message: recievedData.message}});
+    } else {
+      this.dialog.open(ErrorComponent, {data: {message: recievedData.message}});
+    }
     }, (error) => {
     console.log(error);
     });

@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const multer = require ("multer");
 const csv=require('csvtojson');
 var path = require('path');
+const { exec } = require("child_process");
 
 //express app declaration
 const scraper = express();
@@ -205,6 +206,46 @@ scraper.post('/status',checkAuth, (req, res, next) => {
     res.status(500).json({ message: "User scraper status update failed! Please retry!" });
   })
  });
+
+
+ // run scraper
+scraper.post('/exec',checkAuth, (req, res, next) => {
+  const exec_keyword = "python "
+  executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.script);
+  const runId = req.body.scraperId + "_" + (new Date().toISOString().slice(0,14));
+  try{
+    exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+      // if (error) {
+
+      // }
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          res.status(200).json({
+            message: `Scraper execution failed! error: ${stderr.slice(0,30) + '...'}` ,
+            result: stderr,
+            scraperRunId: runId,
+            status: false
+          });
+      }
+      if (stdout) {
+        console.log(`stdout: ${stdout}`);
+        res.status(200).json({
+          message: 'user scraper status updated successfully!',
+          result: stdout,
+          scraperRunId: runId,
+          status: true
+        });
+      }
+  });
+  } catch (err) {
+    console.log(`error: ${error.message}`);
+    res.status(500).json({ message: `Scraper execution failed! ${error.message}` });
+  }
+
+
+ });
+
+
 
  //remove a scraper
 scraper.delete('/one/:id',checkAuth, (req, res, next) => {

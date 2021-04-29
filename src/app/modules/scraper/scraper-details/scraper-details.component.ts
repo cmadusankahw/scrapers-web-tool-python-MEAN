@@ -78,20 +78,15 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   // run scraper
   runScraper() {
-
     this.scraperService.updateUserScraperStatus(this.scraperId, 'running');
     this.scraperStatus = 'running';
 
     this.scraperService.runScraper(this.scraper);
     this.resultsSub = this.scraperService.getResultsUpdateListener()
-      .subscribe((rec: {result: string, status: boolean}) => {
+      .subscribe((rec: {result: string, scraperRunId: string, status: boolean}) => {
         if (rec) {
           this.results = rec.result;
-        }
-        if (rec.status) {
-          this.dialog.open(SuccessComponent, {data: {message: "Scraping completed successfully! All data extracted and saved!"}});
-        } else {
-          this.dialog.open(ErrorComponent, {data: {message: "Scraping completed failed! Please retry or contact administrator"}});
+          // create scraperRun with RunID code here
         }
       });
   }
