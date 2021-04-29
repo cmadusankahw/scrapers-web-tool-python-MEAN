@@ -3,8 +3,6 @@ import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ErrorComponent } from 'src/app/error/error.component';
-import { SuccessComponent } from 'src/app/success/success.component';
 import { Scraper } from '../scraper.model';
 import { ScraperService } from '../scraper.service';
 
@@ -23,16 +21,16 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   private scraperId: string;
 
-  scraperStatus: string;
-
   categories = new FormControl();
 
   locations = new FormControl();
 
   scraper: Scraper;
 
-  // printed status from terminal
-  results: string;
+  selectedLocations = [];
+
+  selectedCategories = [];
+
 
   constructor(private router: Router,
               public scraperService: ScraperService,
@@ -49,11 +47,7 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
           this.scraperService.getUserScraperStatus(this.scraperId);
           this.scraperStatusSub = this.scraperService.getScraperStatusUpdatedListener()
       .subscribe((status: string) => {
-        if (status){
-          this.scraperStatus = status;
-        }
           this.scraper = rec;
-          this.results = 'Scraper loaded successfully at ' + this.scraper.scraperLocation + '\nScraper is ready to run...'
       })
 
         }
@@ -77,18 +71,12 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
   }
 
   // run scraper
-  runScraper() {
+  runScraper(runMode: string) {
+    // this.results +="\nScraper execution started... Please wait...";
     this.scraperService.updateUserScraperStatus(this.scraperId, 'running');
-    this.scraperStatus = 'running';
 
-    this.scraperService.runScraper(this.scraper);
-    this.resultsSub = this.scraperService.getResultsUpdateListener()
-      .subscribe((rec: {result: string, scraperRunId: string, status: boolean}) => {
-        if (rec) {
-          this.results = rec.result;
-          // create scraperRun with RunID code here
-        }
-      });
+    this.scraperService.runScraper(runMode,this.scraper, this.selectedLocations, this.selectedCategories);
+
   }
 
   // stop execution
@@ -96,8 +84,6 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     this.scraperService.terminateScraper(this.scraper);
 
     this.scraperService.updateUserScraperStatus(this.scraperId, 'ideal');
-    this.scraperStatus = 'ideal';
-    console.log(this.scraperStatus);
   }
 
 

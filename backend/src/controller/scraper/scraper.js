@@ -207,42 +207,116 @@ scraper.post('/status',checkAuth, (req, res, next) => {
   })
  });
 
+ // create a scraper Run
+scraper.post('/create-run',checkAuth, (req, res, next) => {
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (let i=0; i< user.scrapers.length; i++){
+        if (user.scrapers[i].scraperId == req.body.scraperId) {
+          user.scrapers[i].status = 'ideal';
+          user.scrapers[i].scraperRuns.push({
+            scraperRunId: req.body.scraperRunId,
+            timestamp: Date.now(),
+            noOfRuns:  1,
+            noOfCols:  10,
+            noOfRows:  100,
+            executionType: req.body.executionType,
+            executed_params:{
+              categories: req.body.executedCategories,
+              locations:  req.body.executedLocations,
+            },
+            dataLocation: req.body.dataLocation,
+            dataFormat: req.body.dataFormat,
+            status: (req.body.status ? 'success' : 'failed'),
+        });
+      }
+    }
+      User.updateOne({ userId: req.userData.user_id}, user)
+      .then(() => {
+        res.status(200).json({
+          message: 'user scraper run added successfully!',
+        });
+      }).catch((err) => {
+        console.log(err);
+    })}
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper run creation failed! Please retry!" });
+  })
+ });
+
 
  // run scraper
 scraper.post('/exec',checkAuth, (req, res, next) => {
   const exec_keyword = "python "
+  const actual_scraper_name = req.body.script.replace('.py','');
   executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.script);
   const runId = req.body.scraperId + "_" + (new Date().toISOString().slice(0,14));
   try{
     exec(exec_keyword + executionScript, (error, stdout, stderr) => {
-      // if (error) {
-
-      // }
       if (stderr) {
           console.log(`stderr: ${stderr}`);
           res.status(200).json({
             message: `Scraper execution failed! error: ${stderr.slice(0,30) + '...'}` ,
             result: stderr,
             scraperRunId: runId,
+            dataLocation:  '',
+            dataFormat: '',
             status: false
           });
       }
       if (stdout) {
-        console.log(`stdout: ${stdout}`);
         res.status(200).json({
-          message: 'user scraper status updated successfully!',
+          message: 'Scraper executed successfully!',
           result: stdout,
           scraperRunId: runId,
+          dataLocation: `scraped_data/${actual_scraper_name}/${actual_scraper_name}_data.csv`, // to be modified later
+          dataFormat: 'csv',
           status: true
         });
       }
   });
   } catch (err) {
-    console.log(`error: ${error.message}`);
-    res.status(500).json({ message: `Scraper execution failed! ${error.message}` });
+    console.log(`error: ${err.message}`);
+    res.status(500).json({ message: `Scraper execution failed! ${err.message.slice(0,30) + '...'}` });
   }
+ });
 
-
+  // run scraper
+scraper.post('/exec-update',checkAuth, (req, res, next) => {
+  const exec_keyword = "python "
+  const actual_scraper_name = req.body.script.replace('.py','');
+  const actual_updater_name = req.body.updaterScript.replace('.py','');
+  executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.updaterScript);
+  const runId = req.body.scraperId + "_updater_" + (new Date().toISOString().slice(0,14));
+  try{
+    exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          res.status(200).json({
+            message: `Updater execution failed! error: ${stderr.slice(0,30) + '...'}` ,
+            result: stderr,
+            scraperRunId: runId,
+            dataLocation:  '',
+            dataFormat: '',
+            status: false
+          });
+      }
+      if (stdout) {
+        res.status(200).json({
+          message: 'Updater executed successfully!',
+          result: stdout,
+          scraperRunId: runId,
+          dataLocation: `scraped_data/${actual_scraper_name}/${actual_updater_name}/${actual_scraper_name}_data.csv`, // to be modified later
+          dataFormat: 'csv',
+          status: true
+        });
+      }
+  });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+    res.status(500).json({ message: `Updater execution failed! ${err.message.slice(0,30) + '...'}` });
+  }
  });
 
 

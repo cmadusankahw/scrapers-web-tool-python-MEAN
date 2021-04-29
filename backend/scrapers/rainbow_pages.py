@@ -137,23 +137,7 @@ def main():
     categories = [
         {
             'main': 'men',
-            'sub': ['men-industrial', 'running-walking', 'men-shoes', 'casual', 'formal', 'sports', 'sandals',
-                    'flip-flops', 'men-slippers', 'accessories-men' ]
-        },
-        {
-            'main': 'women',
-            'sub': ['women-casual', 'women-formal', 'women-heel', 'women-running-and-walking', 'women-shoes',
-                    'women-sports', 'sandals-women', 'wedges', 'heels', 'flats', 'flip-flops-women', 'accessories-women']
-
-        },
-        {
-            'main': 'kids',
-            'sub': ['kids-casual', 'kids-flip-flops', 'kids-sandal', 'kids-shoe', 'flip-flops-kids', 'sandals-kids',
-                    'toddler', 'school-shoes', 'accessories-kids']
-        },
-        {
-            'main': 'accessories',
-            'sub': ['kids-accessories', 'women-accessories']
+            'sub': ['men-industrial',  ]
         },
     ]
 

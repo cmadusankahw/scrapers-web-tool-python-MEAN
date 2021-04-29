@@ -69,3 +69,13 @@ export interface ResultUpdated {
   status: boolean;
 }
 
+export interface CreateRunItem {
+  scraperId: string;
+  scraperRunId: string;
+  dataLocation: string,
+  dataFormat: string,
+  executionType: string,
+  executedCategories: string[],
+  executedLocations: string[],
+  status: boolean;
+}

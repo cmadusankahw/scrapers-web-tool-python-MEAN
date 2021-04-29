@@ -28,8 +28,10 @@ const putUpdateSelectedUser = 'auth/user/selected'; // current userId
 const putUpdateScraper = 'scraper/one/'; // scraperId
 const postAddScraper = 'scraper/add';
 const postUpdateUserScraperStatus = 'scraper/status'; // scraperId
+const postCreateScraperRunEntry = 'scraper/create-run'; // scraperId
 
 const postRunScraper = 'scraper/exec'; // userId, scraperId
+const postRunUpdater = 'scraper/exec-update'; // userId, scraperId
 const deleteScraper = 'scraper/one/'; // scraperRunId
 const deleteScraperRun = 'scraper/run/one/'; // scraperId and scraperRunId
 const deleteUser = "auth/user/one/" // given userId
@@ -61,7 +63,9 @@ export {
   postAddScraper,
   postRunScraper,
   postUpdateUserScraperStatus,
+  postCreateScraperRunEntry,
   postDownloadCSV,
+  postRunUpdater,
   deleteScraper,
   deleteScraperRun,
   deleteUser

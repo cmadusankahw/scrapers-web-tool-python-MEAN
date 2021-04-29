@@ -5,7 +5,7 @@ import { saveAs } from 'file-saver';
 
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
-import {  DashStat, ResultUpdated, Scraper, ScraperRun } from './scraper.model';
+import {  CreateRunItem, DashStat, ResultUpdated, Scraper, ScraperRun } from './scraper.model';
 import {url,
   getDashStat,
   getScraper,
@@ -22,7 +22,9 @@ import {url,
   getScrapedJSONData,
   postDownloadCSV,
   getLastScraperId,
-  postAddScraper} from  './scraper.config';
+  postAddScraper,
+  postRunUpdater,
+  postCreateScraperRunEntry} from  './scraper.config';
 import { SuccessComponent } from 'src/app/success/success.component';
 import { ErrorComponent } from 'src/app/error/error.component';
 
@@ -42,9 +44,10 @@ export class ScraperService {
   private scraper: Scraper;
   private scrapers: Scraper[];
   private userScrapers: Scraper[];
-  private scraperStatus: string;
   private lastId: string;
 
+  scraperStatus: string = "ideal";
+  results = 'Scraper loaded successfully...\nScraper is ready to run...';
 
   // script execution related
   downloadable = false;
@@ -133,7 +136,18 @@ export class ScraperService {
   }
 
   // POST, PUT
-  runScraper(scraper: Scraper) {
+  runScraper(runMode: string, scraper: Scraper, selectedLocations: any[], selectedCategories: any[]) {
+    let executionEndPoint = ''
+    let newScraper = scraper
+    if (runMode == 'scraper') {
+      executionEndPoint = postRunScraper
+      newScraper.script += ' ' + selectedCategories + ' ' + selectedLocations
+      console.log("scraper script ==>>>", scraper.script) // test
+    } else if (runMode == 'updater'){
+      executionEndPoint = postRunUpdater
+      newScraper.updaterScript += ' ' + selectedCategories + ' ' + selectedLocations
+      console.log("scraper updater script ==>>>", scraper.updaterScript) // test
+    }
     this._snackBar.open('Scraper execution started...', 'Dismiss', {
       duration: 2500,
       horizontalPosition: this.horizontalPosition,
@@ -143,19 +157,50 @@ export class ScraperService {
           message: string,
           result: string,
           scraperRunId: string, // creates a new scraperRun and returns the ID
-          status: boolean }>(url + postRunScraper , scraper)
+          dataLocation: string,
+          dataFormat: string,
+          status: boolean }>(url + executionEndPoint , newScraper)
     .subscribe((recievedData) => {
     console.log(recievedData.message);
-    this.resultsUpdated.next({result: recievedData.result, scraperRunId: recievedData.scraperRunId, status: recievedData.status});
+    this.results = recievedData.result;
     if (recievedData.status) {
+      this.createScraperRunEntry({
+        scraperId: scraper.scraperId,
+        scraperRunId: recievedData.scraperRunId,
+        dataLocation: recievedData.dataLocation,
+        dataFormat: recievedData.dataFormat,
+        executionType: runMode,
+        executedCategories: selectedCategories,
+        executedLocations: selectedLocations,
+        status: recievedData.status});
       this.dialog.open(SuccessComponent, {data: {message: recievedData.message}});
     } else {
+      this.updateUserScraperStatus(scraper.scraperId, 'ideal');
       this.dialog.open(ErrorComponent, {data: {message: recievedData.message}});
     }
+
     }, (error) => {
     console.log(error);
     });
   }
+
+
+  // create a new scraperRun entry
+  createScraperRunEntry(runItem: CreateRunItem){
+    this.http.post<{
+          message: string
+        }>(url + postCreateScraperRunEntry , runItem)
+    .subscribe((recievedData) => {
+      if (recievedData) {
+        console.log(recievedData.message);
+        this.scraperStatus = 'ideal';
+        this.scraperStatusUpdated.next(this.scraperStatus);
+      }
+    }, (error) => {
+    console.log(error);
+    });
+  }
+
 
   // update user scraper status runnig , failed, or ideal
   updateUserScraperStatus(scraperId, status){
@@ -165,7 +210,8 @@ export class ScraperService {
     .subscribe((recievedData) => {
       if (recievedData) {
         console.log(recievedData.message);
-        this.scraperStatusUpdated.next(status);
+        this.scraperStatus = status;
+        this.scraperStatusUpdated.next(this.scraperStatus);
       }
     }, (error) => {
     console.log(error);
