@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require ("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require ("multer");
+var path = require('path');
 
 //express app declaration
 const auth = express();
@@ -29,7 +30,7 @@ const storage = multer.diskStorage({
     if(isValid){
       error=null;
     }
-    cb(error,"src/assets/images/scraper/user");
+    cb(error,path.join(__dirname,'..', '..', '..', "images/user"));
   },
   filename: (req, file, cb) => {
     const name = file.originalname.toLowerCase().split(' ').join('-');
@@ -156,7 +157,7 @@ auth.post('/signin', (req, res, next) => {
 // add profile pic for user
 auth.post('/user/image',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
   const url = req.protocol + '://' + req.get("host");
-  imagePath = url+ "/images/scraper/user/" +  req.files[0].filename;
+  imagePath = url+ "/images/user/" +  req.files[0].filename;
   res.status(200).json({
     profile_pic: imagePath
   });

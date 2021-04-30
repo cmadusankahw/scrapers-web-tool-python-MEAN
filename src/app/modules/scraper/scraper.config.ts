@@ -30,8 +30,9 @@ const postAddScraper = 'scraper/add';
 const postUpdateUserScraperStatus = 'scraper/status'; // scraperId
 const postCreateScraperRunEntry = 'scraper/create-run'; // scraperId
 
-const postRunScraper = 'scraper/exec'; // userId, scraperId
-const postRunUpdater = 'scraper/exec-update'; // userId, scraperId
+const postRunScraper = 'scraper/exec';
+const postRunUpdater = 'scraper/exec-update';
+const postScheduleScraper = 'scraper/schedule';
 const getTerminateScraper = 'scraper/terminate/'; // userId, scraperId
 const deleteScraper = 'scraper/one/'; // scraperRunId
 const deleteScraperRun = 'scraper/run/one/'; // scraperId and scraperRunId
@@ -61,6 +62,7 @@ export {
   putUpdateUser,
   putUpdateScraper,
   putUpdateSelectedUser,
+  postScheduleScraper,
   postAddScraper,
   postRunScraper,
   postUpdateUserScraperStatus,

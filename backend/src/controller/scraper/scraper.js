@@ -11,6 +11,7 @@ const multer = require ("multer");
 const csv=require('csvtojson');
 var path = require('path');
 const { exec } = require("child_process");
+const schedule = require('node-schedule');
 
 //express app declaration
 const scraper = express();
@@ -329,6 +330,66 @@ scraper.post('/exec-update',checkAuth, (req, res, next) => {
   } catch (err) {
     console.log(`error: ${err.message}`);
     res.status(500).json({ message: `Updater execution failed! ${err.message.slice(0,30) + '...'}` });
+  }
+ });
+
+ // schedule a scraper run
+scraper.post('/schedule', (req, res, next) => {
+  const date = new Date(req.body.timestamp + (5.5*60*60*1000));
+  try {
+    // scheduling the scraper job
+    const job = schedule.scheduleJob(date, function(
+      scraperId = req.body.scraper.scraperId,
+      scraperLocation= req.body.scraper.scraperLocation,
+      script = req.body.scraper.script,
+      user_id = req.userData.user_id,
+      executedCategories = req.body.executedCategories,
+      executedLocations = req.body.executedLocations,
+    ){
+      const exec_keyword = "python "
+      const actual_scraper_name = script.replace('.py','');
+      executionScript = path.join(__dirname, '..', '..','..', scraperLocation, script);
+      const runId = scraperId + "_" + (new Date().toISOString().slice(0,14));
+      exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+        }
+        if (stdout) {
+          User.findOne({ userId: user_id}).then(
+            user => {
+              for (let i=0; i< user.scrapers.length; i++){
+                if (user.scrapers[i].scraperId == scraperId) {
+                  user.scrapers[i].status = 'ideal';
+                  user.scrapers[i].scraperRuns.push({
+                    scraperRunId: runId,
+                    timestamp: Date.now(),
+                    noOfRuns:  1,
+                    noOfCols:  10,
+                    noOfRows:  100,
+                    executionType: 'scraper',
+                    executed_params:{
+                      categories: executedCategories,
+                      locations:  executedLocations,
+                    },
+                    dataLocation: `scraped_data/${actual_scraper_name}/${actual_scraper_name}_data.csv`,
+                    dataFormat: 'csv',
+                    status: 'success',
+                });
+              }
+            }
+            User.updateOne({ userId: user_id}, user);
+            }).catch((err) => {
+            console.log(err);
+          });
+        }
+    });
+  });
+  res.status(200).json({
+    message: `Scraper execution job (job name: ${job.name}) scheduled!`
+  });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+    res.status(500).json({ message: `Scraper scheduling failed! ${err.message.slice(0,30) + '...'}` });
   }
  });
 

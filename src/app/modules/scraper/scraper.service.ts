@@ -25,7 +25,8 @@ import {url,
   postAddScraper,
   postRunUpdater,
   postCreateScraperRunEntry,
-  getTerminateScraper} from  './scraper.config';
+  getTerminateScraper,
+  postScheduleScraper} from  './scraper.config';
 import { SuccessComponent } from 'src/app/success/success.component';
 import { ErrorComponent } from 'src/app/error/error.component';
 
@@ -282,8 +283,24 @@ export class ScraperService {
   }
 
   // check runnig status
-  checkScraperStatus(scraper: Scraper){
-    // code here
+  scheduleScraper(scraper: Scraper, timestamp: number, executedLocations: string[], executedCategories: string[]){
+    let newScraper = scraper;
+    newScraper.script += ' ' + executedCategories + ' ' + executedLocations
+    this.http.post<{
+      message: string,
+    }>(url + postScheduleScraper , {newScraper, timestamp, executedCategories, executedLocations})
+    .subscribe((recievedData) => {
+      if (recievedData) {
+        console.log(recievedData.message);
+          this._snackBar.open(recievedData.message, 'Dismiss', {
+          duration: 2500,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          });
+      }
+    }, (error) => {
+    console.log(error);
+    });
   }
 
 

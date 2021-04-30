@@ -41,6 +41,26 @@
               </div>
             </div>
 
+            <div class="flex-item mt-4 row" >
+              <div class="col-md-4 bold-text">
+                <mdb-icon far icon="globe"></mdb-icon> Updater:
+              </div>
+              <div class="col-md-8" >
+              <button
+              *ngIf="scraper.updaterMode"
+              mdbBtn
+              class="btn btn-md"
+              [disabled] = "scraperService.scraperStatus == 'running'"
+              color="primary"
+              outline="yes"
+              mdbWavesEffect
+              (click)="runScraper('updater')"
+            >
+              Run Updater
+            </button>
+            </div>
+            </div>
+
           </div>
 
     </div>
@@ -74,24 +94,25 @@
       color="primary"
       [disabled] = "scraperService.scraperStatus == 'running'"
       mdbWavesEffect
-      (click)="runScraper('scraper', locations, categories)"
+      (click)="runScraper('scraper')"
       style="margin-right:10px;"
     >
       Run Scraper
     </button>
-      <button
-      *ngIf="scraper.updaterMode"
-      mdbBtn
-      class="btn btn-md"
-      [disabled] = "scraperService.scraperStatus == 'running'"
-      color="primary"
-      outline="yes"
-      mdbWavesEffect
-      (click)="runScraper('updater')"
-      style="margin-right:10px;"
-    >
-      Run Updater
-    </button>
+    <button
+    mdbBtn
+    class="btn btn-md"
+    color="primary"
+    outline="yes"
+    [disabled] = "scraperService.scraperStatus == 'running'"
+    mdbWavesEffect
+    (click)="scheduleDialog.show()"
+    style="margin-right:10px;"
+  >
+
+    Schedule a Run
+  </button>
+
     <button
       mdbBtn
       class="btn btn-md"
@@ -168,6 +189,60 @@ aria-labelledby="myModalLabel" aria-hidden="true"
       </a>
       <a type="button" mdbBtn color="red" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
       (click)="confirmDialog.hide()"
+        data-dismiss="modal">not now</a>
+    </div>
+  </div>
+  <!--/.Content-->
+</div>
+</div>
+
+
+
+<!-- confirm order deliveery dialog-->
+<div mdbModal #scheduleDialog="mdbModal"
+class="modal fade"
+id="frameModalTop" tabindex="-1" role="dialog"
+[config]="{ backdrop: false, ignoreBackdropClick: true }"
+aria-labelledby="myModalLabel" aria-hidden="true"
+ >
+<div class="modal-dialog modal-notify modal-primary modal-dialog-centered" role="document">
+  <!--Content-->
+  <div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+      <p class="heading">Schedule Scraper</p>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="scheduleDialog.hide()">
+        <span aria-hidden="true" class="white-text">&times;</span>
+      </button>
+    </div>
+
+    <!--Body-->
+    <div class="modal-body">
+        <div class="mb-3 mt-3 text-center">
+          <h5>Select date and time to schedule scraper.</h5>
+          <br>
+          <mat-form-field appearance="fill" style="width:70%">
+            <mat-label>Choose a date</mat-label>
+            <input matInput [matDatepicker]="picker" (dateInput)="setDate($event.value)" [min]="today">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+
+      </div>
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer justify-content-center">
+      <a type="button" mdbBtn color="primary" class="waves-effect btn btn-md"
+      (click) = "scheduleScraper(timestamp)"
+      (click)="scheduleDialog.hide()"
+      mdbWavesEffect> Schedule Scraper
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a>
+      <a type="button" mdbBtn color="primary" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      (click)="scheduleDialog.hide()"
         data-dismiss="modal">not now</a>
     </div>
   </div>

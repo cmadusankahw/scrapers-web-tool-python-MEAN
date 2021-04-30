@@ -31,6 +31,10 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   selectedCategories = [];
 
+  timestamp: number;
+
+  today = new Date();
+
 
   constructor(private router: Router,
               public scraperService: ScraperService,
@@ -70,6 +74,11 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  setDate(date: Date){
+    this.timestamp = date.getTime();
+    console.log(this.timestamp);
+  }
+
   // run scraper
   runScraper(runMode: string) {
     // this.results +="\nScraper execution started... Please wait...";
@@ -84,6 +93,11 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     this.scraperService.terminateScraper(scraperId);
 
     this.scraperService.updateUserScraperStatus(this.scraperId, 'ideal');
+  }
+
+  // schedule scraper
+  scheduleScraper(timestamp: number){
+    this.scraperService.scheduleScraper(this.scraper,timestamp,this.selectedLocations,this.selectedCategories);
   }
 
 
