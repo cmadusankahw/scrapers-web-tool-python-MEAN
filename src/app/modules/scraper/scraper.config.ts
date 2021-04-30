@@ -32,6 +32,7 @@ const postCreateScraperRunEntry = 'scraper/create-run'; // scraperId
 
 const postRunScraper = 'scraper/exec'; // userId, scraperId
 const postRunUpdater = 'scraper/exec-update'; // userId, scraperId
+const getTerminateScraper = 'scraper/terminate/'; // userId, scraperId
 const deleteScraper = 'scraper/one/'; // scraperRunId
 const deleteScraperRun = 'scraper/run/one/'; // scraperId and scraperRunId
 const deleteUser = "auth/user/one/" // given userId
@@ -64,6 +65,7 @@ export {
   postRunScraper,
   postUpdateUserScraperStatus,
   postCreateScraperRunEntry,
+  getTerminateScraper,
   postDownloadCSV,
   postRunUpdater,
   deleteScraper,

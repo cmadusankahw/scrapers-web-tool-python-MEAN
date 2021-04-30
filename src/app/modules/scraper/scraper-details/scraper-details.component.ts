@@ -80,8 +80,8 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
   }
 
   // stop execution
-  terminateScraper() {
-    this.scraperService.terminateScraper(this.scraper);
+  terminateScraper(scraperId: string) {
+    this.scraperService.terminateScraper(scraperId);
 
     this.scraperService.updateUserScraperStatus(this.scraperId, 'ideal');
   }

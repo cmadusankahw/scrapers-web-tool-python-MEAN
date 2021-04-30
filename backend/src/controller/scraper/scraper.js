@@ -39,6 +39,8 @@ const storage = multer.diskStorage({
   }
 });
 
+var current_executions = [];
+
 
 //middleware
 scraper.use(bodyParser.json());
@@ -253,7 +255,7 @@ scraper.post('/exec',checkAuth, (req, res, next) => {
   executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.script);
   const runId = req.body.scraperId + "_" + (new Date().toISOString().slice(0,14));
   try{
-    exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+    let newProc = exec(exec_keyword + executionScript, (error, stdout, stderr) => {
       if (stderr) {
           console.log(`stderr: ${stderr}`);
           res.status(200).json({
@@ -276,6 +278,12 @@ scraper.post('/exec',checkAuth, (req, res, next) => {
         });
       }
   });
+        // add execution to current executions for termination
+        console.log("current execution Id ==>", newProc.pid);
+        current_executions.push({
+          id: req.userData.user_id + '_' + req.body.scraperId,
+          pid: newProc.pid
+        });
   } catch (err) {
     console.log(`error: ${err.message}`);
     res.status(500).json({ message: `Scraper execution failed! ${err.message.slice(0,30) + '...'}` });
@@ -290,7 +298,7 @@ scraper.post('/exec-update',checkAuth, (req, res, next) => {
   executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.updaterScript);
   const runId = req.body.scraperId + "_updater_" + (new Date().toISOString().slice(0,14));
   try{
-    exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+    var newProc = exec(exec_keyword + executionScript, (error, stdout, stderr) => {
       if (stderr) {
           console.log(`stderr: ${stderr}`);
           res.status(200).json({
@@ -313,11 +321,38 @@ scraper.post('/exec-update',checkAuth, (req, res, next) => {
         });
       }
   });
+  console.log("current execution Id ==>", newProc.pid);
+  current_executions.push({
+    id: req.userData.user_id + '_' + req.body.scraper.scraperId,
+    pid: newProc.pid
+  });
   } catch (err) {
     console.log(`error: ${err.message}`);
     res.status(500).json({ message: `Updater execution failed! ${err.message.slice(0,30) + '...'}` });
   }
  });
+
+
+
+  // terminate scraper
+scraper.get('/terminate/:id',checkAuth, (req, res, next) => {
+  let pid = '';
+  try{
+    for (let runner of current_executions) {
+      if (runner.id == req.userData.user_id + '_' + req.params.id){
+        pid = runner.pid;
+        process.kill(runner.pid);
+      }
+    }
+    res.status(200).json({
+      message: `Updater execution terminated for pid: ${pid}` ,
+    });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+    res.status(500).json({ message: `Updater execution termination failed! ${err.message.slice(0,30) + '...'}` });
+  }
+ });
+
 
 
 

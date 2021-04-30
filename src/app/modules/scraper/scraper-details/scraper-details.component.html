@@ -72,6 +72,7 @@
       mdbBtn
       class="btn btn-md"
       color="primary"
+      [disabled] = "scraperService.scraperStatus == 'running'"
       mdbWavesEffect
       (click)="runScraper('scraper', locations, categories)"
       style="margin-right:10px;"
@@ -82,6 +83,7 @@
       *ngIf="scraper.updaterMode"
       mdbBtn
       class="btn btn-md"
+      [disabled] = "scraperService.scraperStatus == 'running'"
       color="primary"
       outline="yes"
       mdbWavesEffect
@@ -159,7 +161,7 @@ aria-labelledby="myModalLabel" aria-hidden="true"
     <!--Footer-->
     <div class="modal-footer justify-content-center">
       <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
-      (click) = "terminateScraper()"
+      (click) = "terminateScraper(scraper.scraperId)"
       (click)="confirmDialog.hide()"
       mdbWavesEffect> Abort execution
         <mdb-btn far icon="check" class="ml-1"></mdb-btn>

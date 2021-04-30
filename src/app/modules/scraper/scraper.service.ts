@@ -24,7 +24,8 @@ import {url,
   getLastScraperId,
   postAddScraper,
   postRunUpdater,
-  postCreateScraperRunEntry} from  './scraper.config';
+  postCreateScraperRunEntry,
+  getTerminateScraper} from  './scraper.config';
 import { SuccessComponent } from 'src/app/success/success.component';
 import { ErrorComponent } from 'src/app/error/error.component';
 
@@ -261,12 +262,22 @@ export class ScraperService {
     });
   }
 
-  terminateScraper(scraper: Scraper) {
-    // code here
-    this._snackBar.open('Scraper execution terminated', 'Dismiss', {
-      duration: 2500,
-      horizontalPosition: this.horizontalPosition,
-      verticalPosition: this.verticalPosition,
+  terminateScraper(scraperId: string) {
+      this.http.get<{
+        message: string
+      }>(url + getTerminateScraper + scraperId)
+      .subscribe((recievedData) => {
+        if (recievedData) {
+          console.log(recievedData.message);
+          this.updateUserScraperStatus(scraperId, 'ideal');
+          this._snackBar.open(recievedData.message, 'Dismiss', {
+            duration: 2500,
+            horizontalPosition: this.horizontalPosition,
+            verticalPosition: this.verticalPosition,
+            });
+        }
+      }, (error) => {
+      console.log(error);
       });
   }
 
