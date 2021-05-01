@@ -1,10 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { ErrorStateMatcher, MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Scraper } from '../scraper.model';
 import { ScraperService } from '../scraper.service';
+
+/** Error when invalid control is dirty, touched, or submitted. */
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
+
 
 @Component({
   selector: 'app-scraper-details',
@@ -21,9 +30,13 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   private scraperId: string;
 
-  categories = new FormControl();
+  categories = new FormControl('',[
+    Validators.required,
+  ]);
 
-  locations = new FormControl();
+  locations = new FormControl('',[
+    Validators.required,
+  ]);
 
   scraper: Scraper;
 
@@ -33,7 +46,11 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   timestamp: number;
 
+  noOfdays: number = 0;
+
   today = new Date();
+
+  matcher = new MyErrorStateMatcher();
 
 
   constructor(private router: Router,
@@ -58,6 +75,7 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
   }, (error) => {
     console.log(error);
     });
+
   }
 
   ngOnDestroy() {
@@ -80,11 +98,17 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
   }
 
   // run scraper
-  runScraper(runMode: string) {
+  runScraper(runMode: string, noOfdays:number) {
     // this.results +="\nScraper execution started... Please wait...";
+    if(!this.selectedCategories.length) {
+      this.selectedCategories.push('all');
+    }
+    if(!this.selectedLocations.length) {
+      this.selectedLocations.push('any');
+    }
     this.scraperService.updateUserScraperStatus(this.scraperId, 'running');
 
-    this.scraperService.runScraper(runMode,this.scraper, this.selectedLocations, this.selectedCategories);
+    this.scraperService.runScraper(runMode, noOfdays, this.scraper, this.selectedLocations, this.selectedCategories);
 
   }
 

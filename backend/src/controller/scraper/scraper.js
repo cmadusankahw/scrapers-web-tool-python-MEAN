@@ -324,12 +324,11 @@ scraper.post('/exec-update',checkAuth, (req, res, next) => {
   });
   console.log("current execution Id ==>", newProc.pid);
   current_executions.push({
-    id: req.userData.user_id + '_' + req.body.scraper.scraperId,
+    id: req.userData.user_id + '_' + req.body.scraperId,
     pid: newProc.pid
   });
   } catch (err) {
     console.log(`error: ${err.message}`);
-    res.status(500).json({ message: `Updater execution failed! ${err.message.slice(0,30) + '...'}` });
   }
  });
 
@@ -389,7 +388,6 @@ scraper.post('/schedule', (req, res, next) => {
   });
   } catch (err) {
     console.log(`error: ${err.message}`);
-    res.status(500).json({ message: `Scraper scheduling failed! ${err.message.slice(0,30) + '...'}` });
   }
  });
 

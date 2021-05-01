@@ -138,7 +138,7 @@ export class ScraperService {
   }
 
   // POST, PUT
-  runScraper(runMode: string, scraper: Scraper, selectedLocations: any[], selectedCategories: any[]) {
+  runScraper(runMode: string, noOfdays: number, scraper: Scraper, selectedLocations: any[], selectedCategories: any[]) {
     let executionEndPoint = ''
     let newScraper = scraper
     if (runMode == 'scraper') {
@@ -147,7 +147,7 @@ export class ScraperService {
       console.log("scraper script ==>>>", scraper.script) // test
     } else if (runMode == 'updater'){
       executionEndPoint = postRunUpdater
-      newScraper.updaterScript += ' ' + selectedCategories + ' ' + selectedLocations
+      newScraper.updaterScript += ' ' + selectedCategories + ' ' + selectedLocations + ' ' + noOfdays
       console.log("scraper updater script ==>>>", scraper.updaterScript) // test
     }
     this._snackBar.open('Scraper execution started...', 'Dismiss', {
