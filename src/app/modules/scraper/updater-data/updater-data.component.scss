@@ -1,0 +1,167 @@
+table {
+  width: 100%;
+}
+
+td {
+  min-width: 100px;
+  width: 18%;
+}
+
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+.pd-top-min {
+  margin-top: 5%;
+  padding: 20px;
+  margin: auto;
+}
+
+.info-text {
+  padding-left: 5%;
+  text-align: left;
+  font-weight: bold;
+  color: darkslategray;
+  line-height: 30px;
+}
+
+.info-input {
+  text-align: left;
+  font-weight: 400;
+  line-height: 30px;
+}
+
+.info-top {
+  padding-top: 5%;
+}
+
+.info-text-net {
+  padding-left: 5%;
+  text-align: left;
+  font-weight: bold;
+  color: darkslategray;
+  line-height: 33px;
+}
+
+.info-input-net {
+  text-align: left;
+  font-weight: bold;
+  line-height: 33px;
+  color: darkmagenta;
+}
+
+.profile-pic {
+  height: 40px;
+  border-radius: 50%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.driver-name {
+  font-weight: bold;
+  font-size: 15px;
+  padding-left: 8px;
+}
+
+.pickup-dropoff {
+  font-weight: 800;
+  font-size: 12px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.driver-raw {
+  align-items: center;
+  display: flex;
+}
+
+.photo-raw {
+  align-items: center;
+  display: flex;
+}
+
+.photo-row > div {
+  width: 45%;
+}
+
+.profile-pic-large {
+  height: 70px;
+  border-radius: 50%;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.driver-name-large {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.scraper-details {
+  padding: 15px;
+  border: 1px solid lightgray;
+  border-radius: 5px;
+  text-align: left;
+}
+
+
+
+.small-info {
+  font-size: 14px;
+}
+
+
+.location {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.driver-name-details {
+  text-align: left;
+}
+
+
+
+mat-table {
+  overflow-x: scroll;
+  overflow-y: scroll;
+  max-height: 280px;
+}
+
+mat-cell,
+mat-header-cell {
+word-wrap: initial;
+display: table-cell;
+padding: 0px 10px;
+line-break: unset;
+width: 100%;
+white-space: nowrap;
+overflow: hidden;
+vertical-align: middle;
+}
+
+mat-row,
+mat-header-row {
+display: table-row;
+}
+
+.bold-text{
+  font-weight:bold;
+  color: darkblue;
+  font-size: 15px;
+}
+
+.item-tag{
+  border-radius:3px;
+  padding:4px;
+  margin:5px;
+  padding-left:8px;
+  padding-right:8px;
+  font-size: 12px;
+  background-color: lightskyblue;
+  color: rgb(14, 67, 116);
+}
+
+.scraper-run-details {
+  font-size: 14px;
+}

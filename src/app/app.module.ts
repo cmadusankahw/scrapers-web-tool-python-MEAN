@@ -65,6 +65,7 @@ import { PasswordResetComponent } from './modules/auth/password-reset/password-r
 import { HomepageComponent } from './modules/home/homepage/homepage.component';
 import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
 import { ScraperDataComponent } from './modules/scraper/scraper-data/scraper-data.component';
+import { UpdaterDataComponent } from './modules/scraper/updater-data/updater-data.component';
 import { AdminDashStatComponent } from './modules/admin/dash/dash-stat/dash-stat.component';
 import { AdminDashboardComponent } from './modules/admin/dash/dashboard/admin-dashboard.component';
 import { AdminHomeComponent } from './modules/admin/dash/pages/admin-home/admin-home.component';
@@ -73,6 +74,7 @@ import { AdminSettingsComponent } from './modules/admin/dash/pages/admin-setting
 import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admin-users.component';
 import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admin-add-scraper.component';
 import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-details/admin-scraper-details.component';
+import { DashUpdatedDataComponent } from './modules/scraper/dash/pages/dash-updated-data/dash-updated-data.component';
 
 
 @NgModule({
@@ -95,6 +97,7 @@ import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-deta
     DashDataComponent,
     AllUsersComponent,
     ScrapersListComponent,
+    UpdaterDataComponent,
     DashSettingsComponent,
     ScraperDetailsComponent,
     ScraperDataComponent,
@@ -105,7 +108,8 @@ import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-deta
     AdminSettingsComponent,
     AdminUsersComponent,
     AdminAddScraperComponent,
-    AdminScraperDetailsComponent
+    AdminScraperDetailsComponent,
+    DashUpdatedDataComponent
   ],
   imports: [
     BrowserModule,

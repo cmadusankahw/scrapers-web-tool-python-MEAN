@@ -41,7 +41,7 @@
               </div>
             </div>
 
-            <div class="flex-item mt-4 row" >
+            <!-- <div class="flex-item mt-4 row" >
               <div class="col-md-4 bold-text">
                 <mdb-icon far icon="globe"></mdb-icon> Updater:
               </div>
@@ -59,7 +59,7 @@
               Run Updater
             </button>
             </div>
-            </div>
+            </div> -->
 
           </div>
 
@@ -118,7 +118,7 @@
     style="margin-right:10px;"
   >
 
-    Schedule a Run
+    Schedule Updater
   </button>
 
     <button
@@ -216,7 +216,7 @@ aria-labelledby="myModalLabel" aria-hidden="true"
   <div class="modal-content">
     <!--Header-->
     <div class="modal-header">
-      <p class="heading">Schedule Scraper</p>
+      <p class="heading">Schedule Updater</p>
 
       <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="scheduleDialog.hide()">
         <span aria-hidden="true" class="white-text">&times;</span>
@@ -226,7 +226,22 @@ aria-labelledby="myModalLabel" aria-hidden="true"
     <!--Body-->
     <div class="modal-body">
         <div class="mb-3 mt-3 text-center">
-          <h5>Select date and time to schedule scraper.</h5>
+          <h5>Enter No of days to check for updates..</h5>
+          <br>
+          <mat-form-field appearance="fill" style="width:70%">
+            <mat-label>No of days</mat-label>
+            <input type="number" matInput [(ngModel)] = "noOfdays" >
+          </mat-form-field>
+          <div class="justify-content-center">
+            <a type="button" mdbBtn color="warning" class="waves-effect btn btn-md"
+            (click) = "runScraper('updater', noOfdays)"
+            (click)="scheduleDialog.hide()"
+            mdbWavesEffect> Run Once
+              <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+            </a>
+          </div>
+          <hr>
+          <h5>Select date and time to schedule updater.</h5>
           <br>
           <mat-form-field appearance="fill" style="width:70%">
             <mat-label>Choose a date</mat-label>
@@ -235,21 +250,43 @@ aria-labelledby="myModalLabel" aria-hidden="true"
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
 
-
+          <mat-form-field appearance="fill" class="dropdown-box"  style="width:70%">
+            <mat-label>Select Scheduling Mode..</mat-label>
+            <mat-select [formControl]="scheduleModels" [(ngModel)]="sceduledMode"  [errorStateMatcher]="matcher">
+              <mat-option *ngFor="let loc of scheduleModes" [value]="loc">{{loc}}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="scheduleModels.hasError('required')">
+              At least one selection is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+          <div class="justify-content-center">
+            <a type="button" mdbBtn color="primary" class="waves-effect btn btn-md"
+            (click) = "scheduleScraper(timestamp)"
+            (click)="scheduleDialog.hide()"
+            mdbWavesEffect> Schedule Updater
+              <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+            </a>
+          </div>
       </div>
     </div>
 
     <!--Footer-->
     <div class="modal-footer justify-content-center">
-      <a type="button" mdbBtn color="primary" class="waves-effect btn btn-md"
+      <!-- <a type="button" mdbBtn color="warning" class="waves-effect btn btn-md"
+      (click) = "runScraper('updater', noOfdays)"
+      (click)="scheduleDialog.hide()"
+      mdbWavesEffect> Run Once
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a> -->
+      <!-- <a type="button" mdbBtn color="primary" class="waves-effect btn btn-md"
       (click) = "scheduleScraper(timestamp)"
       (click)="scheduleDialog.hide()"
-      mdbWavesEffect> Schedule Scraper
+      mdbWavesEffect> Schedule Updater
         <mdb-btn far icon="check" class="ml-1"></mdb-btn>
-      </a>
-      <a type="button" mdbBtn color="primary" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      </a> -->
+      <a type="button" mdbBtn color="link" class="btn btn-md" style="color:black;"
       (click)="scheduleDialog.hide()"
-        data-dismiss="modal">not now</a>
+        data-dismiss="modal">Dismiss</a>
     </div>
   </div>
   <!--/.Content-->

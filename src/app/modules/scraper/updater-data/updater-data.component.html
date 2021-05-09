@@ -1,35 +1,30 @@
 <div class="pd-top-min container-fluid">
-  <h4>
-    <mat-icon>library_books</mat-icon>
-    <b> {{scraperName}} Scraper: Generated Data</b>
-  </h4>
+  <div class="text-center">
+    <h4>
+      <b> {{scraperName}} Updater: Data Generation History </b>
+    </h4>
+  </div>
 
-  <mat-form-field>
-    <mat-label>
-      <mat-icon>search</mat-icon>
-      Search for Runs</mat-label
-    >
-    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. 2021" />
-  </mat-form-field>
+  <p> Ocuurance: <strong style="color:darkblue">{{type}}</strong></p>
 
   <div class="mat-elevation-z8">
     <table
       class="table-responsive"
       mat-table
       [dataSource]="dataSource"
-      *ngIf="scraperRuns.length"
+      *ngIf="newRuns.length"
     >
       <!-- ID Column -->
-      <ng-container matColumnDef="RunId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper ID</th>
+      <ng-container matColumnDef="runId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Run ID</th>
         <td mat-cell *matCellDef="let row">{{ row.scraperRunId }}</td>
       </ng-container>
 
-      <!-- Progress Column -->
-      <ng-container matColumnDef="scraperName">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper</th>
+      <ng-container matColumnDef="updater">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Updates for</th>
         <td mat-cell *matCellDef="let row">{{ scraperName }}</td>
       </ng-container>
+
 
       <!-- Name Column -->
       <ng-container matColumnDef="lastRun">
@@ -40,11 +35,11 @@
       </ng-container>
 
         <!-- Progress Column -->
-        <ng-container matColumnDef="type">
+        <ng-container matColumnDef="noOfRuns">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            Execution Type
+            No of Runs
           </th>
-          <td mat-cell *matCellDef="let row">{{ row.executionType }}</td>
+          <td mat-cell *matCellDef="let row">{{ row.noOfRuns }}</td>
         </ng-container>
 
       <!-- Progress Column -->
@@ -87,8 +82,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
 
-    <div class="text-center pd-top-min" *ngIf="!scraperRuns.length">
-      No Scraper Run Records Found
+    <div class="text-center pd-top-min" *ngIf="!newRuns.length">
+      No {{type}} Updater Run Records Found
     </div>
 
     <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator>
@@ -143,9 +138,6 @@
                     <div class="driver-name-large">
                       {{ scraperName }}
                     </div>
-                    <div class="small-info">
-                      No of Runs: {{ scraperRun.noOfRuns }}
-                    </div>
 
 
               </div>
@@ -180,7 +172,7 @@
               <div class="col-md-4">
 
                 <div class="bold-text">
-                  <mdb-icon far icon="time"></mdb-icon> Last Run:
+                  <mdb-icon far icon="time"></mdb-icon> Run on:
                 </div>
                    <p>
                      {{convertTimeStamptoDate(scraperRun.timestamp)}}

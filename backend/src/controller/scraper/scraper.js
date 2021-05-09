@@ -223,6 +223,7 @@ scraper.post('/create-run',checkAuth, (req, res, next) => {
             noOfRuns:  1,
             noOfCols:  10,
             noOfRows:  100,
+            occurance: req.body.occurance,
             executionType: req.body.executionType,
             executed_params:{
               categories: req.body.executedCategories,

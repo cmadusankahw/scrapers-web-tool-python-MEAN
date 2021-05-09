@@ -9,7 +9,7 @@ def get_images(image_url, images, product_name):
     if requests.get(image_url):
         time = datetime.now().strftime("%H_%M_%S")
         pname = product_name.replace(" ", "").replace("/","")
-        path = f"scraped_images/dsi_images/{pname}"
+        path = f"scraped_images/test_images/{pname}"
         if not os.path.exists(path):
             os.makedirs(path)
 
@@ -141,15 +141,15 @@ def main():
         },
     ]
 
-    print("Scraping dsi footkandy....")
+    print("Scraping now....")
     all_products_df = scrape(base_url, categories)
 
     products_df = pandas.DataFrame(all_products_df)
-    path = "scraped_data/dsi_data"
+    path = "scraped_data/test_data"
     if not os.path.exists(path):
         os.makedirs(path)
-    products_df.to_csv(f'{path}/dsi_products_details.csv', mode='a', index=False)
-    print("dsi footkandy scraping completed")
+    products_df.to_csv(f'{path}/products_details.csv', mode='a', index=False)
+    print("scraping completed")
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admi
 import { AdminDashboardComponent } from './modules/admin/dash/dashboard/admin-dashboard.component';
 import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-details/admin-scraper-details.component';
 import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admin-add-scraper.component';
+import { DashUpdatedDataComponent } from './modules/scraper/dash/pages/dash-updated-data/dash-updated-data.component';
 
 const routes: Routes = [
   {
@@ -29,6 +30,7 @@ const routes: Routes = [
       { path: '', component: DashHomeComponent },
       { path: 'run/:id', component: ScraperDetailsComponent },
       { path: 'data', component: DashDataComponent },
+      { path: 'updates', component: DashUpdatedDataComponent },
       { path: 'settings', component: DashSettingsComponent },
       { path: '**', component: NotFoundPageComponent },
     ], canActivate: [AuthGuard]

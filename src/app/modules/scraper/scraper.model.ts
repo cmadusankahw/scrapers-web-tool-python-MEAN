@@ -22,6 +22,7 @@ export interface ScraperRun {
   noOfRuns: number;
   noOfCols: number;
   noOfRows: number;
+  occurance: string; // once, daily, weekly, monthly
   executionType: string, // scraper, updater
   executed_params:{
     categories: string[];
@@ -74,6 +75,7 @@ export interface CreateRunItem {
   scraperRunId: string;
   dataLocation: string,
   dataFormat: string,
+  occurance: string;
   executionType: string,
   executedCategories: string[],
   executedLocations: string[],

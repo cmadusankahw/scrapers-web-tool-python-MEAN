@@ -11,14 +11,14 @@ import { ScraperService } from '../scraper.service';
 
 
 @Component({
-  selector: 'app-scraper-data',
-  templateUrl: './scraper-data.component.html',
-  styleUrls: ['./scraper-data.component.scss']
+  selector: 'app-updater-data',
+  templateUrl: './updater-data.component.html',
+  styleUrls: ['./updater-data.component.scss']
 })
-export class ScraperDataComponent implements OnInit, OnDestroy {
+export class UpdaterDataComponent implements OnInit, OnDestroy {
 
 
-  displayedColumns: string[] = ['RunId', 'scraperName', 'lastRun', 'type', 'status','action'];
+  displayedColumns: string[] = ['runId','updater', 'lastRun', 'noOfRuns', 'status','action'];
   dataSource: MatTableDataSource<ScraperRun>;
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
@@ -31,7 +31,11 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
 
   @Input() scraperId: string;
 
+  @Input() type: string;
+
   @Input() scraperRuns: ScraperRun[] = [];
+
+  newRuns: ScraperRun[] = [];
 
   scraperRun: ScraperRun;
 
@@ -43,8 +47,8 @@ export class ScraperDataComponent implements OnInit, OnDestroy {
   constructor(private scraperService: ScraperService, private authService: AuthService) { }
 
   ngOnInit() {
-         const newRuns =  this.scraperRuns.filter(run => run.occurance == "once");
-         this.dataSource = new MatTableDataSource(newRuns);
+         this.newRuns = this.scraperRuns.filter(run => run.occurance == this.type);
+         this.dataSource = new MatTableDataSource(this.newRuns);
          this.dataSource.paginator = this.paginator;
          this.dataSource.sort = this.sort;
   }

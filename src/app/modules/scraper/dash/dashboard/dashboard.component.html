@@ -42,12 +42,29 @@
       >
         <div class="col-md-11 side-start">
           <mat-icon>list</mat-icon>
-          <span class="side-text"> Generated Data</span>
+          <span class="side-text"> Scraped Data</span>
         </div>
         <div class="ol-md-1 side-end">
           <mat-icon>arrow_right</mat-icon>
         </div>
       </a>
+
+
+      <a
+      class="txt-white row"
+      mat-list-item
+      [ngClass]="updates"
+      (click)="navUpdates()"
+      routerLink="/scraper/updates"
+    >
+      <div class="col-md-11 side-start">
+        <mat-icon>book</mat-icon>
+        <span class="side-text"> Updated Data</span>
+      </div>
+      <div class="ol-md-1 side-end">
+        <mat-icon>arrow_right</mat-icon>
+      </div>
+    </a>
 
 
 

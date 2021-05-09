@@ -38,11 +38,19 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     Validators.required,
   ]);
 
+  scheduleModels = new FormControl('',[
+    Validators.required,
+  ]);
+
   scraper: Scraper;
 
   selectedLocations = [];
 
   selectedCategories = [];
+
+  scheduleModes = ["daily","weekly", "monthly"]
+
+  sceduledMode: string = ""
 
   timestamp: number;
 
@@ -108,7 +116,7 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     }
     this.scraperService.updateUserScraperStatus(this.scraperId, 'running');
 
-    this.scraperService.runScraper(runMode, noOfdays, this.scraper, this.selectedLocations, this.selectedCategories);
+    this.scraperService.runScraper(runMode,this.sceduledMode, noOfdays, this.scraper, this.selectedLocations, this.selectedCategories);
 
   }
 
