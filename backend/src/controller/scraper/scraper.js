@@ -366,6 +366,7 @@ scraper.post('/schedule', (req, res, next) => {
                     noOfRuns:  1,
                     noOfCols:  10,
                     noOfRows:  100,
+                    occurance: req.body.occurance,
                     executionType: 'scraper',
                     executed_params:{
                       categories: executedCategories,
