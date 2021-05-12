@@ -8,6 +8,10 @@ const email = require("../common/mail");
 const express = require("express");
 const bodyParser = require("body-parser");
 const multer = require ("multer");
+const csv=require('csvtojson');
+var path = require('path');
+const { exec } = require("child_process");
+const schedule = require('node-schedule');
 
 //express app declaration
 const scraper = express();
@@ -36,53 +40,423 @@ const storage = multer.diskStorage({
   }
 });
 
+var current_executions = [];
+
 
 //middleware
 scraper.use(bodyParser.json());
 scraper.use(bodyParser.urlencoded({ extended: false }));
 
 
-//add new product
-scraper.post('/add',checkAuth, (req, res, next) => {
-  // var lastid;
-  // Product.find(function (err, products) {
-  //   if(products.length){
-  //     lastid = products[products.length-1].product_id;
-  //   } else {
-  //     lastid= 'P0';
-  //   }
-  //   let mId = +(lastid.slice(1));
-  //   ++mId;
-  //   lastid = 'P' + mId.toString();
-  //   console.log(lastid);
-  //   if (err) return handleError(err => {
-  //     res.status(500).json({
-  //       message: 'Error occured while getting product ID details!'
-  //     });
-  //   });
-  // }).then( () => {
-  //   const reqProduct = req.body;
-  //   reqProduct['product_id']= lastid;
-  //   reqProduct['user_id']= req.userData.user_id;
-  //   const newProduct = new Product(reqProduct);
-  //   console.log(newProduct);
-  //   newProduct.save()
-  //   .then(result => {
-  //       res.status(200).json({
-  //         message: 'product added successfully!',
-  //         result: result
-  //       });
-  //     })
-  //     .catch(err=>{
-  //       res.status(500).json({
-  //         message: 'Product creation was unsuccessful! Please try again!'
-  //       });
-  //     });
-  // });
+
+// get methods
+
+//get list of products for search
+scraper.get('/user',checkAuth, (req, res, next) => {
+  let scraperList = []
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (scp of user.scrapers){
+        scraperList.push(scp.scraperId)
+      }
+      Scraper.find( { scraperId : { $in : scraperList } }).then(
+        scrapers => {
+          res.status(200).json({
+            message: "User\'s Scrapers retrived!" ,
+            scrapers: scrapers
+          });
+        }
+      )
+    }
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scrapers retrival failed! Please retry!" });
+  })
+});
+
+
+
+//get selected scraper
+scraper.get('/one/:id', (req, res, next) => {
+
+  Scraper.findOne({ scraperId: req.params.id }, function (err,scraper) {
+    if (err) return handleError(err => {
+      console.log(err);
+      res.status(500).json(
+        { message: 'Error while retriving scraper! Please try another time!'}
+        );
+    });
+    res.status(200).json(
+      {
+        message: 'scraper retrived successfully!',
+        scraper: scraper
+      }
+    );
+  });
+});
+
+
+//get all scrapers
+scraper.get('/all', (req, res, next) => {
+
+  Scraper.find({}, function (err,scrapers) {
+    if (err) return handleError(err => {
+      console.log(err);
+      res.status(500).json(
+        { message: 'Error while retriving scrapers! Please try another time!'}
+        );
+    });
+    res.status(200).json(
+      {
+        message: 'scrapers retrived successfully!',
+        scrapers: scrapers
+      }
+    );
+  });
+});
+
+
+//get last scraper ID
+scraper.get('/last-id', (req, res, next) => {
+  Scraper.find(function (err, scrapers) {
+    var lastid;
+    if(scrapers.length){
+      lastid = scrapers[scrapers.length-1].scraperId;
+      var eId = +(lastid.slice(1));
+      lastid = ('S' + (++eId).toString());
+    } else {
+      lastid= 'S0';
+    }
+    if (err) return handleError(err);
+    res.status(200).json(
+      {
+        lastid: lastid
+      }
+    );
+  });
+});
+
+//get scraper status
+scraper.get('/status/:id',checkAuth, (req, res, next) => {
+
+  let scraperStatus = ""
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (scp of user.scrapers){
+        if (scp.scraperId == req.params.id) {
+          scraperStatus = scp.status
+        }
+      }
+      res.status(200).json({
+        message: "User\'s Scraper status retrived!" ,
+        status: scraperStatus
+      });
+    }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper statud retrival failed! Please retry!" });
+  })
+});
+
+
+//get scraper JSON Data
+scraper.post('/json',checkAuth, (req, res, next) => {
+  jsonPath = path.join(__dirname, '..', '..','..', req.body.dataLocation);
+  csv()
+.fromFile(jsonPath)
+.then((jsonObj)=>{
+    res.status(200).json({
+      message: "JSON data retrived!" ,
+      JSONData: jsonObj.slice(0,30)
+    });
+}).catch((err) => {
+  console.log(err);
+  res.status(500).json({ message: "JSON data retrival failed! Please retry!" });
+})
+});
+
+// download csv file
+scraper.post('/csv/download',checkAuth, (req, res) => {
+  filePath = path.join(__dirname, '..', '..','..', req.body.dataLocation);
+  res.download(filePath, (err) => {
+    if (err) {
+      res.status(500).send({
+        message: "Could not download the file. " + err,
+      });
+    }
+  });
+});
+
+
+// update scraper status
+scraper.post('/status',checkAuth, (req, res, next) => {
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (let i=0; i< user.scrapers.length; i++){
+        if (user.scrapers[i].scraperId == req.body.scraperId) {
+          user.scrapers[i].status = req.body.status
+        }
+      }
+      User.updateOne({ userId: req.userData.user_id}, user)
+      .then(() => {
+        res.status(200).json({
+          message: 'user scraper status updated successfully!',
+        });
+      }).catch((err) => {
+        console.log(err);
+      })
+    }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper status update failed! Please retry!" });
+  })
+ });
+
+ // create a scraper Run
+scraper.post('/create-run',checkAuth, (req, res, next) => {
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (let i=0; i< user.scrapers.length; i++){
+        if (user.scrapers[i].scraperId == req.body.scraperId) {
+          user.scrapers[i].status = 'ideal';
+          user.scrapers[i].scraperRuns.push({
+            scraperRunId: req.body.scraperRunId,
+            timestamp: Date.now(),
+            noOfRuns:  1,
+            noOfCols:  10,
+            noOfRows:  100,
+            occurance: req.body.occurance,
+            executionType: req.body.executionType,
+            executed_params:{
+              categories: req.body.executedCategories,
+              locations:  req.body.executedLocations,
+            },
+            dataLocation: req.body.dataLocation,
+            dataFormat: req.body.dataFormat,
+            status: (req.body.status ? 'success' : 'failed'),
+        });
+      }
+    }
+      User.updateOne({ userId: req.userData.user_id}, user)
+      .then(() => {
+        res.status(200).json({
+          message: 'user scraper run added successfully!',
+        });
+      }).catch((err) => {
+        console.log(err);
+    })}
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper run creation failed! Please retry!" });
+  })
  });
 
 
-// add product photos
+ // run scraper
+scraper.post('/exec',checkAuth, (req, res, next) => {
+  const exec_keyword = "python "
+  const actual_scraper_name = req.body.script.replace('.py','');
+  executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.script);
+  const runId = req.body.scraperId + "_" + (new Date().toISOString().slice(0,14));
+  try{
+    let newProc = exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          res.status(200).json({
+            message: `Scraper execution failed! error: ${stderr.slice(0,30) + '...'}` ,
+            result: stderr,
+            scraperRunId: runId,
+            dataLocation:  '',
+            dataFormat: '',
+            status: false
+          });
+      }
+      if (stdout) {
+        res.status(200).json({
+          message: 'Scraper executed successfully!',
+          result: stdout,
+          scraperRunId: runId,
+          dataLocation: `scraped_data/${actual_scraper_name}/${actual_scraper_name}_data.csv`, // to be modified later
+          dataFormat: 'csv',
+          status: true
+        });
+      }
+  });
+        // add execution to current executions for termination
+        console.log("current execution Id ==>", newProc.pid);
+        current_executions.push({
+          id: req.userData.user_id + '_' + req.body.scraperId,
+          pid: newProc.pid
+        });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+    res.status(500).json({ message: `Scraper execution failed! ${err.message.slice(0,30) + '...'}` });
+  }
+ });
+
+  // run scraper
+scraper.post('/exec-update',checkAuth, (req, res, next) => {
+  const exec_keyword = "python "
+  const actual_scraper_name = req.body.script.replace('.py','');
+  const actual_updater_name = req.body.updaterScript.replace('.py','');
+  executionScript = path.join(__dirname, '..', '..','..', req.body.scraperLocation, req.body.updaterScript);
+  const runId = req.body.scraperId + "_updater_" + (new Date().toISOString().slice(0,14));
+  try{
+    var newProc = exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+      if (stderr) {
+          console.log(`stderr: ${stderr}`);
+          res.status(200).json({
+            message: `Updater execution failed! error: ${stderr.slice(0,30) + '...'}` ,
+            result: stderr,
+            scraperRunId: runId,
+            dataLocation:  '',
+            dataFormat: '',
+            status: false
+          });
+      }
+      if (stdout) {
+        res.status(200).json({
+          message: 'Updater executed successfully!',
+          result: stdout,
+          scraperRunId: runId,
+          dataLocation: `scraped_data/${actual_scraper_name}/${actual_updater_name}/${actual_scraper_name}_data.csv`, // to be modified later
+          dataFormat: 'csv',
+          status: true
+        });
+      }
+  });
+  console.log("current execution Id ==>", newProc.pid);
+  current_executions.push({
+    id: req.userData.user_id + '_' + req.body.scraperId,
+    pid: newProc.pid
+  });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+ });
+
+ // schedule a scraper run
+scraper.post('/schedule', (req, res, next) => {
+  const date = new Date(req.body.timestamp + (5.5*60*60*1000));
+  try {
+    // scheduling the scraper job
+    const job = schedule.scheduleJob(date, function(
+      scraperId = req.body.scraper.scraperId,
+      scraperLocation= req.body.scraper.scraperLocation,
+      script = req.body.scraper.script,
+      user_id = req.userData.user_id,
+      executedCategories = req.body.executedCategories,
+      executedLocations = req.body.executedLocations,
+    ){
+      const exec_keyword = "python "
+      const actual_scraper_name = script.replace('.py','');
+      executionScript = path.join(__dirname, '..', '..','..', scraperLocation, script);
+      const runId = scraperId + "_" + (new Date().toISOString().slice(0,14));
+      exec(exec_keyword + executionScript, (error, stdout, stderr) => {
+        if (stderr) {
+            console.log(`stderr: ${stderr}`);
+        }
+        if (stdout) {
+          User.findOne({ userId: user_id}).then(
+            user => {
+              for (let i=0; i< user.scrapers.length; i++){
+                if (user.scrapers[i].scraperId == scraperId) {
+                  user.scrapers[i].status = 'ideal';
+                  user.scrapers[i].scraperRuns.push({
+                    scraperRunId: runId,
+                    timestamp: Date.now(),
+                    noOfRuns:  1,
+                    noOfCols:  10,
+                    noOfRows:  100,
+                    occurance: req.body.occurance,
+                    executionType: 'scraper',
+                    executed_params:{
+                      categories: executedCategories,
+                      locations:  executedLocations,
+                    },
+                    dataLocation: `scraped_data/${actual_scraper_name}/${actual_scraper_name}_data.csv`,
+                    dataFormat: 'csv',
+                    status: 'success',
+                });
+              }
+            }
+            User.updateOne({ userId: user_id}, user);
+            }).catch((err) => {
+            console.log(err);
+          });
+        }
+    });
+  });
+  res.status(200).json({
+    message: `Scraper execution job (job name: ${job.name}) scheduled!`
+  });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+ });
+
+
+
+  // terminate scraper
+scraper.get('/terminate/:id',checkAuth, (req, res, next) => {
+  let pid = '';
+  try{
+    for (let runner of current_executions) {
+      if (runner.id == req.userData.user_id + '_' + req.params.id){
+        pid = runner.pid;
+        process.kill(runner.pid);
+      }
+    }
+    res.status(200).json({
+      message: `Updater execution terminated for pid: ${pid}` ,
+    });
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+    res.status(500).json({ message: `Updater execution termination failed! ${err.message.slice(0,30) + '...'}` });
+  }
+ });
+
+
+
+
+ //remove a scraper
+scraper.delete('/one/:id',checkAuth, (req, res, next) => {
+  Scraper.deleteOne({scraperId: req.params.id}).then(
+    result => {
+      console.log(result);
+      res.status(200).json({ message: "Scraper removed!" });
+    }
+  ).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "Scraper was not removed! Please retry" });
+  })
+});
+
+ //remove a scraper-run
+ scraper.delete('/run/one/:scraperId/:scraperRunId',checkAuth, (req, res, next) => {
+  User.findOne({ userId: req.userData.user_id}).then(
+    user => {
+      for (let i=0; i< user.scrapers.length; i++){
+        if (user.scrapers[i].scraperId == req.params.scraperId) {
+          newScraperRuns = user.scrapers[i].scraperRuns.filter(scr => scr.scraperRunId !== req.params.scraperRunId);
+          user.scrapers[i].scraperRuns = newScraperRuns
+        }
+      }
+      User.updateOne({ userId: req.userData.user_id}, user)
+      .then(() => {
+        res.status(200).json({
+          message: 'user scraper run removed successfully!',
+          userScrapers: user.scrapers
+        });
+      }).catch((err) => {
+        console.log(err);
+      })
+    }).catch((err) => {
+    console.log(err);
+    res.status(500).json({ message: "User scraper run removal failed! Please retry!" });
+  })
+});
+
+
+// add scraper images
 scraper.post('/add/img',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
     // const url = req.protocol + '://' + req.get("host");
     // let imagePaths = [];
@@ -95,78 +469,52 @@ scraper.post('/add/img',checkAuth, multer({storage:storage}).array("images[]"), 
 
 });
 
-//edit product
-scraper.post('/edit',checkAuth, (req, res, next) => {
-  // const newProduct = new Product(req.body);
-  // console.log(newProduct);
-  // Product.updateOne({ product_id: req.body.product_id}, {
-  //   business_name:  req.body.business_name,
-  //   product: req.body.product,
-  //   product_category: req.body.product_category,
-  //   qty_type: req.body.qty_type,
-  //   description: req.body.description,
-  //   created_date: req.body.created_date,
-  //   created_time: req.body.created_time,
-  //   availability: req.body.availability,
-  //   inventory: req.body.inventory,
-  //   rating: req.body.rating,
-  //   no_of_ratings: req.body.no_of_ratings,
-  //   no_of_orders: req.body.no_of_orders,
-  //   delivery_service: req.body.delivery_service,
-  //   price: req.body.price,
-  //   pay_on_delivery: req.body.pay_on_delivery,
-  //   image_01: req.body.image_01,
-  //   image_02: req.body.image_02,
-  //   image_03: req.body.image_03,
-  //   user_id: req.userData.user_id
-  // })
-  // .then(result => {
-  //   res.status(200).json({
-  //     message: 'product updated successfully!',
-  //     result: result
-  //   });
-  // })
-  // .catch(err=>{
-  //   res.status(500).json({
-  //     message: 'Product update was unsuccessful! Please Try again!'
-  //   });
-  // });
+//edit scraper
+scraper.post('/one',checkAuth, (req, res, next) => {
+  Scraper.updateOne({ scraperId: req.body.scraperId}, {
+    scraperId: req.body.scraperId,
+    scraperName: req.body.scraperName,
+    description: req.body.description,
+    tags: req.body.tags,
+    baseURL: req.body.baseURL,
+    scraperLocation: req.body.scraperLocation,
+    script: req.body.script,
+    updaterMode: req.body.updaterMode,
+    updaterScript: req.body.updaterScript,
+    params: req.body.params,
+    price: req.body.price,
+  })
+  .then((result) => {
+    console.log(result);
+    res.status(200).json({
+      message: 'scraper updated successfully!',
+    });
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      message: 'Scraper update failed! Please Try Again!'
+    });
+  });
 });
 
 
-//remove a product
-scraper.delete('/edit/:id',checkAuth, (req, res, next) => {
-  // Product.deleteOne({'product_id': req.params.id}).then(
-  //   result => {
-  //     console.log(result);
-  //     res.status(200).json({ message: "Product deleted!" });
-  //   }
-  // ).catch((err) => {
-  //   res.status(500).json({ message: "Product was not deleted! Please try again!" });
-  // })
-});
+//search scrapers
+scraper.post('/add', (req, res, next) => {
 
-
-//search products
-scraper.post('/search', (req, res, next) => {
-
-  // Product.find({product_category: req.body.category,
-  //               price: {$lte: req.body.maxPrice},
-  //               pay_on_delivery:req.body.payOnDelivery,
-  //               rating: {$gte: req.body.userRating},
-  //               'availability': true,
-  //               'inventory': {$gte: 1}})
-  // .then(result => {
-  //     res.status(200).json({
-  //       message: 'products recieved successfully!',
-  //       products: result
-  //     });
-  //   })
-  //   .catch(err=>{
-  //     res.status(500).json({
-  //       message: 'No matching products Found!'
-  //     });
-  //   });
+  const scraper = new Scraper (req.body);
+  scraper.save()
+  .then(() => {
+    res.status(200).json({
+      message: 'scraper saved successfully!',
+    });
+  })
+  .catch( err => {
+    console.log(err);
+    res.status(500).json({
+      message: 'Scraper saving unsuccessful! Please try again!'
+    });
+  });
 });
 
 
@@ -222,56 +570,11 @@ scraper.post('/promotion/add',checkAuth, (req, res, next) => {
 });
 
 
-
-
-// get methods
-
-//get list of products for search
-scraper.get('/get', (req, res, next) => {
-  // Product.find({'availability': true,
-  //               'inventory': {$gte: 1}},function (err, products) {
-  //   console.log(products);
-  //   if (err) return handleError(err => {
-  //     res.status(500).json(
-  //       { message: 'No matching Products Found! Please check your filters again!'}
-  //       );
-  //   });
-  //   res.status(200).json(
-  //     {
-  //       message: 'Product list recieved successfully!',
-  //       products: products
-  //     }
-  //   );
-  // });
-});
-
-
-
-//get selected product
-scraper.get('/get/:id', (req, res, next) => {
-
-  // Product.findOne({ product_id: req.params.id }, function (err,product) {
-  //   if (err) return handleError(err => {
-  //     res.status(500).json(
-  //       { message: 'Error while loading product Details! Please try another time!'}
-  //       );
-  //   });
-  //   res.status(200).json(
-  //     {
-  //       message: 'product recieved successfully!',
-  //       product: product
-  //     }
-  //   );
-  // });
-});
-
 // create custom HTML
 function createHTML(content) {
-   const message = "<h3> You have new Order on " + content.product + "</h3><hr><h4>Order ID : <b> " + content.order_id + "</b></h4><h4>Date : <b> " +content.created_date.slice(0,10) + ' ' + content.created_date.slice(11,19) + " </b></h4><h4>Quantity : <b> " + content.quantity + " </b></h4><hr><div class='text-center'><p><b> Please log in to view more details.<br><br><a class='btn btn-lg' href='evenza.biz//login'>Log In</a></b></p></div>"
+   const message = ""
    return message;
   }
-
-
 
 
 module.exports = scraper;

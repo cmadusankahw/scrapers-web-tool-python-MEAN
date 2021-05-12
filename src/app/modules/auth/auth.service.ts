@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 
 import { Router } from '@angular/router';
 import { MatDialog, MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material';
-import { User } from '../scraper/scraper.model';
-import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser, postSignUp, postUploadImage, putUpdateUser } from '../scraper/scraper.config';
+import { ScraperRun, User, UserScraper } from '../scraper/scraper.model';
+import { getUser, getHeader, getLastId, postSignIn, url, getUsers, deleteUser, getAuthUser, postSignUp, postUploadImage, putUpdateUser, deleteScraperRun, putUpdateSelectedUser } from '../scraper/scraper.config';
 import { LogIn } from './auth.model';
 import { SuccessComponent } from 'src/app/success/success.component';
 
@@ -17,6 +17,10 @@ export class AuthService {
   private usersUpdated = new Subject<User[]>();
   private authStatusListener = new Subject<boolean>();
   private headerDetailsListener = new Subject<{userType: string, userName: string, profilePic: string}>();
+  private userScrapersUpdated = new Subject<UserScraper[]>();
+
+  // current users scrapers and runs
+  private userScrapers: UserScraper[];
 
   // user logged in
   private currentUser: User;
@@ -64,6 +68,7 @@ export class AuthService {
       this.http.get<{user: User}>(url + getAuthUser )
       .subscribe((res) => {
         this.currentUser = res.user;
+        this.userScrapers = res.user.scrapers
         this.currentUserUpdated.next(this.currentUser);
     });
     }
@@ -142,6 +147,12 @@ export class AuthService {
     return this.currentUserUpdated.asObservable();
   }
 
+  getUserScrapersUpdateListener() {
+    return this.userScrapersUpdated.asObservable();
+  }
+
+
+
 // POST , PUT
 
   signUp(user: User, password: string) {
@@ -151,7 +162,11 @@ export class AuthService {
        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
        this.router.onSameUrlNavigation = 'reload';
        this.router.navigate(['/']);
-       this.dialog.open(SuccessComponent, {data: {message: 'Successfully signed up!'}});
+       this._snackBar.open(recievedData.message , 'Dismiss', {
+        duration: 2500,
+        horizontalPosition: this.horizontalPosition,
+        verticalPosition: this.verticalPosition,
+        });
      }, (error) => {
        console.log(error);
        });
@@ -196,6 +211,31 @@ export class AuthService {
    }
 }
 
+// update selected user
+updateSlectedUser(user: User) {
+  this.http.post<{message: string}>(url + putUpdateSelectedUser , user)
+  .subscribe((recievedData) => {
+    console.log(recievedData.message);
+    this.userUpdated.next(user);
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+    this.router.onSameUrlNavigation = 'reload';
+    this.router.navigate(['/admin/users']);
+    this._snackBar.open('User\'s scrapers details updated!', 'Dismiss', {
+      duration: 2500,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+      });
+  }, (error) => {
+    console.log(error);
+    });
+}
+
+  // user profile change password
+  changeUserPassword(userType: string, currentPword: string, newPword: string) {
+    // code here
+  }
+
+
 
 // DELETE
 
@@ -218,8 +258,27 @@ removeUser(userId){
 }
 
 
-  // user profile change password
-  changeUserPassword(userType: string, currentPword: string, newPword: string) {
+  removeScraperRun(scraperId, scraperRunId){
+    this.http.delete<{ message: string, userScrapers: UserScraper[] }>(url + deleteScraperRun + scraperId + "/" + scraperRunId)
+    .subscribe((recievedData) => {
+      if (recievedData) {
+        console.log(recievedData.message);
+        if (this.userScrapers.length) {
+          this.userScrapers = recievedData.userScrapers;
+          this.userScrapersUpdated.next(this.userScrapers);
+        }
+        this.router.routeReuseStrategy.shouldReuseRoute = () => false;
+        this.router.onSameUrlNavigation = 'reload';
+        this.router.navigate(['/scraper/data']);
+        this._snackBar.open('Your Scraper Run entry:' + scraperRunId + ' removed!', 'Dismiss', {
+          duration: 2500,
+          horizontalPosition: this.horizontalPosition,
+          verticalPosition: this.verticalPosition,
+          });
+      }
+      }, (error) => {
+        console.log(error);
+        });
   }
 
 
@@ -244,8 +303,11 @@ removeUser(userId){
         const now = new Date();
         const expirationDate = new Date (now.getTime() + recievedData.expiersIn * 1000 );
         this.saveAuthData(recievedData.token, expirationDate );
-
-        this.router.navigate(['/scraper']);
+        if (recievedData.user_type == 'admin') {
+          this.router.navigate(['/admin']);
+        } else {
+          this.router.navigate(['/scraper']);
+        }
       }
    }, (error) => {
      console.log(error);

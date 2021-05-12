@@ -14,6 +14,7 @@ export class DashboardComponent implements OnInit {
   // navigation
   home = 'txt-white row';
   data = 'txt-white row';
+  updates = 'txt-white row';
   settings = 'txt-white row';
   accSettings = 'txt-white row';
 
@@ -41,7 +42,9 @@ export class DashboardComponent implements OnInit {
          this.navHome();
        } else if (e.url === '/scraper/data') {
          this.navData();
-       }else if (e.url === '/scraper/settings') {
+       } else if (e.url === '/scraper/updates') {
+        this.navUpdates();
+      }else if (e.url === '/scraper/settings') {
        this.navSettings();
    }
    }
@@ -50,22 +53,27 @@ export class DashboardComponent implements OnInit {
 
  navHome() {
    this.home = 'txt-white row active-nav';
-   this.data = this.accSettings = this.settings  = 'txt-white row';
+   this.data = this.accSettings = this.settings  = this.updates = 'txt-white row';
  }
 
  navData() {
    this.data = 'txt-white row active-nav';
-   this.home = this.accSettings =this.settings  = 'txt-white row';
+   this.home = this.accSettings =this.settings  = this.updates = 'txt-white row';
  }
+
+ navUpdates() {
+  this.updates = 'txt-white row active-nav';
+  this.home = this.accSettings =this.settings = this.data  = 'txt-white row';
+}
 
  navSettings() {
    this.settings = 'txt-white row active-nav';
-   this.data = this.accSettings =this.home  = 'txt-white row';
+   this.data = this.accSettings =this.home  = this.updates = 'txt-white row';
  }
 
  navAccSettings() {
   this.accSettings = 'txt-white row active-nav';
-  this.data = this.settings =this.home  = 'txt-white row';
+  this.data = this.settings =this.home  = this.updates = 'txt-white row';
 }
 
 }

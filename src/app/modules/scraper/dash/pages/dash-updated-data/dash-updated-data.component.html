@@ -1,0 +1,56 @@
+
+  <div *ngIf="userScrapers.length" class="text-center">
+
+  <mat-tab-group mat-align-tabs="center">
+    <mat-tab label="Daily Runs">
+
+    <div class="scraper-data-comp" *ngFor="let scraper of userScrapers">
+      <app-updater-data
+      [scraperId] ="scraper.scraperId"
+      [type] = "'daily'"
+      [scraperName] = "scraper.scraperName"
+      [scraperRuns] = "scraper.scraperRuns"></app-updater-data>
+    </div>
+    </mat-tab>
+
+    <mat-tab label="Weekly Runs">
+      <div class="scraper-data-comp" *ngFor="let scraper of userScrapers">
+        <app-updater-data
+        [scraperId] ="scraper.scraperId"
+        [type] = "'weekly'"
+        [scraperName] = "scraper.scraperName"
+        [scraperRuns] = "scraper.scraperRuns"></app-updater-data>
+      </div>
+
+    </mat-tab>
+
+    <mat-tab label="Monthly Runs ">
+      <div class="scraper-data-comp" *ngFor="let scraper of userScrapers">
+        <app-updater-data
+        [scraperId] ="scraper.scraperId"
+        [type] = "'monthly'"
+        [scraperName] = "scraper.scraperName"
+        [scraperRuns] = "scraper.scraperRuns"></app-updater-data>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+
+  <div *ngIf="!userScrapers.length">
+    <div class="text-center mt-3 pt-4">
+      <img src="./assets/images/scraper/scraper_not_run.png" height="300px">
+      <h4><string>You haven't run any updaters yet!</string></h4>
+      <br>
+      <a
+      type="button"
+      mdbBtn
+      color="primary"
+      class="waves-light btn btn-md cust-btn btn-lg"
+      mdbWavesEffect
+      routerLink="/scraper"
+    >
+      Run a Updater
+    </a>
+    </div>
+  </div>

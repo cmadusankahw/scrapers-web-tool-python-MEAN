@@ -77,7 +77,7 @@
             </div>
 
             <div class="col-md-7 profile-text">
-              <div class="user-scraper" *ngIf="user.scrapers && user.scrapers.length">
+              <div class="user-scraper row" *ngIf="user.scrapers && user.scrapers.length">
                   <div class="scraper-item" *ngFor="let scraper of user.scrapers">
                     {{scraper.scraperName}}
                   </div>

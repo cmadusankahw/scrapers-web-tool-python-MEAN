@@ -13,6 +13,14 @@ import { HomepageComponent } from './modules/home/homepage/homepage.component';
 import { ContactUsComponent } from './modules/home/contact-us/contact-us.component';
 import { ScraperDetailsComponent } from './modules/scraper/scraper-details/scraper-details.component';
 import { AddUserComponent } from './modules/auth/add-user/add-user.component';
+import { AdminHomeComponent } from './modules/admin/dash/pages/admin-home/admin-home.component';
+import { AdminScrapersComponent } from './modules/admin/dash/pages/admin-scrapers/admin-scrapers.component';
+import { AdminSettingsComponent } from './modules/admin/dash/pages/admin-settings/admin-settings.component';
+import { AdminUsersComponent } from './modules/admin/dash/pages/admin-users/admin-users.component';
+import { AdminDashboardComponent } from './modules/admin/dash/dashboard/admin-dashboard.component';
+import { AdminScraperDetailsComponent } from './modules/admin/admin-scraper-details/admin-scraper-details.component';
+import { AdminAddScraperComponent } from './modules/admin/admin-add-scraper/admin-add-scraper.component';
+import { DashUpdatedDataComponent } from './modules/scraper/dash/pages/dash-updated-data/dash-updated-data.component';
 
 const routes: Routes = [
   {
@@ -22,7 +30,22 @@ const routes: Routes = [
       { path: '', component: DashHomeComponent },
       { path: 'run/:id', component: ScraperDetailsComponent },
       { path: 'data', component: DashDataComponent },
+      { path: 'updates', component: DashUpdatedDataComponent },
       { path: 'settings', component: DashSettingsComponent },
+      { path: '**', component: NotFoundPageComponent },
+    ], canActivate: [AuthGuard]
+  },
+  {
+    path: 'admin',
+    component: AdminDashboardComponent,
+    children: [
+      { path: '', component: AdminHomeComponent },
+      { path: 'scrapers', component: AdminScrapersComponent },
+      { path: 'scrapers/details/:id', component: AdminScraperDetailsComponent },
+      { path: 'scrapers/add', component: AdminAddScraperComponent },
+      { path: 'scrapers/edit/:id', component: AdminAddScraperComponent },
+      { path: 'users', component: AdminUsersComponent },
+      { path: 'settings', component: AdminSettingsComponent },
       { path: '**', component: NotFoundPageComponent },
     ], canActivate: [AuthGuard]
   },

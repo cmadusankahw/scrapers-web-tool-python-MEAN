@@ -1,12 +1,19 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material';
+import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { ErrorStateMatcher, MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { ErrorComponent } from 'src/app/error/error.component';
-import { SuccessComponent } from 'src/app/success/success.component';
 import { Scraper } from '../scraper.model';
 import { ScraperService } from '../scraper.service';
+
+/** Error when invalid control is dirty, touched, or submitted. */
+export class MyErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
+
 
 @Component({
   selector: 'app-scraper-details',
@@ -23,29 +30,36 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
 
   private scraperId: string;
 
-  scraperStatus: string = 'ideal';
+  categories = new FormControl('',[
+    Validators.required,
+  ]);
 
-  categories = new FormControl();
+  locations = new FormControl('',[
+    Validators.required,
+  ]);
 
-  locations = new FormControl();
+  scheduleModels = new FormControl('',[
+    Validators.required,
+  ]);
 
-  scraper: Scraper = {
-    scraperId: 'S1',
-    scraperName: 'Rainbow Pages',
-    description: 'SLT RAINBOW PAGES is Sri Lanka’s only telephone directory published by SLT Digital Services (Pvt) Ltd [formerly SLT Publications (Pvt) Ltd], a fully-owned subsidiary of Sri Lanka Telecom PLC (SLT) - the pioneer and foremost telecommunication solutions provider to the nation.',
-    tags: ['mobile', 'landline', 'phone-book'],
-    baseURL: 'https://rainbowpages.lk/',
-    scraperLocation: 'scrapers/',
-    script: 'python raibow_pages.py ',
-    params: {
-      categories: ['all', 'advertising', 'agriculture', 'baby goods', 'banking', 'bauty culture', 'computer'],
-      locations: ['any', 'colombo', 'matara', 'galle'],
-    },
-    price: 2499
-  }
+  scraper: Scraper;
 
-  // printed status from terminal
-  results =  'Scraper loaded successfully at ' + this.scraper.scraperLocation + '\nScraper is ready to run...';
+  selectedLocations = [];
+
+  selectedCategories = [];
+
+  scheduleModes = ["daily","weekly", "monthly"]
+
+  sceduledMode: string = ""
+
+  timestamp: number;
+
+  noOfdays: number = 0;
+
+  today = new Date();
+
+  matcher = new MyErrorStateMatcher();
+
 
   constructor(private router: Router,
               public scraperService: ScraperService,
@@ -62,9 +76,6 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
           this.scraperService.getUserScraperStatus(this.scraperId);
           this.scraperStatusSub = this.scraperService.getScraperStatusUpdatedListener()
       .subscribe((status: string) => {
-        if (status){
-          this.scraperStatus = status;
-        }
           this.scraper = rec;
       })
 
@@ -72,6 +83,7 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
   }, (error) => {
     console.log(error);
     });
+
   }
 
   ngOnDestroy() {
@@ -88,33 +100,36 @@ export class ScraperDetailsComponent implements OnInit, OnDestroy {
     }
   }
 
+  setDate(date: Date){
+    this.timestamp = date.getTime();
+    console.log(this.timestamp);
+  }
+
   // run scraper
-  runScraper() {
-
+  runScraper(runMode: string, noOfdays:number) {
+    // this.results +="\nScraper execution started... Please wait...";
+    if(!this.selectedCategories.length) {
+      this.selectedCategories.push('all');
+    }
+    if(!this.selectedLocations.length) {
+      this.selectedLocations.push('any');
+    }
     this.scraperService.updateUserScraperStatus(this.scraperId, 'running');
-    this.scraperStatus = 'running';
 
-    this.scraperService.runScraper(this.scraper);
-    this.resultsSub = this.scraperService.getResultsUpdateListener()
-      .subscribe((rec: {result: string, status: boolean}) => {
-        if (rec) {
-          this.results = rec.result;
-        }
-        if (rec.status) {
-          this.dialog.open(SuccessComponent, {data: {message: "Scraping completed successfully! All data extracted and saved!"}});
-        } else {
-          this.dialog.open(ErrorComponent, {data: {message: "Scraping completed failed! Please retry or contact administrator"}});
-        }
-      });
+    this.scraperService.runScraper(runMode,this.sceduledMode, noOfdays, this.scraper, this.selectedLocations, this.selectedCategories);
+
   }
 
   // stop execution
-  terminateScraper() {
-    this.scraperService.terminateScraper(this.scraper);
+  terminateScraper(scraperId: string) {
+    this.scraperService.terminateScraper(scraperId);
 
     this.scraperService.updateUserScraperStatus(this.scraperId, 'ideal');
-    this.scraperStatus = 'ideal';
-    console.log(this.scraperStatus);
+  }
+
+  // schedule scraper
+  scheduleScraper(timestamp: number){
+    this.scraperService.scheduleScraper(this.scraper,timestamp,this.selectedLocations,this.selectedCategories);
   }
 
 

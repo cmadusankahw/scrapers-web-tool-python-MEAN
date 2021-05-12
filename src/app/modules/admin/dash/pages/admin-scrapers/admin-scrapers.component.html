@@ -1,0 +1,124 @@
+
+<div *ngIf="scrapers && scrapers.length">
+  <div class="pd-top-min">
+  </div>
+  <div class="text-center pt-2 pb-2">
+    <p> Add New Scrapers to marketplace..</p>
+    <a
+    type="button"
+    mdbBtn
+    color="primary"
+    class="waves-light btn btn-md cust-btn btn-lg"
+    mdbWavesEffect
+    routerLink="add"
+  >
+    Add New Scraper
+  </a>
+
+  </div>
+  <hr>
+    <h4>
+      <mat-icon>library_books</mat-icon>
+      <b> Available Scrapers</b>
+    </h4>
+
+    <mat-form-field>
+      <mat-label>
+        <mat-icon>search</mat-icon>
+        Search Users</mat-label
+      >
+      <input matInput (keyup)="applyFilter($event)" placeholder="Scraper Name to search" />
+    </mat-form-field>
+
+    <div class="mat-elevation-z8">
+      <table
+        class="table-responsive"
+        mat-table
+        [dataSource]="dataSource"
+        *ngIf="scrapers.length"
+      >
+        <!-- ID Column -->
+        <ng-container matColumnDef="scraper_id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Scraper ID</th>
+          <td mat-cell *matCellDef="let row">{{ row.scraperId }}</td>
+        </ng-container>
+
+        <!-- Progress Column -->
+        <ng-container matColumnDef="scraper_name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+          <td mat-cell *matCellDef="let row">{{ row.scraperName }}</td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.description.slice(0,30) +'...'}}
+          </td>
+        </ng-container>
+
+        <!-- Color Column -->
+        <ng-container matColumnDef="base_url">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Base URL</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.baseURL }}
+          </td>
+        </ng-container>
+
+
+        <!-- Action Column -->
+        <ng-container matColumnDef="action">
+          <th
+            mat-header-cell
+            *matHeaderCellDef
+            mat-sort-header
+            style="text-align: center"
+          >
+            ACTION
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <button
+              mdbBtn
+              color="blue"
+              text="white"
+              class="btn btn-sm text-center"
+              routerLink="details/{{row.scraperId}}"
+            >
+              ACTION
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <div class="text-center pd-top-min" *ngIf="!scrapers.length">
+        No Scrapers Found
+      </div>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator>
+
+  </div>
+
+
+</div>
+
+<div *ngIf="!scrapers || !scrapers.length">
+  <div class="text-center mt-3 pt-4">
+    <img src="./assets/images/scraper/scraper_not_run.png" height="300px">
+    <h4><string>No Scrapers adde yet..</string></h4>
+    <br>
+    <a
+    type="button"
+    mdbBtn
+    color="primary"
+    class="waves-light btn btn-md cust-btn btn-lg"
+    mdbWavesEffect
+    routerLink="/add"
+  >
+    Add New
+  </a>
+  </div>
+</div>
+

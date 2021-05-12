@@ -21,6 +21,7 @@ const userSchema = mongoose.Schema(
         noOfRuns:  {type: Number, required: true},
         noOfCols:  {type: Number},
         noOfRows:  {type: Number},
+        executionType: {type: String, required: true},
         executed_params:{
           categories: {type: [String]},
           locations:  {type: [String]},

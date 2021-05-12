@@ -1,0 +1,47 @@
+sprint 01:
+* Images downloading
+* contact us
+* privacy policy/ terms and conditions
+- update logo
+- host and add to domain
+
+
+sprint 02++
+    1) scraper marketplace
+    - scraper catalog
+    - scraper purchasing capability
+    - cart/checkout pages
+    - connecting payment gateways
+
+    2)Admin dashboard
+      - manage payments
+      - user verifications
+      - update web content
+      - monthly reports
+      - insight/performance visualizations
+      - sales/marketing reports/visualizations
+
+    3) secure authentication
+    - OTP Verification/ two-factor authentication
+    - scial media signup
+    - data backups to drive/ external storages
+    - email notifications
+
+
+Python Naming Convensions:
+-------------------------
+
+python scraper.py categories,a,b locations,a,b
+
+python scraper_updater.py categories,a,b locations,a,b
+
+scraperLocation:
+backend/scrapers
+
+dataLocation:
+backend/scraped_data/{scraper_name}/{scraper_name}_data.csv
+
+updater Data Location:
+backend/scraped_data/{scraper_name}/{scraper_name}_updater/{scraper_name}_data.csv
+
+

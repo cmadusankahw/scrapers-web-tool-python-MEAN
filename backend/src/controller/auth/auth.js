@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require ("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require ("multer");
+var path = require('path');
 
 //express app declaration
 const auth = express();
@@ -29,7 +30,7 @@ const storage = multer.diskStorage({
     if(isValid){
       error=null;
     }
-    cb(error,"src/assets/images/scraper/user");
+    cb(error,path.join(__dirname,'..', '..', '..', "images/user"));
   },
   filename: (req, file, cb) => {
     const name = file.originalname.toLowerCase().split(' ').join('-');
@@ -138,7 +139,7 @@ auth.post('/signin', (req, res, next) => {
     res.status(200).json({
       message: 'user authentication successfull!',
       token:token,
-      expiersIn: 15000,
+      expiersIn: 1500000,
       user_type: fetchedUser.user_type,
     });
   })
@@ -154,9 +155,9 @@ auth.post('/signin', (req, res, next) => {
 
 
 // add profile pic for user
-auth.post('/user/img',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
+auth.post('/user/image',checkAuth, multer({storage:storage}).array("images[]"), (req, res, next) => {
   const url = req.protocol + '://' + req.get("host");
-  imagePath = url+ "/images/scraper/user/" +  req.files[0].filename;
+  imagePath = url+ "/images/user/" +  req.files[0].filename;
   res.status(200).json({
     profile_pic: imagePath
   });
@@ -188,6 +189,26 @@ auth.post('/user/one',checkAuth, (req, res, next) => {
   });
 });
 
+//update user
+auth.post('/user/selected',checkAuth, (req, res, next) => {
+  User.updateOne({ userId: req.body.userId}, {
+    scrapers: req.body.scrapers
+  })
+  .then((result) => {
+    console.log(result);
+    res.status(200).json({
+      message: 'user scrapers updated successfully!',
+    });
+  })
+  .catch(err=>{
+    console.log(err);
+    res.status(500).json({
+      message: 'user scrapers update failed! Please Try Again!'
+    });
+  });
+});
+
+
 
 // get auth user
 auth.get('/user/current',checkAuth, (req, res, next) => {
@@ -208,9 +229,11 @@ auth.get('/user/current',checkAuth, (req, res, next) => {
   });
 });
 
-// get all users
+// for ADMIN
+// get all users except current user(admin)
 auth.get('/user/all',checkAuth, (req, res, next) => {
-  User.find({}, function (err,users) {
+
+  User.find({userId: {$ne: req.userData.user_id}}, function (err,users) {
     if (err) return handleError(err => {
       console.log(err);
       res.status(500).json(

@@ -7,6 +7,8 @@ export interface Scraper {
   baseURL: string;
   scraperLocation: string;
   script: string;
+  updaterMode: boolean,
+  updaterScript: string,
   params: {
     categories: string[];
     locations: string[];
@@ -20,6 +22,8 @@ export interface ScraperRun {
   noOfRuns: number;
   noOfCols: number;
   noOfRows: number;
+  occurance: string; // once, daily, weekly, monthly
+  executionType: string, // scraper, updater
   executed_params:{
     categories: string[];
     locations: string[];
@@ -49,9 +53,9 @@ export interface UserScraper {
 }
 
 export interface DashStat {
-  registeredVehicles : number;
-  registeredPassengers: number;
-  monthlyIncome: number;
+  registeredUsers : number;
+  totlaScraperRuns: number;
+  totalScrapers: number;
 }
 
 export interface DateObj {
@@ -66,3 +70,14 @@ export interface ResultUpdated {
   status: boolean;
 }
 
+export interface CreateRunItem {
+  scraperId: string;
+  scraperRunId: string;
+  dataLocation: string,
+  dataFormat: string,
+  occurance: string;
+  executionType: string,
+  executedCategories: string[],
+  executedLocations: string[],
+  status: boolean;
+}

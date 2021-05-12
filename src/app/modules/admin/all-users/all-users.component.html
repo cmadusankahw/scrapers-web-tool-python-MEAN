@@ -1,0 +1,396 @@
+<div class="pd-top-min" *ngIf="users">
+  <h4>
+    <mat-icon>library_books</mat-icon>
+    <b> Registered Users</b>
+  </h4>
+
+  <mat-form-field>
+    <mat-label>
+      <mat-icon>search</mat-icon>
+      Search Users</mat-label
+    >
+    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Saman" />
+  </mat-form-field>
+
+  <div class="mat-elevation-z8">
+    <table
+      class="table-responsive"
+      mat-table
+      [dataSource]="dataSource"
+      *ngIf="users.length"
+    >
+      <!-- ID Column -->
+      <ng-container matColumnDef="user_id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User ID</th>
+        <td mat-cell *matCellDef="let row">{{ row.userId }}</td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="user_type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>User Type</th>
+        <td mat-cell *matCellDef="let row">{{ row.userType }}</td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Full Name</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.userName }}
+        </td>
+      </ng-container>
+
+      <!-- Color Column -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.userEmail }}
+        </td>
+      </ng-container>
+
+      <!-- Color Column -->
+      <ng-container matColumnDef="contact_no">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact No</th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.userContactNo }}
+        </td>
+      </ng-container>
+
+
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th
+          mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          style="text-align: center"
+        >
+          ACTION
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <button
+            mdbBtn
+            color="blue"
+            text="white"
+            class="btn btn-sm text-center"
+            (click)="showUserDetails(row.userId)"
+            (click)="idOptions.show()"
+          >
+            View Data
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+
+    <div class="text-center pd-top-min" *ngIf="!users.length">
+      No Users Found
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator>
+  </div>
+</div>
+
+
+
+
+<!--View Details Modal-->
+<div
+  mdbModal
+  #idOptions="mdbModal"
+  class="modal fade"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myBasicModalLabel"
+  [config]="{ backdrop: false, ignoreBackdropClick: true }"
+  aria-hidden="true"
+>
+  <div
+    class="modal-dialog modal-lg modal-dialog-centered"
+    role="document"
+    style="overflow-y: initial !important"
+  >
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="close pull-right"
+          aria-label="Close"
+          (click)="idOptions.hide()"
+        >
+          <span aria-hidden="true">×</span>
+        </button>
+        <h4 class="modal-title w-100" id="myModalLabel">Add Scrapers to User</h4>
+      </div>
+
+      <div
+        class="modal-body"
+        style="height: 450px; overflow-y: auto"
+        *ngIf="user"
+      >
+        <div class="text-center">
+          <section class="text-center dark-grey-text scraper-details">
+            <div class="driver-raw">
+              <div class="col-md-1 text-center">
+                <img
+                  src={{user.profilePic}}
+                  class="profile-pic"
+                />
+              </div>
+              <div class="col-md-9 driver-name-details">
+
+                    <div class="driver-name-large">
+                      {{ user.userName }}
+                    </div>
+                    <div class="small-info">
+                      User ID: {{  user.userId }}
+                    </div>
+              </div>
+            </div>
+            <hr>
+
+              <div class="add-scraper mt-3 mb-2" *ngIf="scrapers && scrapers.length">
+                <div class="row">
+                  <div class="col-md-1"></div>
+                  <div class="col-md-7">
+
+                    <mat-form-field appearance="fill">
+                      <mat-label>Select a scraper to add</mat-label>
+                      <mat-select [(value)]="selectedScraper" onChange>
+                        <mat-option [value]="{scraperId: scraper.scraperId, scraperName: scraper.scraperName}" *ngFor="let scraper of scrapers">{{scraper.scraperName}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+                  </div>
+                  <div class="col-md-4">
+                    <button
+                    mdbBtn
+                    color="primary"
+                    class="btn btn-md"
+                    (click)="addScraper(selectedScraper.scraperId, selectedScraper.scraperName)"
+                    mdbWavesEffect
+                  >
+                  <mdb-icon fas icon="plus"> </mdb-icon>  Add Scraper
+
+                  </button>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-2 mb-3 text-center"  *ngIf="!scrapers || !scrapers.length">
+                <p> Sorry. No scrapers found! </p>
+              </div>
+
+            <hr />
+
+            <div class="scrapers-header mt-1 mb-3 text-center">
+                <h5> Available Scrapers</h5>
+            </div>
+
+            <div class="scrapers-list" *ngIf="user.scrapers && user.scrapers.length">
+              <div class="scraper-box" *ngFor="let userScraper of user.scrapers">
+                <div class="row">
+                  <div class="col-md-8 scraper-title">
+                    <img
+                    src="./assets/images/scraper/icon.png"
+                    class="profile-pic-sm"
+                    height="40"
+                  />
+                    <div><strong>{{userScraper.scraperName}}</strong></div>
+                  </div>
+                  <div class="col-md-4">
+
+                        <button
+                          mdbBtn
+                          color="red"
+                          outline="yes"
+                          class="btn btn-sm"
+                          (click)="removeScraper(userScraper.scraperId)"
+
+                          mdbWavesEffect
+                        >
+                        <mdb-icon fas icon="ban"> </mdb-icon>  Remove Scraper
+
+                        </button>
+
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2 mb-3 text-center"  *ngIf="!user.scrapers || !user.scrapers.length">
+              <p> Sorry. This user has no scrapers assigned! </p>
+            </div>
+
+
+
+            <hr />
+
+
+          </section>
+        </div>
+      </div>
+
+      <div class="modal-footer" >
+
+
+        <button
+          mdbBtn
+          color="primary"
+          class="btn btn-md"
+          (click)="confirmDialogUpdate.show()"
+
+          mdbWavesEffect
+        >
+        <mdb-icon fas icon="user-alt"> </mdb-icon>  Update User
+
+        </button>
+
+        <button
+          mdbBtn
+          color="red"
+          class="btn btn-md"
+          (click)="confirmDialog.show()"
+
+          mdbWavesEffect
+        >
+        <mdb-icon fas icon="ban"> </mdb-icon>  Remove User
+
+        </button>
+
+        <button
+          mdbBtn
+          color="dark"
+          outline="yes"
+          class="btn btn-md"
+          (click)="idOptions.hide()"
+          mdbWavesEffect
+        >
+          Close
+        </button>
+      </div>
+      <div
+        class="modal-body"
+        style="height: 450px; overflow-y: auto"
+        *ngIf="!user"
+      >
+        <app-not-found-page></app-not-found-page>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- confirm order deliveery dialog-->
+<div mdbModal #confirmDialog="mdbModal"
+class="modal fade"
+id="frameModalTop" tabindex="-1" role="dialog"
+[config]="{ backdrop: false, ignoreBackdropClick: true }"
+aria-labelledby="myModalLabel" aria-hidden="true"
+ >
+<div class="modal-dialog modal-notify modal-danger modal-dialog-centered" role="document">
+  <!--Content-->
+  <div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+      <p class="heading">Remove a User</p>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmDialog.hide()">
+        <span aria-hidden="true" class="white-text">&times;</span>
+      </button>
+    </div>
+
+    <!--Body-->
+    <div class="modal-body">
+
+      <div class="row">
+        <div class="col-3">
+          <p></p>
+          <p class="text-center">
+            <mdb-icon fas icon="ban" size="3x" class="mb-3 animated rotateIn"></mdb-icon>
+          </p>
+        </div>
+
+        <div class="col-9">
+          <h5>Are you sure want to remove <b>this user</b>? <br> (Please Note: This action is permenent and cannot be undone!)</h5>
+        </div>
+      </div>
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer justify-content-center">
+      <a type="button" mdbBtn color="red" class="waves-effect btn btn-md"
+      (click) = "removeUser(user.userId)"
+      (click)="confirmDialog.hide()"
+      (click)="idOptions.hide()"
+      mdbWavesEffect> Remove User
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a>
+      <a type="button" mdbBtn color="red" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      (click)="confirmDialog.hide()"
+        data-dismiss="modal">not now</a>
+    </div>
+  </div>
+  <!--/.Content-->
+</div>
+</div>
+
+
+
+<!-- confirm order deliveery dialog-->
+<div mdbModal #confirmDialogUpdate="mdbModal"
+class="modal fade"
+id="frameModalTop" tabindex="-1" role="dialog"
+[config]="{ backdrop: false, ignoreBackdropClick: true }"
+aria-labelledby="myModalLabel" aria-hidden="true"
+ >
+<div class="modal-dialog modal-notify modal-primary modal-dialog-centered" role="document">
+  <!--Content-->
+  <div class="modal-content">
+    <!--Header-->
+    <div class="modal-header">
+      <p class="heading">Update Scrapers for User </p>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="confirmDialog.hide()">
+        <span aria-hidden="true" class="white-text">&times;</span>
+      </button>
+    </div>
+
+    <!--Body-->
+    <div class="modal-body">
+
+      <div class="row">
+        <div class="col-3">
+          <p></p>
+          <p class="text-center">
+            <mdb-icon fas icon="ban" size="3x" class="mb-3 animated rotateIn"></mdb-icon>
+          </p>
+        </div>
+
+        <div class="col-9">
+          <h5>Are you sure want to update scrapers for <b>this user</b>? <br> (Please Note: All scrapers removed will loss thier execution data. This action cannot be undone!)</h5>
+        </div>
+      </div>
+    </div>
+
+    <!--Footer-->
+    <div class="modal-footer justify-content-center">
+      <a type="button" mdbBtn color="primary" class="waves-effect btn btn-md"
+      (click) = "updateUser(user)"
+      (click)="confirmDialogUpdate.hide()"
+      (click)="idOptions.hide()"
+      mdbWavesEffect> Commit Changes
+        <mdb-btn far icon="check" class="ml-1"></mdb-btn>
+      </a>
+      <a type="button" mdbBtn color="primary" outline="true" class="waves-effect btn btn-md" mdbWavesEffect
+      (click)="confirmDialogUpdate.hide()"
+        data-dismiss="modal">not now</a>
+    </div>
+  </div>
+  <!--/.Content-->
+</div>
+</div>
+

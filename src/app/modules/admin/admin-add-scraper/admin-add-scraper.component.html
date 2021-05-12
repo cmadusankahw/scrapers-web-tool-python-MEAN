@@ -1,0 +1,98 @@
+
+<!--edit product-->
+<div class="container-fluid text-center scraper-all" *ngIf="scraper">
+  <div class="mt-3 mb-2">
+        <p style="line-height:35px;"> Provide required details to add or update an existing scraper.</p>
+   </div>
+  <br>
+    <form class="service-form" (submit)="addScraper(addScraperForm)" #addScraperForm ="ngForm">
+      <mat-form-field class="service-full-width">
+        <mat-label>Scraper Name</mat-label>
+        <input matInput placeholder="Enter Scraper Name"  required
+        [(ngModel)]="scraper.scraperName" name="scraperName" #scraperName="ngModel">
+        <mat-error *ngIf="scraperName.invalid">Scraper name is required</mat-error>
+      </mat-form-field>
+      <br>
+
+      <mat-form-field class="service-full-width">
+        <mat-label class="check-label">Scraper Description</mat-label>
+        <textarea matInput rows="5" placeholder="Enter Scraper Description"
+        [(ngModel)]="scraper.description" name="description" ></textarea>
+      </mat-form-field>
+      <hr>
+
+      <mat-form-field class="service-full-width">
+        <mat-label>Base URL</mat-label>
+        <input matInput placeholder="Enter Scraper Base URL"  required
+        [(ngModel)]="scraper.baseURL" name="baseURL" #baseURL="ngModel">
+        <mat-error *ngIf="baseURL.invalid">Base URL is required</mat-error>
+      </mat-form-field>
+      <br>
+
+      <mat-form-field class="service-full-width">
+        <mat-label>Scraper Store Location</mat-label>
+        <input matInput placeholder="Enter Scraper Storing Location"  required
+        [(ngModel)]="scraper.scraperLocation" name="scraperLocation" #scraperLocation="ngModel">
+        <mat-error *ngIf="scraperLocation.invalid">Scraper Storing Location is required</mat-error>
+      </mat-form-field>
+      <br>
+
+      <mat-form-field class="service-full-width">
+        <mat-label>Scraper Script</mat-label>
+        <input matInput placeholder="Enter Scraper Script command"  required
+        [(ngModel)]="scraper.script" name="script" #script="ngModel">
+        <mat-error *ngIf="script.invalid">Scraper Script is required</mat-error>
+      </mat-form-field>
+      <br>
+
+      <mat-form-field class="service-full-width">
+        <mat-label>Scraper Updater Script</mat-label>
+        <input matInput placeholder="Enter Scraper Updater script if avialable. Else leave blank"  required
+        [(ngModel)]="scraper.updaterScript" name="updaterScript" >
+      </mat-form-field>
+
+          <mat-form-field class="service-full-width">
+            <mat-label>Price(Rs.)</mat-label>
+            <input matInput placeholder="Enter scraper Price" required
+            [(ngModel)]="scraper.price" name="price" #price="ngModel">
+            <mat-error *ngIf="price.invalid">Please enter price </mat-error>
+          </mat-form-field>
+
+      <hr>
+
+      <mat-form-field class="service-full-width">
+        <mat-label class="check-label">Scraper Categories</mat-label>
+        <textarea matInput rows="5" placeholder="Add scraper categories (as comma seperated values)"
+        [(ngModel)]="categories" name="categories" ></textarea>
+      </mat-form-field>
+
+      <br>
+
+      <mat-form-field class="service-full-width">
+        <mat-label class="check-label">Scraper Locations</mat-label>
+        <textarea matInput rows="5" placeholder="Add scraper locations (as comma seperated values)"
+        [(ngModel)]="locations" name="locations" ></textarea>
+      </mat-form-field>
+
+      <br>
+
+      <mat-form-field class="service-full-width">
+        <mat-label class="check-label">Scraper Tags</mat-label>
+        <textarea matInput rows="5" placeholder="Add scraper tags (as comma seperated values)"
+        [(ngModel)]="tags" name="tags" ></textarea>
+      </mat-form-field>
+
+      <br>
+
+</form>
+ <!--back button only if !addnew-->
+ <div class="text-center mt-3 mb-4">
+  <button mdbBtn color="primary" class="btn btn-md edtbt" mdbWavesEffect
+   (click)="addScraper()" *ngIf="!scraperId">Save Changes</button>
+   <button mdbBtn color="primary" class="btn btn-md edtbt" mdbWavesEffect
+   (click)="updateScraper()"  *ngIf="scraperId">Update Changes</button>
+<button mdbBtn color="primary" class="btn btn-md edtbt" outline="yes" mdbWavesEffect
+(click)="addScraperForm.resetForm()"  type="button">Discard</button>
+</div>
+</div>
+
